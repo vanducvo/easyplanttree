@@ -1,0 +1,39 @@
+{
+  "name": "iotserver",
+  "version": "1.0.0",
+  "description": "server provide API for IoT devices and application",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "nodemon src/app.js",
+    "eslint": "eslint src/",
+    "eslint-fix": "eslint src/ --fix",
+    "test": "nyc mocha src/test/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vanducvo/IoTServer.git"
+  },
+  "keywords": [
+    "[expressjs",
+    "IoTServer]"
+  ],
+  "author": "Van Duc Vo",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/vanducvo/IoTServer/issues"
+  },
+  "homepage": "https://github.com/vanducvo/IoTServer#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-google": "^0.14.0",
+    "mocha": "^7.1.1",
+    "nodemon": "^2.0.2",
+    "nyc": "^15.0.0"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "winston": "^3.2.1"
+  }
+}
