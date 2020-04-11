@@ -2,9 +2,9 @@
 
 ![](./save-nature.png)
 
-**Install Enviroment Devlopment  In Linux**:
+**Install Enviroment Development  In Linux**:
 
-1. <u>Install node >=12.*</u>
+1. Install node >=12.*
 
    - Add `nvm`:
 
@@ -18,7 +18,7 @@
 
       ​	`npm --version && node --version`
 
-2. <u>Clone and run project</u>
+2. Clone and run project
 
    - Clone:
 
@@ -35,5 +35,8 @@
    - Run project:
 
       `npm start`
+   
+   - Open Browser:
+      `url: localhost:8080`
 
       
