@@ -4,7 +4,8 @@
   "description": "server provide API for IoT devices and application",
   "main": "src/app.js",
   "scripts": {
-    "start": "nodemon src/app.js",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
     "eslint": "eslint src/",
     "eslint-fix": "eslint src/ --fix",
     "test": "nyc mocha test/*"
