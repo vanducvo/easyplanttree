@@ -1,0 +1,98 @@
+.icon {
+    opacity: 0.5;
+}
+
+.icon:hover {
+    opacity: 1;
+}
+
+.status.active{
+    color:#00D97E !important;
+}
+
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+.avatar-img {
+    width: 40px;
+    height: 40px;
+}
+
+.navbar-vertical.navbar-expand-md .navbar-brand{
+    display: block;
+    text-align: center;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+}
+
+@media (min-width: 768px){
+    .navbar-vertical.navbar-expand-md {
+        display: block;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        max-width: 250px;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        overflow-y: auto;
+        border-right-style: solid;
+    }
+
+    .navbar-vertical.navbar-expand-md.fixed-left{
+        left: 0;
+        border-width: 0 1px 0 0;
+    }
+    .navbar-vertical.navbar-expand-md .container-fluid{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .navbar-vertical.navbar-expand-md .navbar-collapse{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    .navbar-vertical.navbar-expand-md .navbar-nav{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    .navbar-vertical.navbar-expand-md .navbar-nav .icon{
+        padding-right: 1rem;
+    }
+
+    .navbar-vertical.navbar-expand-md .navbar-user{
+        align-items: center;
+        margin-top: 1rem;
+        bottom: 0;
+    }
+    
+    .navbar-vertical.navbar-expand-md .navbar-user .status {
+        font-size: x-large;
+        position: relative;
+        top: -10px;
+        left: -15px;
+        opacity: 0.5;
+    }
+
+    .navbar-vertical.navbar-expand-md .navbar-user-setings{
+        padding-left: 0.8rem;
+    }
+
+    .navbar-vertical.navbar-expand-md .nav-item{
+        border-width: thin;
+        border-bottom-style: solid;
+    }
+
+    .navbar-vertical.navbar-expand-md .mt-auto{
+        height: 100%;
+        width: 100%;
+    }
+
+    #main-area{
+        margin-left: 250px;
+    }
+}

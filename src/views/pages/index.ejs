@@ -3,27 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Easy Plant Tree</title>
     <script src="/public/js/jquery-3.5.0.min.js"></script>
     <script src="/public/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="/public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/index.css">
 </head>
 <body>
-    <form>
-        <div class="form-group">
-          <label for="exampleInputEmail1">Email address</label>
-          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-          <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+  <div id="root">
+    <nav id="slidebar" class="navbar navbar-vertical fixed-left navbar-expand-md navbar-light">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#sideCollapse" aria-controls="sideCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="sideCollapse" class="collapse navbar-collapse">
+          <div class="navbar-brand-info">
+            <a class="navbar-brand" href="/">
+              <img class="navbar-brand-img mx-auto" src="/public/assets/images/brand.png" alt="Brand Image">
+              <p class="navbar-brand-name">Easy Plant Tree</p>
+            </a>
+          </div>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active">
+                <img class="icon" src="/public/assets/images/dashboards.svg" alt="|">
+                Dashboards
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link">
+                <img class="icon" src="/public/assets/images/map.svg" alt="|">
+                Map
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link">
+                <img class="icon" src="/public/assets/images/controls.svg" alt="|">
+                Controls
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link">
+                <img class="icon" src="/public/assets/images/authentication.svg" alt="|">
+                  Contact
+              </a>
+            </li>
+          </ul>
+          <div class="mt-auto"></div>
+          <div id="slidebarUser" class="navbar-user d-none d-md-flex">
+            <a class="navbar-user-notification">
+              <img class="icon" src="/public/assets/images/notifications.svg">
+              <span class="status">●</span>
+            </a>
+            <div class="dropup show">
+              <a id="slidebarAvatar" class="dropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <div class="avatar avatar-sm">
+                  <img class ="avatar-img rounded-circle" src="/public/assets/images/user.png">
+                </div>
+                <div class="dropdown-menu" aria-labelledby="slidebarAvatar">
+                  <a>Logout</a>
+                  <a>Profile</a>
+                </div>
+              </a>
+            </div>
+            <a class="navbar-user-setings">
+              <img class="icon" src="/public/assets/images/settings.svg">
+            </a>
+          </div> 
         </div>
-        <div class="form-group">
-          <label for="exampleInputPassword1">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1">
-        </div>
-        <div class="form-group form-check">
-          <input type="checkbox" class="form-check-input" id="exampleCheck1">
-          <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
+      </div>
+    </nav>
+    <div id="main-area">
+      <h1>This is a main board</h1>
+    </div>
+  </div>
 </body>
 </html>
