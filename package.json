@@ -7,7 +7,7 @@
     "start": "nodemon src/app.js",
     "eslint": "eslint src/",
     "eslint-fix": "eslint src/ --fix",
-    "test": "nyc mocha src/test/*"
+    "test": "nyc mocha test/*"
   },
   "repository": {
     "type": "git",
