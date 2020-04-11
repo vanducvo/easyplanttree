@@ -1,3 +1,7 @@
+#main-area{
+    background-color: #f9fbfd;
+}
+
 .icon {
     opacity: 0.5;
 }
@@ -26,6 +30,16 @@
     padding-bottom: 1.25rem;
 }
 
+.navbar-vertical.navbar-expand-md .navbar-nav .icon{
+    padding-right: 1rem;
+}
+
+.navbar-vertical.navbar-expand-md .nav-item{
+    border-width: thin;
+    border-bottom-style: solid;
+    border-color: #d8e3f1;
+}
+
 @media (min-width: 768px){
     .navbar-vertical.navbar-expand-md {
         display: block;
@@ -38,12 +52,14 @@
         padding-right: 1.5rem;
         overflow-y: auto;
         border-right-style: solid;
+        border-color: #e3ebf6;
     }
 
     .navbar-vertical.navbar-expand-md.fixed-left{
         left: 0;
         border-width: 0 1px 0 0;
     }
+
     .navbar-vertical.navbar-expand-md .container-fluid{
         display: flex;
         flex-direction: column;
@@ -55,13 +71,11 @@
         flex-direction: column;
         width: 100%;
     }
+
     .navbar-vertical.navbar-expand-md .navbar-nav{
         display: flex;
         flex-direction: column;
         width: 100%;
-    }
-    .navbar-vertical.navbar-expand-md .navbar-nav .icon{
-        padding-right: 1rem;
     }
 
     .navbar-vertical.navbar-expand-md .navbar-user{
@@ -82,17 +96,38 @@
         padding-left: 0.8rem;
     }
 
-    .navbar-vertical.navbar-expand-md .nav-item{
-        border-width: thin;
-        border-bottom-style: solid;
-    }
 
     .navbar-vertical.navbar-expand-md .mt-auto{
         height: 100%;
         width: 100%;
     }
 
+    .navbar-vertical.navbar-expand-md .dropdown-menu{
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+    }
+
     #main-area{
-        margin-left: 250px;
+        padding-left: 250px;
+        height: 100%;
+        width: 100%;
+    }
+}
+
+@media(max-width: 768px){
+    .navbar-brand-img{
+        height: 50%;
+        width:50%;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    .navbar.navbar-vertical{
+        position: fixed !important;
+        top: 0;
+        width: 100%;
+        margin-top: 0;
+        padding-top: 0;
     }
 }
