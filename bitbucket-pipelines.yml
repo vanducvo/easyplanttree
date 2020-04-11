@@ -16,7 +16,7 @@ pipelines:
     - step:
         name: Create artifact
         script:
-          - tar czfv easy-plant-tree.tgz .
+          - tar czfv easy-plant-tree.tgz src/ package-lock.json package.json
         artifacts:
           - easy-plant-tree.tgz
     - step:
