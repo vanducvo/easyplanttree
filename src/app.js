@@ -25,7 +25,7 @@ app.get('/', function(req, res){
   res.render('pages/index.ejs');
 });
 
-app.get('api/', function(req, res) {
+app.get('/api', function(req, res) {
   const api = {
     'home': '/',
   };
