@@ -15,18 +15,22 @@ app.set('view engine', 'ejs');
 app.set('views', path.resolve(__dirname, 'views'));
 
 app.use('/public', serveStatic(
-  path.resolve(__dirname, 'public'),
-  {
-    cacheControl: settings.cacheControl
-  }
+    path.resolve(__dirname, 'public'),
+    {
+      cacheControl: settings.cacheControl
+    }
 ));
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.render('pages/index.ejs');
 });
 
-app.get('/map', function(req, res){
+app.get('/map', function(req, res) {
   res.render('pages/map.ejs');
+});
+
+app.get('/signin', function(req, res) {
+  res.render('pages/signin.ejs');
 });
 
 app.get('/api', function(req, res) {
