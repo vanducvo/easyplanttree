@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Plant Tree</title>
+    <%- include('../partials/require') %>
+    <script src="/public/js/mapbox/mapbox-gl.js"></script>
+    <link rel="stylesheet" href="/public/css/mapbox/mapbox-gl.css">
+    <link rel="stylesheet" href="/public/css/map.css">
+</head>
+
+<body>
+    <%- include('../partials/nav', {page: 'map'}) %>
+    <div id="main" class="row">
+        <div id='map' class="col-lg-8"></div>
+        <div id="control" class="col-lg-3">
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Find In Map</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">0</th>
+                    <td>Sensor X</td>
+                    <td><button id="sensorx_0" type="button" class="btn btn-info">Info</button></td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>
+    </div>
+    
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoidmFuZHVjdm8iLCJhIjoiY2s4anhzODJ3MDlieDNlbTdkNXloOXJsbCJ9.rHcG-iX1IOcoqQGq9gX03A';
+        let map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [106.8029505, 10.880711],
+            zoom: 12
+        });
+
+        document.getElementById("sensorx_0").onclick = function(){
+            let info = {
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [106.66, 10.77]
+                },
+                properties: {
+                    title: 'Sensor X',
+                    description: 'Ho Chi Minh city University of Technology'
+                }
+            };
+
+            new mapboxgl.Marker()
+                .setLngLat(info.geometry.coordinates)
+                .setPopup(new mapboxgl.Popup({ offset: 25 }) 
+                .setHTML(
+                    '<h5>' + info.properties.title +
+                     '</h5><p>' + info.properties.description + '</p>'
+                ))
+                .addTo(map);
+
+            map.flyTo({
+                center: info.geometry.coordinates,
+                essential: true
+            });
+        }
+    </script>
+</body>
+
+</html>

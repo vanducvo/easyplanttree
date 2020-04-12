@@ -8,11 +8,11 @@
         </button>
         <div class="collapse navbar-collapse row justify-content-between" id="menu">
             <ul class="navbar-nav col-lg-8 justify-content-start">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Dashboard</a>
+                <li class="nav-item <%= page==='dasboard' ? 'active' : '' %>">
+                    <a class="nav-link" href="/">Dashboard</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Map</a>
+                <li class="nav-item nav-item <%= page==='map' ? 'active' : '' %>">
+                    <a class="nav-link" href="/map">Map</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Controller</a>
