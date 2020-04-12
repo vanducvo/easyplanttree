@@ -13,25 +13,108 @@
 
 <body>
     <%- include('../partials/nav', {page: 'map'}) %>
-    <div id="main" class="row">
-        <div id='map' class="col-lg-8"></div>
-        <div id="control" class="col-lg-3">
-            <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Find In Map</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">0</th>
-                    <td>Sensor X</td>
-                    <td><button id="sensorx_0" type="button" class="btn btn-info">Info</button></td>
-                  </tr>
-                </tbody>
-              </table>
+    <div id="main" class="container-fluid">
+        <div class="row">
+          <div id = map class="col-lg-8">
+          </div>
+          <div class="col-lg-4">
+            <div class="table-responsive">
+                    <table class="table table-fixed">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="col-2">#</th>
+                                <th scope="col" class="col-7">Name</th>
+                                <th scope="col" class="col-3">Find</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor 1 </td>
+                                <td class="col-3">
+                                    <button id="sensor1" type="button" class="btn btn-info">Find</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor</td>
+                                <td class="col-3">
+                                    <button type="button" class="btn btn-info">Info</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor</td>
+                                <td class="col-3">
+                                    <button type="button" class="btn btn-info">Info</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor</td>
+                                <td class="col-3">
+                                    <button type="button" class="btn btn-info">Info</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor</td>
+                                <td class="col-3">
+                                    <button type="button" class="btn btn-info">Info</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor</td>
+                                <td class="col-3">
+                                    <button type="button" class="btn btn-info">Info</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor</td>
+                                <td class="col-3">
+                                    <button type="button" class="btn btn-info">Info</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor</td>
+                                <td class="col-3">
+                                    <button type="button" class="btn btn-info">Info</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor</td>
+                                <td class="col-3">
+                                    <button type="button" class="btn btn-info">Info</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor</td>
+                                <td class="col-3">
+                                    <button type="button" class="btn btn-info">Info</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor</td>
+                                <td class="col-3">
+                                    <button type="button" class="btn btn-info">Info</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-2">1</th>
+                                <td class="col-7">Sensor</td>
+                                <td class="col-3">
+                                    <button type="button" class="btn btn-info">Info</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+          </div>
         </div>
     </div>
     
@@ -44,12 +127,12 @@
             zoom: 12
         });
 
-        document.getElementById("sensorx_0").onclick = function(){
+        document.getElementById("sensor1").onclick = function(){
             let info = {
                 type: 'Feature',
                 geometry: {
                     type: 'Point',
-                    coordinates: [106.66, 10.77]
+                    coordinates: [106.65913661332138, 10.773434613744882]
                 },
                 properties: {
                     title: 'Sensor X',
