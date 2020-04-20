@@ -68,10 +68,10 @@
                                 </div>
                         </div>
                         <div class="fullname">
-                            Đức Võ Văn
+                            <%= user&&user.name ? user.name : 'Guest' %>
                         </div>
                         <div class="email">
-                            duc.vo.cse@hcmut.edu.vn
+                            <%= user&&user.email ? user.email : 'Guest' %>
                         </div>
                     </div>
                     <div class="btn-manager">
@@ -81,9 +81,11 @@
                     </div>
                     <div class="dropdown-divider"></div>
                     <div class="btn-logout">
-                        <button class="btn btn-light">
-                            Đăng Xuất
-                        </button>
+                        <a href="/auth/logout">
+                            <button class="btn btn-light">
+                                Đăng Xuất
+                            </button>
+                        </a>
                     </div>
                 </div>
             </div>

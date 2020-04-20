@@ -33,11 +33,20 @@
     "nyc": "^15.0.0"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "csurf": "^1.11.0",
     "ejs": "^3.0.2",
     "express": "^4.17.1",
+    "googleapis": "^49.0.0",
+    "js-base64": "^2.5.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.9",
     "morgan": "^1.10.0",
+    "nodemailer": "^6.4.6",
     "serve-favicon": "^2.5.0",
     "serve-static": "^1.14.1",
+    "tsscmp": "^1.0.6",
     "winston": "^3.2.1"
   }
 }

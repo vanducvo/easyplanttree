@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <%- include ('../partials/require') %>
+    <meta content="<%= _csrf %>" id="_csrf" />
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background-color: #fafbfc;
+        }
+
+        .image-brand {
+            max-width: 20%;
+            max-height: 20%;
+            opacity: 0.9;
+        }
+
+        .check-mail {
+            text-align: center;
+        }
+
+        .check-mail * {
+            margin-top: 1rem;
+        }
+
+        .check-mail .form-name {
+            font-size: 32px;
+            color: #205081;
+            line-height: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container-fluid d-flex justify-content-center">
+            <img class="image-brand" src="/public/assets/images/logo.png" alt="Eassy Plant Tree">
+        </div>
+    </header>
+    <div class="container-fuild d-flex justify-content-center form">
+        <div class="d-flex flex-column col-sm-6 col-md-5 col-lg-4 check-mail">
+            <div class="form-name"><b>Create your account</b></div>
+            <div><b>Enter your email</b></div>
+            <form method="POST" id="form-create">
+                <input type="email" name="email" id="email" class="form-control" placeholder="Email" required/>
+                <div class="container-fuild">
+                    <button type="submit" id="next" class="btn btn-success col-10">Continue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('next').onclick = function (event) {
+            event.preventDefault();
+            let token = document.getElementById('_csrf').getAttribute('content');
+            let email = document.getElementById('email').value;
+            fetch('/account/check', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'CSRF-Token': token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.status) {
+                        let next = document.getElementById('next');
+                        next.remove();
+                        let email = document.getElementById('email');
+                        email.setAttribute('disabled' , true);
+                        email.insertAdjacentHTML('afterend', `
+                        <input type="text" id="name" name="name" class="form-control" placeholder="Full Name" required>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                        `);
+
+                        let submit = document.querySelector('.check-mail .container-fuild');
+                        submit.innerHTML =  `
+                        <button type="submit" id="submit" class="btn btn-success col-10">Create Account</button>
+                        `;
+
+                        let form = document.getElementById("form-create");
+                        form.onsubmit = signup;
+                    } else {
+                        let notify = document.createElement('div');
+                        notify.classList.add('alert', 'alert-danger');
+                        notify.setAttribute('role' , 'alert');
+                        notify.textContent = 'Email Exists';
+                        let parent =  document.querySelector('.form-name');
+                        parent.after(notify);
+                        setTimeout(()=> notify.remove(), 5000);
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error.name);
+                });
+        }
+
+        function signup(event){
+            event.preventDefault();
+            let token = document.getElementById('_csrf').getAttribute('content');
+            let email = document.getElementById('email').value;
+            let name = document.getElementById('name').value;
+            let password = document.getElementById('password').value;
+            fetch('/account/signup', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'CSRF-Token': token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    name: name,
+                    password: password
+                })
+            })
+            .then((res) => {
+                if (res.status == 200){
+                    let mainpage = document.querySelector('.check-mail');
+                    mainpage.innerHTML = `
+                    <div class="alert alert-success" role="alert">
+                        Check Mail to Verify Account!
+                    </div>
+                    `;
+                } else {
+                    throw new Error(res.statusText);
+                }
+
+            })
+            .catch((err) => {
+                let mainpage = document.querySelector('.check-mail');
+                    mainpage.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        Fails! Reload and try again!
+                    </div>
+                `;
+            });
+        }
+    </script>
+
+</body>
+
+</html>

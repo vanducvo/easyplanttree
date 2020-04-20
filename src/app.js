@@ -1,11 +1,26 @@
 const express = require('express');
 const app = express();
-const settings = require('./config/settings');
-const utils = require('./utils/utils');
+
 const path = require('path');
 const serveStatic = require('serve-static');
 const serveFavicon = require('serve-favicon');
+const cookieParse = require('cookie-parser');
+const bodyParser = require('body-parser');
+const csrf = require('csurf');
 const morgan = require('morgan');
+
+const auth = require('./routes/authentication');
+const account = require('./routes/account');
+const settings = require('./config/settings');
+const utils = require('./utils/utils');
+const authorization = require('./services/authorization');
+const mongoose = require('mongoose');
+
+mongoose.connect(settings.database, { 
+  useCreateIndex: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 app.use(morgan('dev'));
 
@@ -21,12 +36,26 @@ app.use('/public', serveStatic(
     }
 ));
 
+app.use(cookieParse());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+app.use(csrf({
+  cookie: true,
+  sessionKey: settings.csrf_secretkey
+}));
+
+app.use('/auth', auth);
+app.use('/account', account);
+
+app.use(authorization);
+
 app.get('/', function(req, res) {
-  res.render('pages/index.ejs');
+  console.log(req.user);
+  res.render('pages/index.ejs', {user: req.user});
 });
 
 app.get('/map', function(req, res) {
-  res.render('pages/map.ejs');
+  res.render('pages/map.ejs', {user: req.user});
 });
 
 app.get('/signin', function(req, res) {
@@ -46,7 +75,7 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.err = settings.type === 'production' ? {} : err;
   res.status(err.status || 500);
-  res.render('error');
+  res.end();
 });
 
 app.listen(settings.port);
