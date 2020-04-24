@@ -1,6 +1,14 @@
-const {logger, jwtVerify} = require('../utils/utils');
+const {jwtVerify} = require('../utils/utils');
+const serverLogger = require('../utils/logger').serverLogger(module);
+const databaseLogger = require('../utils/logger').databaseLogger(module); 
 const Tokens = require('../models/token');
 
+/**
+ * @description Middleware for authorization user
+ * @param {Object} req 
+ * @param {Oject} res 
+ * @param {() => void} next 
+ */
 function authorization(req, res, next){
     jwtVerify(req.cookies.jwt)
     .then(data => {
@@ -14,16 +22,22 @@ function authorization(req, res, next){
                 res.redirect('/auth/login');
             }
         }).catch(err => {
-            logger.error(err);
+            databaseLogger.error(err);
             res.redirect('/auth/login');
         });
     })
     .catch(err => {
-        logger.error(err);
+        serverLogger.error(err);
         res.redirect('/auth/login');
     })
 }
 
+/**
+ * @description Middleware for prevent user relogin when logined
+ * @param {Object} req 
+ * @param {Oject} res 
+ * @param {() => void} next 
+ */
 function preventRelogin(req, res, next){
     jwtVerify(req.cookies.jwt)
     .then(data => {
@@ -36,12 +50,12 @@ function preventRelogin(req, res, next){
                 next();
             }
         }).catch(err => {
-            logger.error(err);
+            databaseLogger.error(err);
             next();
         });
     })
     .catch(err => {
-        logger.error(err);
+        serverLogger.error(err);
         next();
     })
 }

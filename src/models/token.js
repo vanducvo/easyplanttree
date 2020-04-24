@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Schema for Token collection
 const tokenSchema = mongoose.Schema({
     ip: {
         type: String,
@@ -20,6 +21,7 @@ const tokenSchema = mongoose.Schema({
     }
 });
 
+// Create index with user id
 tokenSchema.index({user: 1});
 
 module.exports = mongoose.model('Token', tokenSchema);

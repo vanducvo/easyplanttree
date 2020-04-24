@@ -1,57 +1,34 @@
-const settings = require('../config/settings');
-const winston = require('winston');
-const path = require('path');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const compare = require('tsscmp');
+const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
+/**
+ * @description check mail valid
+ * @param {string} email
+ * @returns {boolean} valid mail?
+ */
+function checkEmail(email){
+  return emailPattern.test(email);
+}
+
+/**
+ * @description Create json text with beautiful
+ * @param {Object} json
+ * @returns {string} beautify json text
+ */
 function createTextResepondJSONBeaufy(json) {
   return JSON.stringify(json, null, '\t');
 }
 
-const customFormat = winston.format.printf(
-    function({level, message, label, timestamp}) {
-      return `${timestamp} [${label}] ${level}: ${message}`;
-    },
-);
-
-function logFile(name) {
-  return path.join(settings.logFolder, name);
-}
-
-const logger = winston.createLogger({
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({
-      filename: logFile('debug_error.log'),
-      level: 'error',
-    }),
-  ],
-  format: winston.format.combine(
-      winston.format.label({label: 'Middleware'}),
-      winston.format.timestamp(),
-      customFormat,
-  ),
-});
-
-const serverErrorLogger = winston.createLogger({
-  transports: [
-    new winston.transports.File({
-      filename: logFile('server_error.log'),
-      level: 'error',
-    }),
-  ],
-
-  format: winston.format.combine(
-      winston.format.label({label: 'Server Error'}),
-      winston.format.timestamp(),
-      customFormat,
-  ),
-});
-
+/**
+ * @description Crypto data to protect
+ * @param {string} data
+ * @returns {string} data have crypto
+ */
 function promiseScrypt (data){
   return new Promise((resolve, reject) => {
-    crypto.scrypt(data, settings.cryto_secretkey, 64, function(err, key){
+    crypto.scrypt(data, process.env.CRYTO_SECRET_KEY, 64, function(err, key){
       if(err)
         reject(err);
       
@@ -60,19 +37,34 @@ function promiseScrypt (data){
   });
 }
 
+/**
+ * @description Verify data have crypto prevent timing attacks 
+ * @param {string} origindata 
+ * @returns {boolean} valid data ? 
+ */
 function promiseVerifyScrypt(origindata, data){
   return promiseScrypt(origindata).then(key => {
     return compare(data, key);
   });
 }
 
-function jwtCreate(data, limit){
-  return jwt.sign(data, settings.jwt_secretkey);
+/**
+ * @description sign data with jwt
+ * @param {string} data
+ * @return {string} tooken have sign 
+ */
+function jwtCreate(data){
+  return jwt.sign(data, process.env.JWT_SECRET_KEY);
 }
 
+/**
+ * @description Verify jwt token
+ * @param {string} data 
+ * @returns {boolean} valid data ? 
+ */
 function jwtVerify(data){
   return new Promise((resolve, reject) => {
-    jwt.verify(data, settings.jwt_secretkey, function(err, decoded){
+    jwt.verify(data, process.env.JWT_SECRET_KEY, function(err, decoded){
       if(err)
         reject(err);
       
@@ -82,9 +74,8 @@ function jwtVerify(data){
 }
 
 exports.createTextResepondJSONBeaufy = createTextResepondJSONBeaufy;
-exports.logger = logger;
-exports.serverErrorLogger = serverErrorLogger.error.bind(serverErrorLogger);
 exports.promiseScrypt = promiseScrypt;
 exports.jwtCreate = jwtCreate;
 exports.jwtVerify = jwtVerify;
 exports.promiseVerifyScrypt = promiseVerifyScrypt;
+exports.checkEmail = checkEmail;

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-const settings = require('../config/settings');
+const {checkEmail} = require('../utils/utils');
 
+// Schema for user collection
 const UserSchema = mongoose.Schema({
     name: {
         type: String,
@@ -13,9 +14,7 @@ const UserSchema = mongoose.Schema({
     email: {
         type: String,
         validate: {
-            validator: function(value){
-                return settings.email_partern.test(value)
-            },
+            validator: checkEmail,
             message: props => `${props.value} is not a valid email!`
         }
         ,
@@ -24,7 +23,7 @@ const UserSchema = mongoose.Schema({
     }
 });
 
+// Create email index
 UserSchema.index({email: 1});
-
 
 module.exports = mongoose.model('User', UserSchema);
