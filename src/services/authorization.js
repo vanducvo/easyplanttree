@@ -13,7 +13,7 @@ function authorization(req, res, next){
     jwtVerify(req.cookies.jwt)
     .then(data => {
         Tokens
-        .findOne({token: req.cookies.jwt})
+        .findOne({_id: data.token})
         .then(doc => {
             if (doc){
                 req.user = data;
@@ -42,7 +42,7 @@ function preventRelogin(req, res, next){
     jwtVerify(req.cookies.jwt)
     .then(data => {
         Tokens
-        .findOne({token: req.cookies.jwt})
+        .findOne({token: data.token})
         .then(doc => {
             if (doc){
                 res.redirect('/');

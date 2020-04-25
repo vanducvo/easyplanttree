@@ -10,15 +10,12 @@ const tokenSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    token: {
-        type: String,
-        required: true
-    },
     user: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'User',
         required: true
-    }
+    },
+    pusher: String
 });
 
 // Create index with user id

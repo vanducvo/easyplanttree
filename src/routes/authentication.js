@@ -21,7 +21,7 @@ router.get('/logout', function(req, res){
     .then(data => {
         if(data){
             Token
-            .findOneAndDelete({token: req.cookies.jwt})
+            .findOneAndDelete({_id: data.token})
             .then(doc => {
                 res.clearCookie('jwt');
                 res.redirect('/auth/login');
@@ -57,27 +57,27 @@ router.post('/login', function (req, res) {
             promiseVerifyScrypt(req.body.password, doc.password)
             .then(result => {
                 if (result) {
-                    let user = {
-                        id: doc._id,
-                        name: doc.name,
-                        email: doc.email
-                    };
 
-                    let token = jwtCreate(user, '1d');
                     let ip = req.headers['x-forwarded-for']
                         || req.connection.remoteAddress || '';
                     let agent = req.get('User-Agent');
                     let storeToken = new Token({
                         user: doc._id,
                         browser: agent,
-                        token: token,
                         ip: ip
                     });
 
                     storeToken
                     .save()
-                    .then(doc => {
-                        res.cookie('jwt', token, {
+                    .then(token => {
+                        let user = {
+                            token: token._id,
+                            id: doc._id,
+                            name: doc.name,
+                            email: doc.email
+                        };
+                        let jwt = jwtCreate(user);
+                        res.cookie('jwt', jwt, {
                             sameSite: 'strict'
                         });
                         res.redirect('/');

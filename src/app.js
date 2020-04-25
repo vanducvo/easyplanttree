@@ -20,13 +20,13 @@ const morgan = require('morgan');
 // Router
 const auth = require('./routes/authentication');
 const account = require('./routes/account');
+const api = require('./routes/api');
 
 // Middleware Implement
 const authorization = require('./services/authorization');
 
 // Utils
 const settings = require('./config/settings');
-const utils = require('./utils/utils');
 const path = require('path');
 
 // Logger
@@ -43,6 +43,19 @@ mongoose.connect(process.env.DATABASE_URL, {
 if (process.env.NODE_ENV == "development"){
   app.use(morgan('dev'));
 }
+
+// Serve Https only for deploy
+var forceSSL = function (req, res, next) {
+  if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(['https://', req.get('Host'), req.url].join(''));
+  }
+  return next();
+};
+
+if (process.env.NODE_ENV === 'production') {
+      app.use(forceSSL);
+}
+
 
 // Serve Favicon
 app.use(serveFavicon(path.resolve(__dirname, 'public/favicon.ico')));
@@ -79,23 +92,15 @@ app.use(authorization);
 
 // Dashbboard
 app.get('/', function(req, res) {
-  res.render('pages/index.ejs', {user: req.user});
+  res.render('pages/index.ejs', {user: req.user, _csrf: req.csrfToken()});
 });
 
 // Map
 app.get('/map', function(req, res) {
-  res.render('pages/map.ejs', {user: req.user});
+  res.render('pages/map.ejs', {user: req.user, _csrf: req.csrfToken()});
 });
 
-// API for services
-app.get('/api', function(req, res) {
-  const api = {
-    'home': '/',
-  };
-  res.write(utils.createTextResepondJSONBeaufy(api));
-  res.end();
-});
-
+app.use('/api', api);
 
 // Handle error
 app.use(function(err, req, res, next) {
