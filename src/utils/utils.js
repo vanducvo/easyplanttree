@@ -58,6 +58,17 @@ function jwtCreate(data){
 }
 
 /**
+ * @description sign data with jwt with expires
+ * @param {string} data
+ * @return {string} tooken have sign 
+ */
+function jwtCreateWithExpire(data, exprire){
+  return jwt.sign(data, process.env.JWT_SECRET_KEY, {
+    expiresIn: exprire
+  });
+}
+
+/**
  * @description Verify jwt token
  * @param {string} data 
  * @returns {boolean} valid data ? 
@@ -77,5 +88,6 @@ exports.createTextResepondJSONBeaufy = createTextResepondJSONBeaufy;
 exports.promiseScrypt = promiseScrypt;
 exports.jwtCreate = jwtCreate;
 exports.jwtVerify = jwtVerify;
+exports.jwtCreateWithExpire = jwtCreateWithExpire;
 exports.promiseVerifyScrypt = promiseVerifyScrypt;
 exports.checkEmail = checkEmail;

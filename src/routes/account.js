@@ -12,7 +12,7 @@ const User = require('../models/user');
 const {preventRelogin} = require('../services/authorization');
 
 // Utils
-const {promiseScrypt, jwtCreate, jwtVerify} = require('../utils/utils');
+const {promiseScrypt, jwtCreateWithExpire, jwtVerify} = require('../utils/utils');
 const debugLogger = require('../utils/logger').debugLogger(module);
 const serverLogger = require('../utils/logger').serverLogger(module);
 const databaseLogger = require('../utils/logger').databaseLogger(module);
@@ -31,7 +31,7 @@ router.post('/signup', function(req, res){
     promiseScrypt(req.body.password)
     .then(key => {
         req.body.password = key;
-        let token = jwtCreate(req.body);
+        let token = jwtCreateWithExpire(req.body, '1d');
         let url = `${req.protocol}://${req.get('host')}/account/verify?data=${token}`
         mailer('Easy Plant Tree', {
             to: req.body.email,

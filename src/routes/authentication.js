@@ -78,7 +78,8 @@ router.post('/login', function (req, res) {
                         };
                         let jwt = jwtCreate(user);
                         res.cookie('jwt', jwt, {
-                            sameSite: 'strict'
+                            sameSite: 'strict',
+                            maxAge: 315360000000
                         });
                         res.redirect('/');
                     }).catch(err => {
