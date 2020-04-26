@@ -17,6 +17,15 @@ const debugLogger = require('../utils/logger').debugLogger(module);
 const serverLogger = require('../utils/logger').serverLogger(module);
 const databaseLogger = require('../utils/logger').databaseLogger(module);
 
+router.get('/forget', function(req, res){
+    res.render('pages/forget.ejs', {_csrf: req.csrfToken()});
+});
+
+router.post('/forget', function(req, res){
+    console.log(req.body);
+    res.redirect('/');
+});
+
 // Middleware prevent reloggin
 router.use(preventRelogin);
 

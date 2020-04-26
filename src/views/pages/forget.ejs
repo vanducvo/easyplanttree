@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forget</title>
+    <%- include ('../partials/require') %>
+    <meta content="<%= _csrf %>" id="_csrf" />
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background-color: #fafbfc;
+        }
+
+        .image-brand {
+            max-width: 20%;
+            max-height: 20%;
+            opacity: 0.9;
+        }
+
+        .check-mail {
+            text-align: center;
+        }
+
+        .check-mail * {
+            margin-top: 1rem;
+        }
+
+        .check-mail .form-name {
+            font-size: 32px;
+            color: #205081;
+            line-height: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container-fluid d-flex justify-content-center">
+            <img class="image-brand" src="/public/assets/images/logo.png" alt="Eassy Plant Tree">
+        </div>
+    </header>
+    <div class="container-fuild d-flex justify-content-center form">
+        <div class="d-flex flex-column col-sm-6 col-md-5 col-lg-4 check-mail">
+            <div class="form-name"><b>Forgot your account</b></div>
+            <div><b>Enter your email</b></div>
+            <form method="POST" id="form-create" action="/account/forget">
+                <input type="hidden" value="<%= _csrf %>" name="_csrf" />
+                <input type="email" name="email" id="email" class="form-control" placeholder="Email" required/>
+                <div class="container-fuild">
+                    <button type="submit" id="next" class="btn btn-success col-10">Continue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

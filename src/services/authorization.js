@@ -10,6 +10,10 @@ const Tokens = require('../models/token');
  * @param {() => void} next 
  */
 function authorization(req, res, next){
+    if (!req.cookies.jwt){
+        return res.redirect('/auth/login');
+    }
+    
     jwtVerify(req.cookies.jwt)
     .then(data => {
         Tokens
@@ -39,25 +43,29 @@ function authorization(req, res, next){
  * @param {() => void} next 
  */
 function preventRelogin(req, res, next){
-    jwtVerify(req.cookies.jwt)
-    .then(data => {
-        Tokens
-        .findOne({token: data.token})
-        .then(doc => {
-            if (doc){
-                res.redirect('/');
-            } else {
-                next();
-            }
-        }).catch(err => {
-            databaseLogger.error(err);
-            next();
-        });
-    })
-    .catch(err => {
-        serverLogger.error(err);
+    if (!req.cookies.jwt){
         next();
-    })
+    }else{
+        jwtVerify(req.cookies.jwt)
+        .then(data => {
+            Tokens
+            .findOne({_id: data.token})
+            .then(doc => {
+                if (doc){
+                    res.redirect('/');
+                } else {
+                    next();
+                }
+            }).catch(err => {
+                databaseLogger.error(err);
+                next();
+            });
+        })
+        .catch(err => {
+            serverLogger.error(err);
+            next();
+        })
+    }
 }
 
 module.exports = authorization;
