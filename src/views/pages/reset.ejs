@@ -24,7 +24,7 @@
             text-align: center;
         }
 
-        .check-mail button {
+        .check-mail * {
             margin-top: 1rem;
         }
 
@@ -46,12 +46,11 @@
         <div class="d-flex flex-column col-sm-6 col-md-5 col-lg-4 check-mail">
             <div class="form-name"><b>Forgot your account</b></div>
             <div><b>Enter your email</b></div>
-            <div class="alert alert-warning" role="alert">
-                After submit check your mail! Expired after 10 minutes
-              </div>
-            <form method="POST" id="form-create" action="/account/forget">
+            <form method="POST" id="form-create" action="/account/reset">
                 <input type="hidden" value="<%= _csrf %>" name="_csrf" />
-                <input type="email" name="email" id="email" class="form-control" placeholder="Email" required/>
+                <input type="hidden" value="<%= token %>" name="token"/>
+                <input type="email" name="email" value="<%= email %>" class="form-control" disabled>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
                 <div class="container-fuild">
                     <button type="submit" id="next" class="btn btn-success col-10">Continue</button>
                 </div>

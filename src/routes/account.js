@@ -12,19 +12,10 @@ const User = require('../models/user');
 const {preventRelogin} = require('../services/authorization');
 
 // Utils
-const {promiseScrypt, jwtCreateWithExpire, jwtVerify} = require('../utils/utils');
+const {checkEmail, promiseScrypt, jwtCreateWithExpire, jwtVerify} = require('../utils/utils');
 const debugLogger = require('../utils/logger').debugLogger(module);
 const serverLogger = require('../utils/logger').serverLogger(module);
 const databaseLogger = require('../utils/logger').databaseLogger(module);
-
-router.get('/forget', function(req, res){
-    res.render('pages/forget.ejs', {_csrf: req.csrfToken()});
-});
-
-router.post('/forget', function(req, res){
-    console.log(req.body);
-    res.redirect('/');
-});
 
 // Middleware prevent reloggin
 router.use(preventRelogin);
@@ -114,6 +105,86 @@ router.post('/check',  function(req, res){
         res.json({status: false});
         res.end();
     });
+});
+
+router.get('/forget', function(req, res){
+    res.render('pages/forget.ejs', {_csrf: req.csrfToken()});
+});
+
+router.post('/forget', function(req, res){
+    let email = req.body.email;
+    if(checkEmail(email)){
+        let token = jwtCreateWithExpire({email}, '10m')
+        let url = `${req.protocol}://${req.get('host')}/account/reset?token=${token}`;
+        mailer('Easy Plant Tree', {
+            to: email,
+            subject: 'Reset Email',
+            html: `<p>Please Click link to reset password: <a href="${url}">Reset<a><p>`
+        });
+    }
+    res.redirect('/');
+});
+
+router.get('/reset', function(req, res){
+    let token = req.query.token;
+    if(token){
+        jwtVerify(token)
+        .then(data => {
+            if(data){
+                res.render('pages/reset.ejs', {
+                    email: data.email,
+                    token: token,
+                     _csrf: req.csrfToken()
+                });
+            }else {
+                res.render('pages/resetfail.ejs');
+            }
+        }).catch(err => {
+            serverLogger.error(err);
+            res.render('pages/resetfail.ejs');
+        })
+    } else {
+        res.render('pages/resetfail.ejs');
+    }
+});
+
+router.post('/reset', function(req, res){
+    let token = req.body.token;
+    let password = req.body.password;
+    console.log(password);
+    if(token && password){
+        jwtVerify(token)
+        .then(data => {
+            if(data){
+                promiseScrypt(password)
+                .then(pass => {
+                    User.updateOne({
+                        email: data.email
+                    },
+                    {
+                        password: pass
+                    }
+                    ).then(doc => {
+                        res.redirect('/');
+                    }).catch(err => {
+                        databaseLogger.err(err);
+                        res.render('pages/resetfail.ejs');
+                    })
+                })
+                .catch(err => {
+                    serverLogger.error(err);
+                    res.render('pages/resetfail.ejs');
+                })
+            }else {
+                res.render('pages/resetfail.ejs');
+            }
+        }).catch(err => {
+            serverLogger.error(err);
+            res.render('pages/resetfail.ejs');
+        })
+    } else {
+        res.render('pages/resetfail.ejs');
+    }
 });
 
 module.exports = router;
