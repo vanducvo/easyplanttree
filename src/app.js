@@ -28,6 +28,7 @@ const authorization = require('./services/authorization');
 // Utils
 const settings = require('./config/settings');
 const path = require('path');
+const utils = require('./utils/utils');
 
 // Logger
 const serverLogger = require('./utils/logger').serverLogger(module);
@@ -111,4 +112,14 @@ app.use(function(err, req, res, next) {
   res.end();
 });
 
+// Demon services
+const {connect} = require('./services/broker');
+const {createDBSaver} = require('./services/demon');
+const client =  connect(
+                    settings.clientBroker, settings.subTopic, settings.pubTopic,
+                    process.env.MQTT_BROKER
+                    );
+createDBSaver(client, settings.subTopic, utils.classifyDevice);
+
+//Express App Listen Port
 app.listen(settings.port);

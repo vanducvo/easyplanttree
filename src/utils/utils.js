@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const compare = require('tsscmp');
 const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-
+const Device = require('../models/device');
 /**
  * @description check mail valid
  * @param {string} email
@@ -84,6 +84,50 @@ function jwtVerify(data){
   })
 }
 
+function classifyDevice(data){
+  if (
+    !data.device_id || 
+    typeof(data.device_id) !== 'string'||
+    !data.value
+    ){
+    return;
+  }
+  let device = data.device_id.match(/^id(\d+)/)[1];
+  switch(device){
+    case '4':
+      if (data.value.length === 3
+        && ( 0 <= Number(data.value[1]) && Number(data.value[1]) <= 360 )
+        && ( 0 <= Number(data.value[2]) && Number(data.value[2]) <= 360 )
+        ){
+          return new Device.GPS(data);
+        }
+      break;
+    case '7':
+      if(
+        data.value.length == 2 
+        && (data.value[0] === '0' || data.value[0] === '1')
+        && ( 0 <= Number(data.value[1]) && Number(data.value[1]) <= 1023 )
+      ){
+        return new Device.SoilMoisture(data);
+      }
+      break;
+    case '9':
+      if(
+        data.value.length == 2
+        && (data.value[0] === '0' || data.value[0] === '1')
+        && (
+            data.value[0] === '0' || 
+            0 <= Number(data.value[1]) && Number(data.value[1]) <= 3
+        )
+      ){
+        return new Device.MotorSchema(data)
+      }
+      break;
+    default:
+      break;
+  }
+}
+
 exports.createTextResepondJSONBeaufy = createTextResepondJSONBeaufy;
 exports.promiseScrypt = promiseScrypt;
 exports.jwtCreate = jwtCreate;
@@ -91,3 +135,4 @@ exports.jwtVerify = jwtVerify;
 exports.jwtCreateWithExpire = jwtCreateWithExpire;
 exports.promiseVerifyScrypt = promiseVerifyScrypt;
 exports.checkEmail = checkEmail;
+exports.classifyDevice = classifyDevice;
