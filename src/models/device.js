@@ -9,9 +9,16 @@ let SoilMoistureSchema = new Schema({
     value: {
         type: [String],
         required: function(){
-            return this.length == 2 
-                    && (this[0] === '0' || this[0] === '1')
-                    && ( 0 <= Number(this[1]) && Number(this[1]) <= 1023 );
+            return  (
+                        this.length == 1 &&
+                        this[0] === '0'
+                    ) 
+                    ||
+                    (
+                        this.length === 2 &&
+                        this[0] === '1' && 
+                        0 <= Number(this[1]) && Number(this[1]) <= 1023
+                    );
         }
     },
     time: {
@@ -30,9 +37,17 @@ let GPSSchema  = new Schema({
     value: {
         type: [String],
         required: function(){
-            return this.length == 2
-                    && ( 0 <= Number(this[1]) && Number(this[1]) <= 360 )
-                    && ( 0 <= Number(this[2]) && Number(this[2]) <= 360 );
+            return  (
+                        this.length === 1 &&
+                        this[0] === '0'
+                    )
+                    ||
+                    (
+                        this.length === 3 &&
+                        this[0] === '1' &&
+                        0 <= Number(this[1]) && Number(this[1]) <= 360 &&
+                        0 <= Number(this[2]) && Number(this[2]) <= 360
+                    );
         }
     },
     time: {
@@ -51,10 +66,14 @@ let MotorSchema = new Schema({
     value: {
         type: [String],
         required: function(){
-            return this.length == 3
-                    && (this[0] === '0' || this[0] === '1')
-                    && (
-                        this[0] === '0' || 
+            return  (
+                        this.length == 1 &&
+                        this[0] === '0'
+                    )
+                    ||
+                    (
+                        this.length == 2 &&
+                        this[0] === '1' &&
                         0 <= Number(this[1]) && Number(this[1]) <= 3
                     );
         }
