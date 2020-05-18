@@ -14,9 +14,8 @@ function createDBSaver(client, traceTopic, classifyCollection){
             serverLogger.error(err);
             return;
         }
-        console.log(data);
+        
         let collection = classifyCollection(data);
-        console.log(collection);
         if(collection && collection.save){
             collection.save();
         }

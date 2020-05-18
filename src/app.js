@@ -1,5 +1,15 @@
+// Utils
+const settings = require('./config/settings');
+const path = require('path');
+const utils = require('./utils/utils');
+
 // Node load .env
-require('dotenv').config()
+if (process.env.NODE_ENV == "development"){
+  require('dotenv').config({path: path.resolve('./.env.test')})
+}else {
+  require('dotenv').config();
+}
+
 
 // Express Framework
 const express = require('express');
@@ -7,7 +17,6 @@ const app = express();
 
 // Database ODM
 const mongoose = require('mongoose');
-
 
 // Middleware Libary
 const serveStatic = require('serve-static');
@@ -24,11 +33,6 @@ const api = require('./routes/api');
 
 // Middleware Implement
 const authorization = require('./services/authorization');
-
-// Utils
-const settings = require('./config/settings');
-const path = require('path');
-const utils = require('./utils/utils');
 
 // Logger
 const serverLogger = require('./utils/logger').serverLogger(module);
