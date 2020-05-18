@@ -1,18 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easy Plant Tree</title>
-    <meta content="<%= _csrf %>" id="_csrf" />
-    <link rel="manifest" href="public/manifest.json">
-    <script src="/public/js/initsw.js"></script>
-    <%- include('../partials/require') %>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Easy Plant Tree</title>
+  <meta content="<%= _csrf %>" id="_csrf" />
+  <link rel="manifest" href="public/manifest.json">
+  <script src="/public/js/initsw.js"></script>
+  <script src="/public/chartjs/Chart.min.js"></script>
+  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+  <%- include('../partials/require') %>
+
+
 </head>
+
 <body>
+
   <%- include('../partials/nav', {page: 'dasboard', user: user}) %>
-  <div>
+  <div class="row" style="margin-top: 1%; margin-left: 1%; margin-right: 1%;">
+    <div class="col-sm-6" style="background-color:yellow;">
+      <canvas id="myChart"></canvas>
+      <script>
+        var datas = Array.from({length: 1000}, () => Math.floor(Math.random() * 60));
+        var label = Array.from({length: 999}, () => '');
+        label.push("Current");
+        var ctx = document.getElementById('myChart');
+        var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: label,
+            datasets: [{
+              label: '# of Votes',
+              data: datas,
+              backgroundColor: [
+               
+                'rgba(255, 159, 64, 0.2)'
+              ],
+              borderColor: [
+                
+                'rgba(255, 159, 64, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true
+                }
+              }]
+            },
+            animation: {
+              duration: 0 // general animation time
+            },
+            hover: {
+              animationDuration: 0 // duration of animations when hovering an item
+            },
+            responsiveAnimationDuration: 0,// animation duration after a resize
+            // elements: {
+            //   line: {
+            //     tension: 0 // disables bezier curves
+            //   }
+            // }
+          }
+        });
+      </script>
+    </div>
+    <div class="col-sm-6" >
+      <div id="chartContainer" ></div>
+      <script>
+        window.onload = function () {
+        
+        var dps = []; // dataPoints
+        var chart = new CanvasJS.Chart("chartContainer", {
+          title :{
+            text: "Dynamic Data"
+          },
+          axisY: {
+            includeZero: false
+          },      
+          data: [{
+            type: "line",
+            dataPoints: dps
+          }]
+        });
+        
+        var xVal = 0;
+        var yVal = 100; 
+        var updateInterval = 1000;
+        var dataLength = 3600; // number of dataPoints visible at any point
+        
+        var createChart = function (count) {
+        
+          count = count || 1;
+        
+          for (var j = 0; j < count; j++) {
+            yVal = yVal +  Math.round(5 + Math.random() *(-5-5));
+            dps.push({
+              x: xVal,
+              y: yVal
+            });
+            xVal++;
+          }
+        
+          if (dps.length > dataLength) {
+            dps.shift();
+          }
+        
+          chart.render();
+        };
+        
+        var updateChart = function (count) {
+
+        };
+
+
+        createChart(dataLength);
+        //setInterval(function(){updateChart()}, updateInterval);
+        
+        }
+        </script>
+    </div>
+  </div>
+  <div class="row">
 
   </div>
 </body>
+
 </html>
