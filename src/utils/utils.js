@@ -92,40 +92,28 @@ function classifyDevice(data){
     ){
     return;
   }
-  let device = data.device_id.match(/^id(\d+)/)[1];
+  let device = data.device_id.match(/^id(\d+)/);
+
+  if(!device || device.length < 1){
+    return;
+  }
+
+  device = device[1];
+
+  if(data.value.length && data.value[0] === '0'){
+    data.value = ['0'];
+  }
+  
   switch(device){
     case '4':
-      if (data.value.length === 3
-        && ( 0 <= Number(data.value[1]) && Number(data.value[1]) <= 360 )
-        && ( 0 <= Number(data.value[2]) && Number(data.value[2]) <= 360 )
-        ){
-          return new Device.GPS(data);
-        }
-      break;
+      return new Device.GPS(data);
     case '7':
-      if(
-        data.value.length == 2 
-        && (data.value[0] === '0' || data.value[0] === '1')
-        && ( 0 <= Number(data.value[1]) && Number(data.value[1]) <= 1023 )
-      ){
-        return new Device.SoilMoisture(data);
-      }
-      break;
+      return new Device.SoilMoisture(data);
     case '9':
-      if(
-        data.value.length == 2
-        && (data.value[0] === '0' || data.value[0] === '1')
-        && (
-            data.value[0] === '0' || 
-            0 <= Number(data.value[1]) && Number(data.value[1]) <= 3
-        )
-      ){
-        return new Device.MotorSchema(data)
-      }
-      break;
-    default:
-      break;
+      return new Device.MotorSchema(data);
   }
+
+  return;
 }
 
 exports.createTextResepondJSONBeaufy = createTextResepondJSONBeaufy;
