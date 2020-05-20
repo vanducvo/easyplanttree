@@ -8,124 +8,179 @@
   <meta content="<%= _csrf %>" id="_csrf" />
   <link rel="manifest" href="public/manifest.json">
   <script src="/public/js/initsw.js"></script>
-  <script src="/public/chartjs/Chart.min.js"></script>
-  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+  <script src="/public/js/chartjs/Chart.bundle.min.js"></script>
+  <script src="/public/js/palette.js"></script>
   <%- include('../partials/require') %>
+  <style>
+    .average-wrapper,
+    .chart-wrapper {
+      background-color: #f8f9fa;
+      margin-top: 0.3rem;
+      border-radius: 1rem;
+      height: 100%;
+    }
 
+    .left-chart {
+      padding-left: 0.3rem;
+      padding-right: 0.3rem;
+    }
 
+    .right-chart {
+      margin-top: 0.3rem;
+      padding-left: 0.3rem;
+      padding-right: 0.3rem;
+    }
+
+    @media screen and (min-width: 960px) {
+      .right-chart {
+        margin-top: 0 !important;
+      }
+
+      .left-chart {
+        padding-right: 0 !important;
+      }
+
+      #average {
+        position: relative;
+        top: 25%;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
   <%- include('../partials/nav', {page: 'dasboard', user: user}) %>
-  <div class="row" style="margin-top: 1%; margin-left: 1%; margin-right: 1%;">
-    <div class="col-sm-6" style="background-color:yellow;">
-      <canvas id="myChart"></canvas>
-      <script>
-        var datas = Array.from({length: 1000}, () => Math.floor(Math.random() * 60));
-        var label = Array.from({length: 999}, () => '');
-        label.push("Current");
-        var ctx = document.getElementById('myChart');
-        var myChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: label,
-            datasets: [{
-              label: '# of Votes',
-              data: datas,
-              backgroundColor: [
-               
-                'rgba(255, 159, 64, 0.2)'
-              ],
-              borderColor: [
-                
-                'rgba(255, 159, 64, 1)'
-              ],
-              borderWidth: 1
-            }]
-          },
-          options: {
-            scales: {
-              yAxes: [{
-                ticks: {
-                  beginAtZero: true
-                }
-              }]
-            },
-            animation: {
-              duration: 0 // general animation time
-            },
-            hover: {
-              animationDuration: 0 // duration of animations when hovering an item
-            },
-            responsiveAnimationDuration: 0,// animation duration after a resize
-            // elements: {
-            //   line: {
-            //     tension: 0 // disables bezier curves
-            //   }
-            // }
-          }
-        });
-      </script>
-    </div>
-    <div class="col-sm-6" >
-      <div id="chartContainer" ></div>
-      <script>
-        window.onload = function () {
-        
-        var dps = []; // dataPoints
-        var chart = new CanvasJS.Chart("chartContainer", {
-          title :{
-            text: "Dynamic Data"
-          },
-          axisY: {
-            includeZero: false
-          },      
-          data: [{
-            type: "line",
-            dataPoints: dps
-          }]
-        });
-        
-        var xVal = 0;
-        var yVal = 100; 
-        var updateInterval = 1000;
-        var dataLength = 3600; // number of dataPoints visible at any point
-        
-        var createChart = function (count) {
-        
-          count = count || 1;
-        
-          for (var j = 0; j < count; j++) {
-            yVal = yVal +  Math.round(5 + Math.random() *(-5-5));
-            dps.push({
-              x: xVal,
-              y: yVal
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-8 left-chart">
+        <div class="chart-wrapper">
+          <canvas id="chart" class=""></canvas>
+          <script>
+            let datas = Array.from({ length: 60 }, () => Math.floor(Math.random() * 1024) % 1024);
+            let label = Array.from({ length: 60 }, (v, i) => {
+              let date = new Date(Date.now() + 180000 * i);
+              return date;
             });
-            xVal++;
-          }
-        
-          if (dps.length > dataLength) {
-            dps.shift();
-          }
-        
-          chart.render();
-        };
-        
-        var updateChart = function (count) {
+            let chart = document.getElementById('chart').getContext('2d');
+            let soilMoisture = new Chart(chart, {
+              type: 'line',
+              data: {
+                labels: label,
+                datasets: [
+                  {
+                    label: 'Độ Ẩm',
+                    data: datas
+                  }
+                ]
+              },
+              options: {
+                responsiveAnimationDuration: 500,
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      minx: 0,
+                      max: 1023,
+                      stepSize: 256
+                    }
+                  }],
+                  xAxes: [{
+                    type: 'time',
+                    time: {
+                      unit: 'minute',
+                      round: 'minute',
+                      unitStepSize: 30,
+                      displayFormats: {
+                        minute: 'HH:mm'
+                      }
 
-        };
+                    }
+                  }]
+                },
+                title: {
+                  position: 'bottom',
+                  display: true,
+                  text: 'Cảm biến độ ẩm đất 1'
+                },
+                legend: {
+                  display: true,
+                },
+                elements: {
+                  point: {
+                    pointStyle: 'rectRounded'
+                  },
+                  line: {
+                    fill: false,
+                    tension: 0,
+                    borderColor: '#48bb78',
+                    borderWidth: 2
+                  }
+                },
+                layout: {
+                  padding: {
+                    right: 20
+                  }
+                }
+              }
+            });
 
+            setInterval(function addData(chart) {
+              let fake = new Date(chart.data.labels[chart.data.labels.length - 1].getTime() + 180000);
+              chart.data.labels.push(fake);
+              chart.data.datasets.forEach((dataset) => {
+                dataset.data.push(Math.floor(Math.random() * 1024) % 1024);
+              });
+              chart.update();
+            }, 1000, soilMoisture);
+          </script>
+        </div>
+      </div>
 
-        createChart(dataLength);
-        //setInterval(function(){updateChart()}, updateInterval);
-        
-        }
-        </script>
+      <div class="col-lg-4 right-chart">
+        <div class="average-wrapper">
+          <canvas id="average"></canvas>
+          <script>
+            let average = document.getElementById('average');
+            let averageChart = new Chart(average, {
+              type: 'bar',
+              data: {
+                datasets: [{
+                  data: [1000, 750, 250, 400],
+                  backgroundColor: palette('cb-Pastel2', 4).map(color => `#${color}`)
+                }],
+                labels: ['Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4']
+              },
+              options: {
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      beginAtZero: true,
+                    }
+                  }]
+                },
+                title: {
+                  text: 'Độ ẩm đất trung bình theo tuần',
+                  position: 'bottom',
+                  display: true
+                },
+                legend: {
+                  display: false,
+                },
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      minx: 0,
+                      max: 1023,
+                      stepSize: 256
+                    }
+                  }],
+                }
+              }
+            });
+          </script>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="row">
-
   </div>
 </body>
 
