@@ -6,18 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Easy Plant Tree</title>
   <meta content="<%= _csrf %>" id="_csrf" />
-  <link rel="manifest" href="public/manifest.json">
+  <link rel="manifest" href="/public/manifest.json">
   <script src="/public/js/initsw.js"></script>
   <script src="/public/js/chartjs/Chart.bundle.min.js"></script>
   <script src="/public/js/palette.js"></script>
   <%- include('../partials/require') %>
+  <script src="/public/js/bootstrap/bootstrap-select.min.js"></script>
+  <link rel="stylesheet" href="/public/css/bootstrap/bootstrap-select.min.css">
   <style>
-    .average-wrapper,
-    .chart-wrapper {
+    .right-chart-wrapper,
+    .left-chart-wrapper {
       background-color: #f8f9fa;
       margin-top: 0.3rem;
       border-radius: 1rem;
       height: 100%;
+      padding-top: 2rem;
     }
 
     .left-chart {
@@ -29,6 +32,10 @@
       margin-top: 0.3rem;
       padding-left: 0.3rem;
       padding-right: 0.3rem;
+    }
+
+    .waters-chart {
+      margin-top: 2rem;
     }
 
     @media screen and (min-width: 960px) {
@@ -44,6 +51,11 @@
         position: relative;
         top: 25%;
       }
+
+      .left-chart-wrapper>.dropdown {
+        margin-bottom: 0.5rem !important;
+        margin-left: 0.5rem !important;
+      }
     }
   </style>
 </head>
@@ -54,130 +66,215 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-lg-8 left-chart">
-        <div class="chart-wrapper">
-          <canvas id="chart" class=""></canvas>
-          <script>
-            let datas = Array.from({ length: 60 }, () => Math.floor(Math.random() * 1024) % 1024);
-            let label = Array.from({ length: 60 }, (v, i) => {
-              let date = new Date(Date.now() + 180000 * i);
-              return date;
-            });
-            let chart = document.getElementById('chart').getContext('2d');
-            let soilMoisture = new Chart(chart, {
-              type: 'line',
-              data: {
-                labels: label,
-                datasets: [
-                  {
-                    label: 'Độ Ẩm',
-                    data: datas
-                  }
-                ]
-              },
-              options: {
-                responsiveAnimationDuration: 500,
-                scales: {
-                  yAxes: [{
-                    ticks: {
-                      minx: 0,
-                      max: 1023,
-                      stepSize: 256
-                    }
-                  }],
-                  xAxes: [{
-                    type: 'time',
-                    time: {
-                      unit: 'minute',
-                      round: 'minute',
-                      unitStepSize: 30,
-                      displayFormats: {
-                        minute: 'HH:mm'
-                      }
+        <div class="left-chart-wrapper">
+          <canvas id="soil-chart"></canvas>
+          <select id="picker" class="selectpicker">
+            <% for (let sensor of devices.sensor){ %>
+            <option value="<%= sensor %>">Sensor <%= sensor.match(/id\d+_(\d+)/)[1] %></option>
+            <% } %>
 
-                    }
-                  }]
-                },
-                title: {
-                  position: 'bottom',
-                  display: true,
-                  text: 'Cảm biến độ ẩm đất 1'
-                },
-                legend: {
-                  display: true,
-                },
-                elements: {
-                  point: {
-                    pointStyle: 'rectRounded'
+          </select>
+          <script>
+            let canvas = document.getElementById('soil-chart').getContext('2d');
+            function createNewSoilMoistureChart(chart) {
+
+              let soilMoisture = null;
+              return function () {
+                if (soilMoisture != null) {
+                  soilMoisture.destroy();
+                }
+                soilMoisture = new Chart(chart, {
+                  type: 'line',
+                  data: {
+                    labels: [],
+                    datasets: [
+                      {
+                        label: 'Độ Ẩm',
+                        data: []
+                      }
+                    ]
                   },
-                  line: {
-                    fill: false,
-                    tension: 0,
-                    borderColor: '#48bb78',
-                    borderWidth: 2
+                  options: {
+                    responsiveAnimationDuration: 500,
+                    scales: {
+                      yAxes: [{
+                        ticks: {
+                          minx: 0,
+                          max: 100,
+                          stepSize: 20,
+                          callback: function (value, index, values) {
+                            return value + '%';
+                          }
+                        },
+                      }],
+                      xAxes: [{
+                        type: 'time',
+                        time: {
+                          unit: 'minute',
+                          round: 'minute',
+                          unitStepSize: 30,
+                          displayFormats: {
+                            minute: 'HH:mm'
+                          }
+                        }
+                      }]
+                    },
+                    title: {
+                      position: 'bottom',
+                      display: true,
+                      text: 'Cảm biến độ ẩm đất 1'
+                    },
+                    legend: {
+                      display: true,
+                    },
+                    elements: {
+                      point: {
+                        pointStyle: 'rectRounded'
+                      },
+                      line: {
+                        fill: false,
+                        tension: 0,
+                        borderColor: '#48bb78',
+                        borderWidth: 2
+                      }
+                    },
+                    layout: {
+                      padding: {
+                        right: 20
+                      }
+                    }
                   }
-                },
-                layout: {
-                  padding: {
-                    right: 20
+                });
+
+                return soilMoisture;
+              }
+            }
+            let chart = createNewSoilMoistureChart(canvas);
+
+            async function drawSoilMoistureChart(sensor, chart) {
+              let json = null;
+              while (!json || json.begin) {
+                let url = `/getdatasensor?id=${sensor}` + (json && json.begin ? `&begin=${json.begin}` : '');
+                let data = await fetch(url, {
+                  method: 'GET',
+                  credentials: "same-origin"
+                });
+
+                if (data.status != 200) {
+                  return;
+                }
+
+                json = await data.json();
+                if (json.docs) {
+                  for (let doc of json.docs) {
+                    chart.data.labels.push(new Date(doc.time));
+                    chart.data.datasets[0].data.push(Math.round(Number(doc.moisture) * 10000 / 1023) / 100);
+                    chart.update();
                   }
                 }
               }
+            };
+
+            drawSoilMoistureChart(document.getElementById("picker").value, chart());
+
+            document.getElementById("picker").addEventListener("change", function (e) {
+              drawSoilMoistureChart(e.target.value, chart());
             });
 
-            setInterval(function addData(chart) {
-              let fake = new Date(chart.data.labels[chart.data.labels.length - 1].getTime() + 180000);
-              chart.data.labels.push(fake);
-              chart.data.datasets.forEach((dataset) => {
-                dataset.data.push(Math.floor(Math.random() * 1024) % 1024);
-              });
-              chart.update();
-            }, 1000, soilMoisture);
           </script>
         </div>
       </div>
 
       <div class="col-lg-4 right-chart">
-        <div class="average-wrapper">
-          <canvas id="average"></canvas>
-          <script>
-            let average = document.getElementById('average');
-            let averageChart = new Chart(average, {
-              type: 'bar',
-              data: {
-                datasets: [{
-                  data: [1000, 750, 250, 400],
-                  backgroundColor: palette('cb-Pastel2', 4).map(color => `#${color}`)
-                }],
-                labels: ['Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4']
-              },
-              options: {
-                scales: {
-                  yAxes: [{
-                    ticks: {
-                      beginAtZero: true,
-                    }
-                  }]
-                },
-                title: {
-                  text: 'Độ ẩm đất trung bình theo tuần',
-                  position: 'bottom',
-                  display: true
-                },
-                legend: {
-                  display: false,
-                },
-                scales: {
-                  yAxes: [{
-                    ticks: {
-                      minx: 0,
-                      max: 1023,
-                      stepSize: 256
-                    }
+        <div class="right-chart-wrapper">
+          <div class="average-chart">
+            <canvas id="average"></canvas>
+            <script>
+              let average = document.getElementById('average');
+              let averageChart = new Chart(average, {
+                type: 'bar',
+                data: {
+                  datasets: [{
+                    data: [1000, 750, 250, 400],
+                    backgroundColor: palette('cb-Pastel2', 4).map(color => `#${color}`)
                   }],
+                  labels: ['Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4']
+                },
+                options: {
+                  scales: {
+                    yAxes: [{
+                      ticks: {
+                        beginAtZero: true,
+                      }
+                    }]
+                  },
+                  title: {
+                    text: 'Độ ẩm đất trung bình theo tuần',
+                    position: 'bottom',
+                    display: true
+                  },
+                  legend: {
+                    display: false,
+                  },
+                  scales: {
+                    yAxes: [{
+                      ticks: {
+                        minx: 0,
+                        max: 1023,
+                        stepSize: 256
+                      }
+                    }],
+                  }
                 }
-              }
-            });
-          </script>
+              });
+            </script>
+          </div>
+          <div class="waters-chart">
+            <canvas id="waters"></canvas>
+            <script>
+              let waters = document.getElementById('waters');
+              let watersChart = new Chart(waters, {
+                type: 'bar',
+                data: {
+                  datasets: [{
+                    data: [1, 2, 3, 4, 5, 6, 7, 8],
+                    backgroundColor: palette('cb-Pastel1', 7).map(color => `#${color}`),
+                    type: 'line'
+                  }, {
+                    data: [1, 2, 3, 4, 5, 6, 7, 8],
+                    backgroundColor: palette('cb-Pastel1', 7).map(color => `#${color}`)
+                  },
+                  ],
+                  labels: ['2', '3', '4', '5', '6', '7', 'CN']
+                },
+                options: {
+                  scales: {
+                    yAxes: [{
+                      ticks: {
+                        beginAtZero: true,
+                      }
+                    }]
+                  },
+                  title: {
+                    text: 'Thống kê tưới nước trong tuần',
+                    position: 'bottom',
+                    display: true
+                  },
+                  legend: {
+                    display: false,
+                  },
+                  elements: {
+                    line: {
+                      fill: false,
+                      tension: 0,
+                      borderColor: '#b3e2cd',
+                      borderWidth: 2
+                    }
+                  }
+                }
+              });
+            </script>
+          </div>
         </div>
       </div>
     </div>

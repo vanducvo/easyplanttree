@@ -30,6 +30,7 @@ const morgan = require('morgan');
 const auth = require('./routes/authentication');
 const account = require('./routes/account');
 const api = require('./routes/api');
+const dashboard = require('./routes/dashboard');
 
 // Middleware Implement
 const authorization = require('./services/authorization');
@@ -96,9 +97,7 @@ app.use('/account', account);
 app.use(authorization);
 
 // Dashbboard
-app.get('/', function(req, res) {
-  res.render('pages/index.ejs', {user: req.user, _csrf: req.csrfToken()});
-});
+app.use('/', dashboard);
 
 // Map
 app.get('/map', function(req, res) {
@@ -117,13 +116,13 @@ app.use(function(err, req, res, next) {
 });
 
 // Demon services
-const {connect} = require('./services/broker');
-const {createDBSaver} = require('./services/demon');
-const client =  connect(
-                    settings.clientBroker, settings.subTopic, settings.pubTopic,
-                    process.env.MQTT_BROKER
-                    );
-createDBSaver(client, settings.subTopic, utils.classifyDevice);
+// const {connect} = require('./services/broker');
+// const {createDBSaver} = require('./services/demon');
+// const client =  connect(
+//                     settings.clientBroker, settings.subTopic, settings.pubTopic,
+//                     process.env.MQTT_BROKER
+//                     );
+// createDBSaver(client, settings.subTopic, utils.classifyDevice);
 
 //Express App Listen Port
 app.listen(settings.port);
