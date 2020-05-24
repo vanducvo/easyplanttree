@@ -24,8 +24,8 @@ function createDBSaver(client, traceTopic, classifyCollection){
 
 function dashBoardUpdate(io, client, traceTopic, getDevices){
     io.of('/dashboard').on('connection', (socket) => {
-        console.log('connected');
-        getDevices(socket.handshake.query.jwt).then(docs => {
+        let user = socket.request.headers.cookie.match(/jwt=([^;]*)/)[1];
+        getDevices(user).then(docs => {
             let devices = docs.reduce((mapper, doc) => 
                 mapper.set(doc.device_id, true), new Map()
             );

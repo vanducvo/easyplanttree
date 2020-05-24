@@ -282,14 +282,13 @@
   <script>
 
     // Socket
-    const chat = io.connect('/dashboard', {
-      query: {jwt:  document.cookie.match(/jwt=([^;]*)/)[1]}
-    });
+    const chat = io.connect('/dashboard');
 
     chat.on('new' , message => {
       let sensor = document.getElementById("picker").value;
       if(sensor === message.device_id && message.value[0] === "1"){
         soilMoisture.data.labels.push(new Date());
+        soilMoisture.data.labels.shift();
         soilMoisture.data.datasets[0].data.shift();
         soilMoisture.data.datasets[0].data.push(Math.round(Number(message.value[1]) * 10000 / 1023) / 100);
         soilMoisture.update();

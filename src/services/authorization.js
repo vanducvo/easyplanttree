@@ -37,12 +37,12 @@ function authorization(req, res, next){
 }
 
 function authorizationSocket(socket, next){
-    let query = socket.handshake.query;
-    if (!query || !query.jwt){
+    let query = socket.request.headers.cookie.match(/jwt=([^;]*)/);
+    if (!query || !query[1]){
         return socket.emit('authorization', {status: false});
     }
     
-    jwtVerify(query.jwt)
+    jwtVerify(query[1])
     .then(data => {
         Tokens
         .findOne({_id: data.token})
