@@ -12,6 +12,7 @@
   <script src="/public/js/palette.js"></script>
   <%- include('../partials/require') %>
   <script src="/public/js/bootstrap/bootstrap-select.min.js"></script>
+  <script src="/public//js/socket/socket.io.js"></script>
   <link rel="stylesheet" href="/public/css/bootstrap/bootstrap-select.min.css">
   <style>
     .right-chart-wrapper,
@@ -76,9 +77,8 @@
           </select>
           <script>
             let canvas = document.getElementById('soil-chart').getContext('2d');
+            let soilMoisture = null;
             function createNewSoilMoistureChart(chart) {
-
-              let soilMoisture = null;
               return function () {
                 if (soilMoisture != null) {
                   soilMoisture.destroy();
@@ -279,6 +279,23 @@
       </div>
     </div>
   </div>
+  <script>
+
+    // Socket
+    const chat = io.connect('/dashboard', {
+      query: {jwt:  document.cookie.match(/jwt=([^;]*)/)[1]}
+    });
+
+    chat.on('new' , message => {
+      let sensor = document.getElementById("picker").value;
+      if(sensor === message.device_id){
+        soilMoisture.data.labels.push(new Date());
+        soilMoisture.data.datasets[0].data.shift();
+        soilMoisture.data.datasets[0].data.push(Math.round(Number(message.value[1]) * 10000 / 1023) / 100);
+        soilMoisture.update();
+      }
+    })
+  </script>
 </body>
 
 </html>

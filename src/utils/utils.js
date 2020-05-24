@@ -84,6 +84,10 @@ function jwtVerify(data){
   })
 }
 
+function jwtDecode(token){
+  return jwt.decode(token);
+}
+
 function classifyDevice(data){
   if (
     !data.device_id || 
@@ -143,6 +147,16 @@ function getTypeDevice(data){
   return;
 }
 
+function getSensorDevices(token){
+  let user = jwtDecode(token);
+  return Device.Device.find({
+    user: user.id, 
+    device_id:{
+      '$regex': /^id7_\d+$/
+    }
+  }).select({device_id: 1});
+}
+
 exports.createTextResepondJSONBeaufy = createTextResepondJSONBeaufy;
 exports.promiseScrypt = promiseScrypt;
 exports.jwtCreate = jwtCreate;
@@ -152,3 +166,5 @@ exports.promiseVerifyScrypt = promiseVerifyScrypt;
 exports.checkEmail = checkEmail;
 exports.classifyDevice = classifyDevice;
 exports.getTypeDevice = getTypeDevice;
+exports.jwtDecode = jwtDecode;
+exports.getSensorDevices = getSensorDevices;

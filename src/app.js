@@ -12,9 +12,11 @@ if (process.env.NODE_ENV == "development"){
 
 
 // Express Framework
+const http = require('http');
 const express = require('express');
 const app = express();
-
+const server = http.createServer(app);
+const io = require("socket.io")(server);
 // Database ODM
 const mongoose = require('mongoose');
 
@@ -34,6 +36,7 @@ const dashboard = require('./routes/dashboard');
 
 // Middleware Implement
 const authorization = require('./services/authorization');
+const {authorizationSocket} = require('./services/authorization');
 
 // Logger
 const serverLogger = require('./utils/logger').serverLogger(module);
@@ -116,13 +119,18 @@ app.use(function(err, req, res, next) {
 });
 
 // Demon services
-// const {connect} = require('./services/broker');
-// const {createDBSaver} = require('./services/demon');
-// const client =  connect(
-//                     settings.clientBroker, settings.subTopic, settings.pubTopic,
-//                     process.env.MQTT_BROKER
-//                     );
-// createDBSaver(client, settings.subTopic, utils.classifyDevice);
+const {connect} = require('./services/broker');
+const {createDBSaver, dashBoardUpdate} = require('./services/demon');
+const client =  connect(
+                    settings.clientBroker, settings.subTopic, settings.pubTopic,
+                    process.env.MQTT_BROKER
+                    );
+createDBSaver(client, settings.subTopic, utils.classifyDevice);
 
-//Express App Listen Port
-app.listen(settings.port);
+// Socket
+io.use(authorizationSocket);
+
+dashBoardUpdate(io, client, settings.subTopic, utils.getSensorDevices);
+
+// Express App Listen Port
+server.listen(settings.port);

@@ -36,6 +36,34 @@ function authorization(req, res, next){
     })
 }
 
+function authorizationSocket(socket, next){
+    let query = socket.handshake.query;
+    if (!query || !query.jwt){
+        return socket.emit('authorization', {status: false});
+    }
+    
+    jwtVerify(query.jwt)
+    .then(data => {
+        Tokens
+        .findOne({_id: data.token})
+        .then(doc => {
+            if (doc){
+                socket.user = data;
+                next();
+            } else {
+                socket.emit('authorization', {status: false});
+            }
+        }).catch(err => {
+            databaseLogger.error(err);
+            socket.emit('authorization', {status: false});
+        });
+    })
+    .catch(err => {
+        serverLogger.error(err);
+        socket.emit('authorization', {status: false});
+    })
+}
+
 /**
  * @description Middleware for prevent user relogin when logined
  * @param {Object} req 
@@ -70,3 +98,4 @@ function preventRelogin(req, res, next){
 
 module.exports = authorization;
 module.exports.preventRelogin = preventRelogin;
+module.exports.authorizationSocket = authorizationSocket
