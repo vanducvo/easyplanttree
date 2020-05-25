@@ -129,7 +129,7 @@ const client =  connect(
 
 // Socket
 io.use(authorizationSocket);
-
+io.setMaxListeners(Infinity);
 dashBoardUpdate(io, client, settings.subTopic, utils.getSensorDevices);
 
 // Express App Listen Port
