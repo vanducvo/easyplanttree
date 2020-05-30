@@ -123,7 +123,7 @@ const client =  connect(
                     settings.clientBroker, settings.subTopic, settings.pubTopic,
                     process.env.MQTT_BROKER
                     );
-createDBSaver(client, settings.subTopic, utils.classifyDevice);
+//createDBSaver(client, settings.subTopic, utils.classifyDevice);
 
 //Express App Listen Port
 app.listen(settings.port);
