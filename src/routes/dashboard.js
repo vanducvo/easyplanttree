@@ -93,4 +93,63 @@ router.get('/getdatasensor', function (req, res) {
 
 });
 
+router.get('/averageallsensor', function(req, res){
+    // Change to begin day of week
+    let type = req.query.type;
+    let start = new Date();
+    let end = new Date();
+    let day = start.getDay();
+    start.setHours(0);
+    start.setMinutes(0);
+    start.setSeconds(0);
+    start.setMilliseconds(0);
+    start.setDate(start.getDate() - day + (day === 0 ? -6 : 1));
+
+    if(type && type === "preweek"){
+        end = new Date(start);
+        end.setDate(end.getDate() - 1);
+        start.setDate(start.getDate() - 7);
+    }
+    
+    // Query
+    Device.find({user: req.user.id, device_id: {"$regex": /^id7_\d+$/}})
+    .then(docs => docs.map(doc => doc.device_id))
+    .then(ids => {
+        SoilMoisture.aggregate([
+            {
+                "$match": {
+                    device_id: {"$in": ids},
+                    'value.0': '1',
+                    time: {
+                        "$gte": start,
+                        "$lte": end
+                    },
+                }
+            },
+            {
+                "$project": {
+                    device_id: 1,
+                    moisture: {
+                        "$arrayElemAt": ["$value", -1]
+                    }
+                }
+            },
+            {
+                "$group": {
+                    _id: "$device_id",
+                    average:{
+                        "$avg": {
+                            "$toInt": "$moisture"
+                        }
+                    }
+                }
+            }
+        ]).then(stats => {
+            res.json(stats).status(200).end();
+        }).catch(err => {
+            databaseLogger.error(err);
+        });
+    });
+});
+
 module.exports = router;

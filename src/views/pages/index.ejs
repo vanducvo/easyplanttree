@@ -122,7 +122,7 @@
                     title: {
                       position: 'bottom',
                       display: true,
-                      text: 'Cảm biến độ ẩm đất 1'
+                      text: 'Cảm biến độ ẩm đất trong 3h'
                     },
                     legend: {
                       display: true,
@@ -189,48 +189,99 @@
         <div class="right-chart-wrapper">
           <div class="average-chart">
             <canvas id="average"></canvas>
+            <select id="average-picker" class="selectpicker">
+              <option>Tuần Hiện Tại</option>
+              <option value="preweek">Tuần Trước</option>
+            </select>
             <script>
-              let average = document.getElementById('average');
-              let averageChart = new Chart(average, {
-                type: 'bar',
-                data: {
-                  datasets: [{
-                    data: [1000, 750, 250, 400],
-                    backgroundColor: palette('cb-Pastel2', 4).map(color => `#${color}`)
-                  }],
-                  labels: ['Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4']
-                },
-                options: {
-                  scales: {
-                    yAxes: [{
-                      ticks: {
-                        beginAtZero: true,
-                      }
-                    }]
-                  },
-                  title: {
-                    text: 'Độ ẩm đất trung bình theo tuần',
-                    position: 'bottom',
-                    display: true
-                  },
-                  legend: {
-                    display: false,
-                  },
-                  scales: {
-                    yAxes: [{
-                      ticks: {
-                        minx: 0,
-                        max: 1023,
-                        stepSize: 256
-                      }
-                    }],
+              let averageCanvas = document.getElementById('average');
+              let averageSoilMoisture = null;
+              function createAverageChart(chart) {
+                return function () {
+                  if (averageSoilMoisture) {
+                    averageSoilMoisture.destroy();
                   }
+                  averageSoilMoisture = new Chart(averageCanvas, {
+                    type: 'bar',
+                    data: {
+                      datasets: [{
+                        data: [],
+                        backgroundColor: palette('cb-Pastel2', document.getElementById("picker").children.length).map(color => `#${color}`)
+                      }],
+                      labels: []
+                    },
+                    options: {
+                      scales: {
+                        yAxes: [{
+                          ticks: {
+                            beginAtZero: true,
+                          }
+                        }]
+                      },
+                      title: {
+                        text: 'Độ ẩm đất trung bình theo tuần',
+                        position: 'bottom',
+                        display: true
+                      },
+                      legend: {
+                        display: false,
+                      },
+                      scales: {
+                        yAxes: [{
+                          ticks: {
+                            min: 0,
+                            max: 100,
+                            stepSize: 20,
+                            callback: function (value, index, values) {
+                              return value + '%';
+                            }
+                          }
+                        }],
+                      }
+                    }
+                  });
+
+                  return averageSoilMoisture;
                 }
+              }
+              let averageChart = createAverageChart(averageCanvas);
+
+              async function drawAverageChart(type, chart) {
+                let url = '/averageallsensor';
+                if (type === "preweek") {
+                  url += '?type=preweek'
+                }
+
+                fetch(url, {
+                  method: 'GET',
+                  credentials: "same-origin"
+                })
+                  .then(res => res.json())
+                  .then(json =>
+                    json.sort((a, b) =>
+                      (a._id > b._id) ? 1 : (a._id < b._id) ? -1 : 0
+                    )
+                  )
+                  .then(sorted => {
+                    sorted.forEach(value => {
+                      chart.data.labels.push(value._id.replace(/^id7_/,'Sensor '));
+                      chart.data.datasets[0].data.push(Math.round(value.average * 10000 / 1023) / 100);
+                      chart.update();
+                    });
+                  });
+              }
+              drawAverageChart(null, averageChart());
+              document.getElementById("average-picker").addEventListener("change", function (e) {
+                drawAverageChart(e.target.value, averageChart());
               });
             </script>
           </div>
           <div class="waters-chart">
             <canvas id="waters"></canvas>
+            <select id="waters-picker" class="selectpicker col-6 col-lg-5">
+              <option>Tuần Hiện Tại</option>
+              <option>Tuần Trước</option>
+            </select>
             <script>
               let waters = document.getElementById('waters');
               let watersChart = new Chart(waters, {
@@ -284,9 +335,9 @@
     // Socket
     const chat = io.connect('/dashboard');
 
-    chat.on('new' , message => {
+    chat.on('new', message => {
       let sensor = document.getElementById("picker").value;
-      if(sensor === message.device_id && message.value[0] === "1"){
+      if (sensor === message.device_id && message.value[0] === "1") {
         soilMoisture.data.labels.push(new Date());
         soilMoisture.data.labels.shift();
         soilMoisture.data.datasets[0].data.shift();
