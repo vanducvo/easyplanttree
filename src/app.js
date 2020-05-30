@@ -33,6 +33,7 @@ const auth = require('./routes/authentication');
 const account = require('./routes/account');
 const api = require('./routes/api');
 const dashboard = require('./routes/dashboard');
+const admin = require('./routes/admin');
 
 // Middleware Implement
 const authorization = require('./services/authorization');
@@ -95,6 +96,9 @@ app.use(csrf({
 // Router to user action for account
 app.use('/auth', auth);
 app.use('/account', account);
+
+// Admin page
+app.use('/admin', admin);
 
 // Middleware require user login
 app.use(authorization);

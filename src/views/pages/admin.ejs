@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Plant Tree</title>
+    <meta content="<%= _csrf %>" id="_csrf" />
+    <%- include('../partials/require') %>
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            background-color: #f7fafc;
+        }
+
+        .navbar {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        .number-users,
+        .number-devices {
+            font-size: xx-large;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
+        }
+
+        .number-users {
+            color: #4299e1;
+        }
+
+        .number-devices {
+            color: #48bb78;
+        }
+
+        .info-users>.text-center,
+        .info-devices>.text-center {
+            font-size: x-large;
+            color: #2c7a7b;
+            background-color: #f8f9fa;
+            margin-top: 0.5rem;
+            border-radius: 1rem;
+            padding-left: 0.1rem;
+            padding-right: 0.1rem;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .table-fixed tbody {
+            height: 47vh;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .table-fixed thead,
+        .table-fixed tbody,
+        .table-fixed tr,
+        .table-fixed td,
+        .table-fixed th {
+            display: block;
+        }
+
+        .table-fixed tbody td,
+        .table-fixed tbody th,
+        .table-fixed thead>tr>th {
+            float: left;
+            position: relative;
+        }
+
+        .table-name {
+            font-size: large;
+            color: #667eea;
+            font-weight: bolder;
+        }
+
+        .wrapper {
+            background-color: #f8f9fa;
+            border-radius: 1rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            padding-left: 0.5rem;
+            padding-right: 0.25rem;
+        }
+
+        .list-r{
+            margin-top: 0.5rem;
+        }
+
+
+        @media screen and (min-width: 960px) {
+            .list-l {
+                padding-right: 0.25rem !important;
+            }
+
+            .list-r {
+                padding-left: 0.25rem !important;
+                margin-top: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="page-header">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">
+                <img src="/public/assets/images/logo.png" alt="East Plan Tree">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu" aria-controls="menu"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse row justify-content-between" id="menu">
+                <ul class="navbar-nav col-lg-8 justify-content-start">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/admin">Trang Chủ</a>
+                    </li>
+                    <li class="nav-item nav-item">
+                        <a class="nav-link" href="#">Thiết Đặt</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav col-lg-4 justify-content-end guest">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Logout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Admin: Vo Van Duc</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid main">
+        <div class="row justify-content-center">
+            <div class="col-md-4 info-users">
+                <p class="text-center shadow">Số người dùng <span class="number-users">2</span></p>
+            </div>
+            <div class="col-md-4 info-devices">
+                <p class="text-center shadow">Số thiết bị <span class="number-devices">12</span></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 list-l">
+                <div class="wrapper shadow">
+                    <p class="table-name">Danh sách người dùng</p>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
+                            aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                            <select class="custom-select" id="search-type">
+                                <option selected>Theo...</option>
+                                <option value="email">Email</option>
+                                <option value="name">Tên</option>
+                            </select>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button">Button</button>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table class="table table-fixed">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="col-6">Email</th>
+                                    <th scope="col" class="col-6">Tên</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="col-6">Vo Van Duc</td>
+                                    <td class="col-6">vanducvo@gmail.com</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">Vo Van Duc</td>
+                                    <td class="col-6">vanducvo@gmail.com</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">Vo Van Duc</td>
+                                    <td class="col-6">vanducvo@gmail.com</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">Vo Van Duc</td>
+                                    <td class="col-6">vanducvo@gmail.com</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">Vo Van Duc</td>
+                                    <td class="col-6">vanducvo@gmail.com</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">Vo Van Duc</td>
+                                    <td class="col-6">vanducvo@gmail.com</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">Vo Van Duc</td>
+                                    <td class="col-6">vanducvo@gmail.com</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">Vo Van Duc</td>
+                                    <td class="col-6">vanducvo@gmail.com</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">Vo Van Duc</td>
+                                    <td class="col-6">vanducvo@gmail.com</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">Vo Van Duc</td>
+                                    <td class="col-6">vanducvo@gmail.com</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-6 list-r">
+                <div class="wrapper shadow">
+                    <p class="table-name">Danh sách thiết bị</p>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
+                            aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                            <select class="custom-select" id="search-type">
+                                <option selected>Theo...</option>
+                                <option value="email">Email</option>
+                                <option value="name">Tên</option>
+                            </select>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button">Button</button>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table class="table table-fixed">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="col-6">ID</th>
+                                    <th scope="col" class="col-6">Loại</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-6">id-7-1</td>
+                                    <td class="col-6">Cảm biến đổ ẩ m đất</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
