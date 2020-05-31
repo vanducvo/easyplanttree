@@ -89,7 +89,10 @@ app.use(bodyParser.json());
 
 // Middleware security protect webapp csrf attaction
 app.use(csrf({
-  cookie: true,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'strict'
+  },
   sessionKey: process.env.CSRF_SECRET_KEY
 }));
 

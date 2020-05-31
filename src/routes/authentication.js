@@ -78,6 +78,7 @@ router.post('/login', function (req, res) {
                         };
                         let jwt = jwtCreate(user);
                         res.cookie('jwt', jwt, {
+                            httpOnly: true,
                             sameSite: 'strict',
                             maxAge: 315360000000
                         });
