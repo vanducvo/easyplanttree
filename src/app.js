@@ -105,6 +105,11 @@ app.get('/map', function(req, res) {
   res.render('pages/map.ejs', {user: req.user, _csrf: req.csrfToken()});
 });
 
+// Map
+app.get('/controller', function(req, res) {
+  res.render('pages/controller.ejs', {user: req.user, _csrf: req.csrfToken()});
+});
+
 app.use('/api', api);
 
 // Handle error
