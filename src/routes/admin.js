@@ -116,7 +116,6 @@ router.get('/', function (req, res) {
     ]);
 
     getData.then(data => {
-        console.log(data);
         res.render('pages/admin.ejs', { 
             _csrf: req.csrfToken(), 
             admin: req.admin,

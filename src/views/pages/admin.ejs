@@ -157,10 +157,10 @@
     <div class="container-fluid main">
         <div class="row justify-content-center">
             <div class="col-md-4 info-users">
-                <p class="text-center shadow">Số người dùng <span class="number-users">2</span></p>
+                <p class="text-center shadow">Số người dùng <span class="number-users"><%= data[1] && data[1].length %></span></p>
             </div>
             <div class="col-md-4 info-devices">
-                <p class="text-center shadow">Số thiết bị <span class="number-devices">12</span></p>
+                <p class="text-center shadow">Số thiết bị <span class="number-devices"><%= data[1] && data[0].length %></span></p>
             </div>
         </div>
         <div class="row">
