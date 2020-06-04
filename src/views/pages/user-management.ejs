@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Plant Tree</title>
+    <meta content="<%= _csrf %>" id="_csrf" />
+    <%- include('../partials/require') %>
+    <script src="/public/js/bootstrap/bootstrap-select.min.js"></script>
+    <link rel="stylesheet" href="/public/css/bootstrap/bootstrap-select.min.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            background-color: #f7fafc;
+        }
+
+        .navbar {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        .handmade-table-content {
+            height: 67vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .handmade-table-header .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-top: 0.5rem;
+            border-radius: 0.5rem;
+            border-top: #2c7a7b solid 2px;
+            text-align: center;
+        }
+
+        .handmade-table-header .row .text-break:nth-child(1) {
+            border-bottom: #2c7a7b solid 1px;
+            padding-bottom: 0.5rem;
+        }
+
+        .handmade-table-header .row .text-break:nth-child(2) {
+            border-bottom: #2c7a7b solid 1px;
+            padding-bottom: 0.5rem;
+        }
+
+        .handmade-table-content .row {
+            padding: 1rem;
+            border-bottom: #2c7a7b solid 1px;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .handmade-table-content .row .text-break:nth-child(1) {
+            border-right: #2c7a7b solid 1px;
+        }
+
+        .list-l {
+            width: 100%;
+        }
+
+        .wrapper {
+            background-color: #f8f9fa;
+            border-radius: 1rem;
+            padding: 0.5rem;
+            margin: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 0 !important;
+        }
+
+        .devices div {
+            align-items: center;
+            margin: 0.2rem;
+            min-width: 80px;
+        }
+
+        .devices div p {
+            background-color: #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.2rem;
+            text-align: center;
+        }
+
+        .handmade-table-content .task {
+            text-align: center;
+            margin: auto;
+        }
+
+        .handmade-table-content button {
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="page-header">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">
+                <img src="/public/assets/images/logo.png" alt="East Plan Tree">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu" aria-controls="menu"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse row justify-content-between" id="menu">
+                <ul class="navbar-nav col-lg-8 justify-content-start">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">Trang Chủ</a>
+                    </li>
+                    <li class="nav-item nav-item active">
+                        <a class="nav-link" href="/admin/user-management">Quản Lí Người Dùng</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav col-lg-4 justify-content-end guest">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/logout">Logout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Admin: <%= admin.name %></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid main">
+        <div class="row">
+            <div class="list-l">
+                <div class="wrapper shadow">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
+                            aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                            <button class="btn btn-info" type="button">Tìm</button>
+                        </div>
+                    </div>
+                    <!-- Table -->
+                    <div class="handmade-table container-fluid">
+                        <div class="handmade-table-header">
+                            <div class="row row-cols-2">
+                                <div class="col-* text-break">Thông Tin</div>
+                                <div class="col-* text-break">Tác vụ</div>
+                            </div>
+                        </div>
+                        <div class="handmade-table-content">
+                            <% for (let user of data){ %>
+                            <div class="row row-cols-2">
+                                <div class="col-* text-break">
+                                    <p><b>Tên: </b><%= user.name %></p>
+                                    <p><b>Email: </b><%= user.email %></p>
+                                    <p><b>Thiết bị: </b></p>
+                                    <div class="d-flex flex-row flex-wrap devices">
+                                        <% if (user.devices_id) { %>
+                                            <% for (let device of user.devices_id) { %>
+                                            <div>
+                                                <p><%= device %></p>
+                                            </div>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <div class="col-* text-break task">
+                                    <div>
+                                        <button type="button" class="btn btn-danger">Xóa</button>
+                                        <button type="button" class="btn btn-info">Thông Tin</button>
+                                        <button type="button" class="btn btn-primary">Thiết bị</button>
+                                        <button type="button" class="btn btn-success">Ràng buộc</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+</body>
+
+</html>

@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Admin = require('../models/admin');
-const {Device} = require('../models/device');
+const { Device } = require('../models/device');
 const User = require('../models/user');
-const { 
-    promiseVerifyScrypt, 
+const {
+    promiseVerifyScrypt,
     jwtCreateWithExpire,
     jwtVerify
 } = require('../utils/utils');
@@ -13,14 +13,14 @@ const serverLogger = require('../utils/logger').serverLogger(module);
 const databaseLogger = require('../utils/logger').databaseLogger(module);
 
 // Prevent PreLogin
-router.get('/login', function(req, res, next){
+router.get('/login', function (req, res, next) {
     let token = req.cookies.jwt_admin;
-    if(!token){
+    if (!token) {
         next();
     }
 
     jwtVerify(token).then(valid => {
-        if(!valid){
+        if (!valid) {
             next();
         }
         return res.redirect('/admin');
@@ -44,9 +44,9 @@ router.post('/login', function (req, res) {
                 if (!valid) {
                     return res.redirect('/admin/login?wrong=password');
                 }
-                
+
                 let ip = req.headers['x-forwarded-for']
-                        || req.connection.remoteAddress || '';
+                    || req.connection.remoteAddress || '';
 
                 let admin = {
                     rule: "admin",
@@ -57,9 +57,9 @@ router.post('/login', function (req, res) {
                 };
 
                 let token = jwtCreateWithExpire(admin, '1d');
-                
+
                 res.cookie('jwt_admin', token, {
-                    httpOnly: true, 
+                    httpOnly: true,
                     sameSite: 'strict',
                     maxAge: 86400000
                 });
@@ -77,22 +77,22 @@ router.post('/login', function (req, res) {
 });
 
 // Authorization admin
-router.use(function(req, res, next){
+router.use(function (req, res, next) {
     let token = req.cookies.jwt_admin;
-    if(!token){
+    if (!token) {
         return res.redirect('/admin/login');
     }
 
     let ip = req.headers['x-forwarded-for']
-                        || req.connection.remoteAddress || '';
-    
+        || req.connection.remoteAddress || '';
+
 
     jwtVerify(token).then(valid => {
-        if(!valid){
+        if (!valid) {
             return res.redirect('/admin/login');
         }
 
-        if(ip !== valid.ip){
+        if (ip !== valid.ip) {
             return res.redirect('/admin/login');
         }
 
@@ -104,22 +104,76 @@ router.use(function(req, res, next){
     });
 });
 
-router.get('/logout', function(req, res){
+router.get('/logout', function (req, res) {
     res.clearCookie('jwt_admin');
     res.redirect('/admin/login');
 });
 
 router.get('/', function (req, res) {
     let getData = Promise.all([
-        Device.find({}).select({_id: 0, device_id: 1}),
-        User.find({}).select({_id:0, email: 1, name: 1})
+        Device.find({}).select({ _id: 0, device_id: 1 }),
+        User.find({}).select({ _id: 0, email: 1, name: 1 })
     ]);
 
     getData.then(data => {
-        res.render('pages/admin.ejs', { 
-            _csrf: req.csrfToken(), 
+        res.render('pages/admin.ejs', {
+            _csrf: req.csrfToken(),
             admin: req.admin,
             data: data
+        });
+    });
+});
+
+router.get('/user-management', function (req, res) {
+    User.aggregate([
+        {
+            "$lookup": {
+                from: 'devices',
+                let: { user: "$_id" },
+                pipeline: [
+                    {
+                        "$match": {
+                            "$expr": {
+                                "$eq": ["$user", "$$user"]
+                            }
+
+                        }
+                    },
+                    {
+                        "$group": {
+                            _id: "$user",
+                            devices_id: { "$push": "$device_id" }
+                        }
+                    },
+                    {
+                        "$project": {
+                            devices_id: 1
+                        }
+                    }
+                ],
+                as: "devices"
+            }
+        },
+        {
+            "$replaceRoot": {
+                newRoot: {
+                    $mergeObjects: [{ $arrayElemAt: ["$devices", 0] }, "$$ROOT"]
+                }
+            }
+        },
+        {
+            "$project": {
+                _id: 1,
+                name: 1,
+                email: 1,
+                devices_id: 1
+            }
+        }
+    ]).then(docs => {
+        res.render('pages/user-management.ejs', {
+            _csrf: req.csrfToken(),
+            admin: req.admin,
+            data: docs
         });
     });
 });
