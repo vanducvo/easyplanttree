@@ -10,6 +10,13 @@
     <%- include('../partials/require') %>
     <link rel="stylesheet" href="/public/css/map.css">
     <link rel="stylesheet" href="/public/css/table.css">
+    
+   
+    <script type="text/javascript" language="javascript" src="/public/js/moment-with-locales.js"></script>
+
+   
+
+   
 </head>
 <body>
   <%- include('../partials/nav', {page: 'controller', user: user}) %>
@@ -158,28 +165,49 @@
             </div>
             
             <form >
-                <div class="form-group">
+                <div class="form-group pmd-textfield ">
                   <label for="exampleFormControlSelect1">Chọn motor:</label>
                   <select class="form-control" id="exampleFormControlSelect1" style="margin-right: 25%;">
-                    <option>id9_1</option>
-                    <option>id9_2</option>
-                    <option>id9_3</option>
-                    <option>id9_4</option>
-                    <option>id9_5</option>
+                    <option>Motor 1</option>
+                    <option>Motor 2</option>
+                    <option>Motor 3</option>
+                    <option>Motor 4</option>
+                    <option>Motor 5</option>
                   </select>
                 </div>
+                
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6" >
+                        <div class="form-group">
+                            <label class="control-label" for="regular1">Select Date</label>
+                            <input type="date" class="form-control" >    
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6" >
+                        <div class="form-group">
+                            <label class="control-label" for="regular1">Select Time</label>
+                            <input type="time" class="form-control" id = "timepicker" >    
+                        </div>
+                    </div>
+                </div>
+                
+
                 <div class="form-group">
-                  <label for="exampleFormControlSelect2">Chọn ngày giờ tưới:</label>
-                  <div class='input-group date' id='datetimepicker5'>
-                    <input type='text' class="form-control" />
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
+                    <div style="text-align:center;">
+                        <label class="control-label" for="regular1">Thời lượng tưới (phút):</label>
+                    </div>
+                    <div style="text-align:center;">
+                        <input type="number" class="form-control" value="5" min="0" style="width: 20%; margin-left: 40%;">
+                    </div>
+                    
                 </div>
-                </div>
+               
                 <div class="form-group">
-                  
+                    <div style="text-align:center;" >
+                        <input type="submit" class="btn btn-primary" id="" value="Bơm" style="width:20%">
+                    </div>
                 </div>
+                
             </form>
         </div>
     </div>
