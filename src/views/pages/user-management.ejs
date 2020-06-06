@@ -94,11 +94,13 @@
             margin: auto;
         }
 
-        #device-modal .device, .handmade-table-content .device {
+        #device-modal .device,
+        .handmade-table-content .device {
             min-width: 100px;
         }
 
-        .handmade-table-content .device-add, #device-modal .device-add-depend {
+        .handmade-table-content .device-add,
+        #device-modal .device-add-depend {
             width: 30px;
             height: 30px;
             border-radius: 50%;
@@ -132,7 +134,8 @@
             margin-bottom: 0.5rem;
         }
 
-        #device-modal .devices .close, .handmade-table-content .devices .close {
+        #device-modal .devices .close,
+        .handmade-table-content .devices .close {
             width: 0px;
             height: 0px;
             padding: 0 !important;
@@ -140,6 +143,10 @@
             top: -5px;
             left: -14px;
             font-size: large;
+        }
+
+        .dropdown.bootstrap-select {
+            margin-bottom: 0.5rem;
         }
     </style>
 </head>
@@ -195,7 +202,7 @@
                         </div>
                         <div class="handmade-table-content" id="content">
                             <% for (let user of data){ %>
-                            <div class="row row-cols-2">
+                            <div class="row row-cols-2" data-user="<%= user._id %>">
                                 <div class="col-* text-break">
                                     <p><b>Tên: </b><%= user.name %></p>
                                     <p><b>Email: </b><%= user.email %></p>
@@ -245,24 +252,21 @@
                 </div>
                 <div class="modal-body">
                     <div>
-                        <p><b>Motor Phụ thuộc:</b>
+                        <p><b class="depend-type">Motor Phụ thuộc:</b>
                             <button data-type="device-add-depend" type="button"
-                            class="device-add-depend btn btn-info">+</button>
+                                class="device-add-depend btn btn-info">+</button>
                         </p>
                         <div class="d-flex flex flex-wrap devices align-items-center">
                             <div>
-                                <button data-type="device" type="button" class="device btn btn-info"
-                                    id="1">id9_1</button>
+                                <button data-type="device" type="button" class="device btn btn-info">id9_1</button>
                                 <span class="close" aria-hidden="true">&times;</span>
                             </div>
                             <div>
-                                <button data-type="device" type="button" class="device btn btn-info"
-                                    id="2">id9_1</button>
+                                <button data-type="device" type="button" class="device btn btn-info">id9_1</button>
                                 <span class="close" aria-hidden="true">&times;</span>
                             </div>
                             <div>
-                                <button data-type="device" type="button" class="device btn btn-info"
-                                    id="3">id9_1</button>
+                                <button data-type="device" type="button" class="device btn btn-info">id9_1</button>
                                 <span class="close" aria-hidden="true">&times;</span>
                             </div>
                         </div>
@@ -280,9 +284,8 @@
         </div>
     </div>
 
-    <!-- Config Modal -->
-    <div class="modal fade" id="confirm" tabindex="-1" role="dialog"
-        aria-labelledby="confirm-title" aria-hidden="true">
+    <!-- Confirm Modal -->
+    <div class="modal fade" id="confirm" tabindex="-1" role="dialog" aria-labelledby="confirm-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -292,26 +295,106 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    
+
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                    <button id="confirm-yes" type="button" class="btn btn-danger">Đồng Ý</button>
+                    <button id="confirm-no" type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button id="confirm-yes" type="button" class="btn btn-danger">Đồng ý</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Device Modal -->
+    <div class="modal fade" id="add-device-to-user" tabindex="-1" role="dialog" aria-labelledby="device-title"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="device-title">Chọn Thiết Bị</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" value="" id="user-of-device">
+                    <select class="selectpicker" id="device-types">
+                        <option value="sensor">Cảm biến độ ẩm đất</option>
+                        <option value="motor">Motor</option>
+                    </select>
+                    <select class="selectpicker" id="device-ids">
+                        <option value="id7_1">id7_1</option>
+                        <option value="id9-1">id9_1</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button id="btn-add-device" type="button" class="btn btn-success">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Constraint Device Modal -->
+    <div class="modal fade" id="constraint-device" tabindex="-1" role="dialog" aria-labelledby="constraint-title"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="constraint-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="" id="constraint-user">
+                    <input type="hidden" value="" id="master-device">
+                    <select class="selectpicker" id="slave-device">
+                        <option selected>ID</option>
+                        <option value="id7_1">id7_1</option>
+                        <option value="id9-1">id9_1</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button id="constraint-no" type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button id="constraint-yes" type="button" class="btn btn-success">Ràng Buộc</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+
+        // Comfirm UI
+        function confirm(message, callback) {
+            document.querySelector("#confirm .modal-body").textContent = message;
+            $("#confirm").modal("show");
+            let handle = () => {
+                $("#confirm").modal("hide");
+                $("#confirm-yes").off("click", handle);
+                callback();
+            };
+            $("#confirm-yes").on("click", handle);
+            $("#confirm-no").on("click", () => {
+                $("#confirm-yes").off("click", handle);
+            })
+        }
         let handle = document.getElementById("content");
 
+        // Handle click in table
         handle.addEventListener('click', function (event) {
             if (event.target.type === "button") {
                 let type = event.target.getAttribute("data-type");
                 let userID = event.target.parentElement.id;
                 switch (type) {
                     case "delete":
-                        alert("delete: " + userID);
+                        let userDelete = (e) => {
+                            //send to server detele userid
+                            event.target.closest(".row").remove();
+                        };
+
+                        let message = "Bạn có chắc chắn sẽ xóa người dùng này?";
+                        confirm(message, userDelete);
                         break;
                     case "info":
                         alert("info: " + userID);
@@ -321,43 +404,55 @@
                         $("#device-modal").modal("show");
                         break;
                     case "device-add":
-                        alert("Add: " + userID);
+                        loadUserToDevicesModal(event.target);
+                        $("#add-device-to-user").modal("show");
                         break;
                 }
             } else if (event.target.tagName === "SPAN") {
-                document.querySelector("#confirm .modal-body").textContent = "Bạn có chắc muốn xóa thiết bị khỏi tài khoản?";
-                $("#confirm").modal("show");
-                let handle = () => {
+                let message = "Bạn có chắc muốn xóa thiết bị khỏi tài khoản?";
+                confirm(message, () => {
                     event.target.parentElement.remove();
-                    $("#confirm").modal("hide");
-                    $("#confirm-yes").off("click", handle);
-                    // Send to server to delete
-                };
-                $("#confirm-yes").on("click", handle);
+                });
             }
         });
 
+        // Load devices to device-modal
         function loadDevicesToModal(element) {
             let title = document.querySelector("#device-modal .modal-header .modal-title");
             let content = document.querySelector("#device-modal .modal-body");
+            let userID = element.closest(".row").getAttribute("data-user");
 
             content.setAttribute("data-type", element.textContent);
+            content.setAttribute("data-user", userID);
 
             let match = element.textContent.match(/^id(\d+)_(\d+)$/);
             switch (match[1]) {
                 case '7':
                     title.textContent = 'Cảm Biến Độ Ẩm Đất ' + match[2];
+                    content.querySelector(".depend-type").textContent = "Motor phụ thuộc:";
                     addLocation(content);
                     break;
                 case '9':
                     title.textContent = 'Motor ' + match[2];
+                    content.querySelector(".depend-type").textContent = "Cảm biến độ ẩm đất phụ thuộc:";
+                    addLocation(content);
                     break;
             }
 
         }
 
         function addLocation(content) {
+            // Send to Server
+        }
 
+        // Load info to constraint-device modal
+        function loadUserToDevicesModal(element) {
+            let content = document.querySelector("#add-device-to-user .modal-body");
+            let user = element.closest(".row");
+
+            document.getElementById("user-of-device").value = user.getAttribute("data-user");
+
+            
         }
 
         // Map
@@ -399,21 +494,90 @@
             document.querySelector(".modal-body .cords button").hidden = false;
         });
 
-        $("#confirm-yes")
-
+        // resize map when show modal
         $('#device-modal').on('shown.bs.modal', function () {
             map.resize();
         });
 
+        // remove marker when close windows
         $('#device-modal').on('hidden.bs.modal', function (e) {
             if (old) {
                 old.remove();
             }
         });
 
-        $("#update-location").on("click", function(e){
+        //Update location services
+        $("#update-location").on("click", function (e) {
             this.hidden = true;
             // Send to Server
+        });
+
+        // Add devices to constraint
+        let belong = document.querySelector("#device-modal .modal-body");
+        belong.addEventListener("click", function (e) {
+            if (e.target.className.match(/close/)) {
+                let message = "Bạn có chắc chắn muốn xóa ràng buộc thiết bị?";
+                confirm(message, () => {
+                    e.target.parentElement.remove();
+                    // send to server
+                });
+            } else if(e.target.className.match(/device-add-depend/)){
+                let body = e.target.closest('.modal-body');
+                let type = body.getAttribute("data-type");
+                document.getElementById("constraint-user").value = body.getAttribute("data-user");
+                document.getElementById("master-device").value = type;
+                if(type.match(/^id7_\d+$/)){
+                    let title = "Cảm biến độ ẩm đất " + type + " với Motor:";
+                    document.getElementById("constraint-title").textContent = title;
+                } else if (type.match(/^id9_\d+$/)){
+                    let title = "Motor " + type + " với Cảm biến độ ẩm đất:";
+                    document.getElementById("constraint-title").textContent = title;
+                }
+                let devices = body.querySelector(".devices");
+                let addConstraint = (e) => {
+                    let slave = $("#slave-device").val();
+                    let master = $("#slave-master").val();
+                    let user = $("constraint-user").val();
+                    
+                    if(slave === "ID"){
+                        return;
+                    }
+                    //Send to server
+
+                    //Show UI
+                    devices.insertAdjacentHTML("beforeend",`
+                        <div>
+                            <button data-type="device" type="button" class="device btn btn-info">${slave}</button>
+                            <span class="close" aria-hidden="true">&times;</span>
+                        </div>
+                    `)
+                    $("#constraint-yes").off("click", addConstraint);
+                    $("#constraint-device").modal("hide");
+                };
+
+                $("#constraint-yes").on("click", addConstraint);
+
+                $("#constraint-no").on("click", (e) => {
+                    $("#constraint-yes").off("click", addConstraint);
+                });
+                $("#constraint-device").modal("show");
+            }
+        });
+    
+        let add = document.getElementById("btn-add-device");
+        add.addEventListener("click", function(e){
+            let user = document.getElementById("user-of-device").value;
+            let device = document.getElementById("device-ids").value;
+            let content = document.getElementById(user).closest(".row").querySelector(".devices");
+
+            content.insertAdjacentHTML("beforeend", `
+                <div>
+                    <button data-type="device" type="button" class="device btn btn-info">${device}</button>
+                    <span class="close" aria-hidden="true">&times;</span>
+                </div>
+            `);
+
+            $("#add-device-to-user").modal("hide");
         });
     </script>
 </body>
