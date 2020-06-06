@@ -9,6 +9,13 @@
     <%- include('../partials/require') %>
     <script src="/public/js/bootstrap/bootstrap-select.min.js"></script>
     <link rel="stylesheet" href="/public/css/bootstrap/bootstrap-select.min.css">
+    <script src="/public/js/mapbox/mapbox-gl.js"></script>
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+        type="text/css" />
+    <link rel="stylesheet" href="/public/css/mapbox/mapbox-gl.css">
     <style>
         html,
         body {
@@ -54,10 +61,6 @@
             margin-right: 0 !important;
         }
 
-        .handmade-table-content .row .text-break:nth-child(1) {
-            border-right: #2c7a7b solid 1px;
-        }
-
         .list-l {
             width: 100%;
         }
@@ -91,8 +94,52 @@
             margin: auto;
         }
 
-        .handmade-table-content button {
-            margin-top: 0.5rem;
+        #device-modal .device, .handmade-table-content .device {
+            min-width: 100px;
+        }
+
+        .handmade-table-content .device-add, #device-modal .device-add-depend {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            padding: 0 !important;
+            font-weight: bolder;
+        }
+
+        .handmade-table-content .button-task {
+            min-width: 100px;
+            margin-top: 0.345rem;
+        }
+
+        #map {
+            height: 80vh;
+        }
+
+        .modal-body .cords div {
+            background-color: #bee3f8;
+            padding: 0.4rem;
+            border-radius: 0.345rem;
+            margin-right: 0.5rem;
+        }
+
+        .modal-body .cords .lat,
+        .modal-body .cords .lng {
+            width: 150px;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-body .cords button {
+            margin-bottom: 0.5rem;
+        }
+
+        #device-modal .devices .close, .handmade-table-content .devices .close {
+            width: 0px;
+            height: 0px;
+            padding: 0 !important;
+            position: relative;
+            top: -5px;
+            left: -14px;
+            font-size: large;
         }
     </style>
 </head>
@@ -146,29 +193,35 @@
                                 <div class="col-* text-break">Tác vụ</div>
                             </div>
                         </div>
-                        <div class="handmade-table-content">
+                        <div class="handmade-table-content" id="content">
                             <% for (let user of data){ %>
                             <div class="row row-cols-2">
                                 <div class="col-* text-break">
                                     <p><b>Tên: </b><%= user.name %></p>
                                     <p><b>Email: </b><%= user.email %></p>
-                                    <p><b>Thiết bị: </b></p>
+                                    <p>
+                                        <b>Thiết bị: </b>
+                                        <button data-type="device-add" type="button"
+                                            class="device-add btn btn-info">+</button>
+                                    </p>
                                     <div class="d-flex flex-row flex-wrap devices">
                                         <% if (user.devices_id) { %>
-                                            <% for (let device of user.devices_id) { %>
-                                            <div>
-                                                <p><%= device %></p>
-                                            </div>
-                                            <% } %>
+                                        <% for (let device of user.devices_id) { %>
+                                        <div>
+                                            <button data-type="device" type="button" class="device btn btn-info"
+                                                id="<%= device %>"><%= device %></button>
+                                            <span class="close" aria-hidden="true">&times;</span>
+                                        </div>
+                                        <% } %>
                                         <% } %>
                                     </div>
                                 </div>
                                 <div class="col-* text-break task">
-                                    <div>
-                                        <button type="button" class="btn btn-danger">Xóa</button>
-                                        <button type="button" class="btn btn-info">Thông Tin</button>
-                                        <button type="button" class="btn btn-primary">Thiết bị</button>
-                                        <button type="button" class="btn btn-success">Ràng buộc</button>
+                                    <div id="<%= user._id %>">
+                                        <button data-type="delete" type="button"
+                                            class="button-task btn btn-danger">Xóa</button>
+                                        <button data-type="info" type="button" class="button-task btn btn-success">Thông
+                                            Tin</button>
                                     </div>
                                 </div>
                             </div>
@@ -177,10 +230,192 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
+
+    <!-- Modal devices include Map -->
+    <div id="device-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Thiết Bị</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <p><b>Motor Phụ thuộc:</b>
+                            <button data-type="device-add-depend" type="button"
+                            class="device-add-depend btn btn-info">+</button>
+                        </p>
+                        <div class="d-flex flex flex-wrap devices align-items-center">
+                            <div>
+                                <button data-type="device" type="button" class="device btn btn-info"
+                                    id="1">id9_1</button>
+                                <span class="close" aria-hidden="true">&times;</span>
+                            </div>
+                            <div>
+                                <button data-type="device" type="button" class="device btn btn-info"
+                                    id="2">id9_1</button>
+                                <span class="close" aria-hidden="true">&times;</span>
+                            </div>
+                            <div>
+                                <button data-type="device" type="button" class="device btn btn-info"
+                                    id="3">id9_1</button>
+                                <span class="close" aria-hidden="true">&times;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <p><b>Vị Trí:</b></p>
+                    <div class="cords d-flex flex align-items-center flex-wrap">
+                        <div class="lng">Kinh Độ: <span></span></div>
+                        <div class="lat">Vĩ Độ: <span></span> </div>
+                        <button id="update-location" type="button" class="btn btn-danger" hidden>Cập Nhật</button>
+                    </div>
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Config Modal -->
+    <div class="modal fade" id="confirm" tabindex="-1" role="dialog"
+        aria-labelledby="confirm-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirm-title">Xác Nhận</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button id="confirm-yes" type="button" class="btn btn-danger">Đồng Ý</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let handle = document.getElementById("content");
+
+        handle.addEventListener('click', function (event) {
+            if (event.target.type === "button") {
+                let type = event.target.getAttribute("data-type");
+                let userID = event.target.parentElement.id;
+                switch (type) {
+                    case "delete":
+                        alert("delete: " + userID);
+                        break;
+                    case "info":
+                        alert("info: " + userID);
+                        break;
+                    case "device":
+                        loadDevicesToModal(event.target);
+                        $("#device-modal").modal("show");
+                        break;
+                    case "device-add":
+                        alert("Add: " + userID);
+                        break;
+                }
+            } else if (event.target.tagName === "SPAN") {
+                document.querySelector("#confirm .modal-body").textContent = "Bạn có chắc muốn xóa thiết bị khỏi tài khoản?";
+                $("#confirm").modal("show");
+                let handle = () => {
+                    event.target.parentElement.remove();
+                    $("#confirm").modal("hide");
+                    $("#confirm-yes").off("click", handle);
+                    // Send to server to delete
+                };
+                $("#confirm-yes").on("click", handle);
+            }
+        });
+
+        function loadDevicesToModal(element) {
+            let title = document.querySelector("#device-modal .modal-header .modal-title");
+            let content = document.querySelector("#device-modal .modal-body");
+
+            content.setAttribute("data-type", element.textContent);
+
+            let match = element.textContent.match(/^id(\d+)_(\d+)$/);
+            switch (match[1]) {
+                case '7':
+                    title.textContent = 'Cảm Biến Độ Ẩm Đất ' + match[2];
+                    addLocation(content);
+                    break;
+                case '9':
+                    title.textContent = 'Motor ' + match[2];
+                    break;
+            }
+
+        }
+
+        function addLocation(content) {
+
+        }
+
+        // Map
+        mapboxgl.accessToken = 'pk.eyJ1IjoidmFuZHVjdm8iLCJhIjoiY2s4anhzODJ3MDlieDNlbTdkNXloOXJsbCJ9.rHcG-iX1IOcoqQGq9gX03A';
+        let map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [106.8029505, 10.880711],
+            zoom: 12
+        });
+
+
+        map.addControl(
+            new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl,
+                marker: false
+            })
+        );
+
+        let old = null;
+
+        map.on('click', function (e) {
+            if (old) {
+                old.remove();
+            }
+
+            let point = e.lngLat.wrap();
+            old = new mapboxgl.Marker()
+                .setLngLat([point.lng, point.lat])
+                .addTo(map);
+
+            let lng = document.querySelector(".modal-body .cords .lng span");
+            let lat = document.querySelector(".modal-body .cords .lat span");
+            lng.parentElement.setAttribute("data-value", point.lng);
+            lat.parentElement.setAttribute("data-value", point.lat);
+            lng.textContent = String(point.lng).match(/^(\d+.\d{4})\d*$/)[1];
+            lat.textContent = String(point.lat).match(/^(\d+.\d{4})\d*$/)[1];
+            document.querySelector(".modal-body .cords button").hidden = false;
+        });
+
+        $("#confirm-yes")
+
+        $('#device-modal').on('shown.bs.modal', function () {
+            map.resize();
+        });
+
+        $('#device-modal').on('hidden.bs.modal', function (e) {
+            if (old) {
+                old.remove();
+            }
+        });
+
+        $("#update-location").on("click", function(e){
+            this.hidden = true;
+            // Send to Server
+        });
+    </script>
 </body>
 
 </html>
