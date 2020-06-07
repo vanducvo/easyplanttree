@@ -148,6 +148,14 @@
         .dropdown.bootstrap-select {
             margin-bottom: 0.5rem;
         }
+        
+        #info-modal .login-info button{
+            float: right;
+            margin-bottom: 0.5rem;
+        }
+        #info-modal .login-info hr{
+            clear: both;
+        }
     </style>
 </head>
 
@@ -363,6 +371,37 @@
         </div>
     </div>
 
+    <!-- Add Info Modal -->
+    <div class="modal fade" id="info-modal" tabindex="-1" role="dialog" aria-labelledby="info-title"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="info-title">Thông Tin Đăng Nhập</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="login-info">
+                        <div class="broswer text-break"><b>Trình Duyệt: </b>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36</div>
+                        <div class="ip text-break"><b>IP: </b>192.168.0.1</div>
+                        <button type="button" class="btn btn-danger">Xóa</button>
+                        <hr />
+                    </div>
+                
+                    <div class="login-info">
+                        <div class="broswer text-break"><b>Trình Duyệt: </b>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36</div>
+                        <div class="ip text-break"><b>IP: </b>192.168.0.1</div>
+                        <button type="button" class="btn btn-danger">Xóa</button>
+                        <hr />
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
 
         // Comfirm UI
@@ -397,7 +436,8 @@
                         confirm(message, userDelete);
                         break;
                     case "info":
-                        alert("info: " + userID);
+                        loadUserToModal(userID, event.target);
+                        $("#info-modal").modal("show");
                         break;
                     case "device":
                         loadDevicesToModal(event.target);
@@ -415,6 +455,30 @@
                 });
             }
         });
+
+        // Load user to Modal
+        function loadUserToModal(user, target){
+            let logins = document.querySelector("#info-modal .modal-body");
+            let url = "/admin/getloginsuser?userID=" + user;
+            logins.innerHTML = "";
+
+            fetch(url, {
+                credentials: "same-origin"
+            })
+            .then(res => res.json())
+            .then(docs => {
+                for(let doc of docs){
+                    logins.insertAdjacentHTML("beforeend", `
+                    <div class="login-info" id="${doc._id}">
+                        <div class="broswer text-break"><b>Trình Duyệt: </b>${doc.browser}</div>
+                        <div class="ip text-break"><b>IP: </b>${doc.ip}</div>
+                        <button type="button" class="btn btn-danger">Xóa</button>
+                        <hr />
+                    </div>
+                    `);
+                }
+            });
+        }
 
         // Load devices to device-modal
         function loadDevicesToModal(element) {
@@ -452,7 +516,7 @@
 
             document.getElementById("user-of-device").value = user.getAttribute("data-user");
 
-            
+
         }
 
         // Map
@@ -521,15 +585,15 @@
                     e.target.parentElement.remove();
                     // send to server
                 });
-            } else if(e.target.className.match(/device-add-depend/)){
+            } else if (e.target.className.match(/device-add-depend/)) {
                 let body = e.target.closest('.modal-body');
                 let type = body.getAttribute("data-type");
                 document.getElementById("constraint-user").value = body.getAttribute("data-user");
                 document.getElementById("master-device").value = type;
-                if(type.match(/^id7_\d+$/)){
+                if (type.match(/^id7_\d+$/)) {
                     let title = "Cảm biến độ ẩm đất " + type + " với Motor:";
                     document.getElementById("constraint-title").textContent = title;
-                } else if (type.match(/^id9_\d+$/)){
+                } else if (type.match(/^id9_\d+$/)) {
                     let title = "Motor " + type + " với Cảm biến độ ẩm đất:";
                     document.getElementById("constraint-title").textContent = title;
                 }
@@ -538,14 +602,14 @@
                     let slave = $("#slave-device").val();
                     let master = $("#slave-master").val();
                     let user = $("constraint-user").val();
-                    
-                    if(slave === "ID"){
+
+                    if (slave === "ID") {
                         return;
                     }
                     //Send to server
 
                     //Show UI
-                    devices.insertAdjacentHTML("beforeend",`
+                    devices.insertAdjacentHTML("beforeend", `
                         <div>
                             <button data-type="device" type="button" class="device btn btn-info">${slave}</button>
                             <span class="close" aria-hidden="true">&times;</span>
@@ -563,9 +627,9 @@
                 $("#constraint-device").modal("show");
             }
         });
-    
+
         let add = document.getElementById("btn-add-device");
-        add.addEventListener("click", function(e){
+        add.addEventListener("click", function (e) {
             let user = document.getElementById("user-of-device").value;
             let device = document.getElementById("device-ids").value;
             let content = document.getElementById(user).closest(".row").querySelector(".devices");

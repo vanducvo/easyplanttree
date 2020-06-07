@@ -3,6 +3,8 @@ const router = express.Router();
 const Admin = require('../models/admin');
 const { Device } = require('../models/device');
 const User = require('../models/user');
+const Token = require('../models/token');
+
 const {
     promiseVerifyScrypt,
     jwtCreateWithExpire,
@@ -176,6 +178,18 @@ router.get('/user-management', function (req, res) {
             data: docs
         });
     });
+});
+
+router.get("/getloginsuser", function(req, res){
+    let userID = req.query.userID;
+    Token
+    .find({user: userID})
+    .select({browser: 1, ip: 1})
+    .exec()
+    .then(docs => {
+        res.json(docs).end();
+    });
+
 });
 
 module.exports = router;
