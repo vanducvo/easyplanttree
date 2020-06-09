@@ -325,9 +325,6 @@
                     <input type="hidden" name="" id="constraint-user">
                     <input type="hidden" value="" id="master-device">
                     <select class="selectpicker" id="slave-device">
-                        <option selected>ID</option>
-                        <option value="id7_1">id7_1</option>
-                        <option value="id9-1">id9_1</option>
                     </select>
                 </div>
                 <div class="modal-footer">
@@ -542,6 +539,13 @@
                         return;
                     }
 
+                    let button = content.closest(".modal-body").querySelector(".device-add-depend");
+                    if(doc.constraint.length >= 1){
+                        button.disabled = true;
+                    }else{
+                        button.disabled = false;
+                    }
+
                     //Set Contraint
                     content.innerHTML = "";
                     for (let constraint of doc.constraint) {
@@ -705,6 +709,31 @@
                     $('#device-ids').selectpicker('refresh');
                 });
         })
+    
+        let constraintBtn = document.querySelector("#device-modal .device-add-depend");
+
+        constraintBtn.addEventListener("click", function(event){
+            let info = event.target.closest(".modal-body");
+            let user = info.getAttribute("data-user");
+            let deviceID = info.getAttribute("data-type");
+            let type = deviceID.match(/^id7_\d+$/) ? 'motor' : deviceID.match(/^id9_\d+$/) ? 'sensor' : '';
+            url = `/admin/independent?user=${user}&type=${type}&device=${deviceID}`;
+            fetch(url, {
+                credentials: "same-origin"
+            })
+            .then(res => res.json())
+            .then(devices => {
+                let content = document.getElementById("slave-device");
+                content.innerHTML = "";
+                for(let device of devices){
+                    content.insertAdjacentHTML("beforeend", `
+                        <option value="${device}">${device}</option>
+                    `);
+                }
+
+                $('#slave-device').selectpicker('refresh');
+            });
+        });
     </script>
 </body>
 

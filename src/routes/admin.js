@@ -315,4 +315,83 @@ router.get("/dependent", function (req, res) {
         });
 });
 
+router.get("/independent", function(req, res){
+    let {type, user, device} = req.query;
+    if (type !== "sensor" && type !== "motor") {
+        return res.json([]).end();
+    }
+
+    let pattern = {
+        "sensor": sensorPattern,
+        "motor": motorPattern
+    };
+
+    Device
+    .findOne({
+        user: user, 
+        device_id: device
+    })
+    .then(doc => {
+        if(!doc){
+            return res.json([]).end();
+        }
+
+        let commands = [
+            {
+                "$match": {
+                    user: doc.user,
+                    device_id: {
+                        "$regex": pattern[type]
+                    }
+                }
+            },
+            {
+                "$lookup": {
+                    from: "dependents",
+                    let: {device: "$_id"},
+                    pipeline: [
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$eq": ["$$device", `$${type}`]
+                                }
+                            }
+                        }
+                    ],
+                    as: "dependent"
+
+                }
+            },
+            {
+                "$match": {
+                    "$expr":{
+                        "$eq": [0, {"$size": "$dependent"}]
+                    }
+                }
+            },
+            {
+                "$group": {
+                    _id: null,
+                    devices_id: { "$push": "$device_id" }
+                }
+            },
+            {
+                "$project": {
+                    _id: 0,
+                    devices_id: 1
+                }
+            },
+        ];
+    
+        Device.aggregate(commands).then(doc => {
+            if(!doc[0]){
+                return res.json([]).end();
+            }
+
+
+            res.json(doc[0].devices_id).end();
+        });
+    });
+});
+
 module.exports = router;
