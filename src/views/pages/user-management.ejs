@@ -274,7 +274,7 @@
                     <div class="cords d-flex flex align-items-center flex-wrap">
                         <div class="lng">Kinh Độ: <span></span></div>
                         <div class="lat">Vĩ Độ: <span></span> </div>
-                        <button id="update-location" type="button" class="btn btn-danger" hidden>Cập Nhật</button>
+                        <button id="update-location" type="button" class="btn btn-success">Sửa</button>
                     </div>
                     <div id="map"></div>
                 </div>
@@ -393,8 +393,12 @@
         );
 
         let old = null;
+        let modify = false;
 
         map.on('click', function (e) {
+            if(!modify){
+                return;
+            }
             if (old) {
                 old.remove();
             }
@@ -526,6 +530,11 @@
             content.setAttribute("data-type", element.textContent);
             content.setAttribute("data-user", userID);
 
+            modify = false;
+            let btnLocation = document.getElementById("update-location");
+            btnLocation.className = btnLocation.className.replace('danger', 'success');
+            btnLocation.textContent = "Sửa";
+
             let match = element.textContent.match(/^id(\d+)_(\d+)$/);
             switch (match[1]) {
                 case '7':
@@ -606,8 +615,18 @@
 
         //Update location services
         $("#update-location").on("click", function (e) {
-            this.hidden = true;
-            // Send to Server
+            let current = e.target.className;
+            if(current.match('success')){
+                e.target.className = current.replace('success', 'danger');
+                e.target.textContent = "Cập nhật";
+                modify = true;
+            } else {
+                e.target.className = current.replace('danger', 'success');
+                e.target.textContent = "Sửa";
+                modify = false;
+                // Send to Server
+                
+            }
         });
 
         // Add devices to constraint
