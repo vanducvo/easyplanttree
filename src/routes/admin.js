@@ -11,7 +11,8 @@ const {
     motorPattern,
     promiseVerifyScrypt,
     jwtCreateWithExpire,
-    jwtVerify
+    jwtVerify,
+    getTypeDevice
 } = require('../utils/utils');
 
 const serverLogger = require('../utils/logger').serverLogger(module);
@@ -394,4 +395,101 @@ router.get("/independent", function(req, res){
     });
 });
 
+router.put('/user-add-device', function(req, res){
+    let {user, device} = req.body;
+    if(!user || !device){
+        return res.json({}).status(200);
+    }
+    let verify = Promise.all([
+        User.findOne({_id: user}),
+        Device.findOne({device_id: device})
+    ]);
+
+    verify.then(docs => {
+        Device.updateOne({_id: docs[1]._id}, {user: docs[0]._id}).exec();
+    });
+
+    res.json({}).status(201).end();
+});
+
+router.put('/user-remove-device', function(req, res){
+    let {device} = req.body;
+    if(!device){
+        return res.json({}).status(200);
+    }
+
+    Device.findOne({device_id: device}).then(doc => {
+        if(!doc){
+            return;
+        }
+
+        let type = device.match(sensorPattern) ? 'sensor' : device.match(motorPattern)? 'motor' : '';
+
+        Dependent.deleteMany({[type]: doc._id}).exec();
+    });
+
+    Device.updateOne({device_id: device}, {"$unset": {user: 1}}).exec();
+
+    res.json({}).end();
+});
+
+router.put('/device-add-constraint', function(req, res){
+    let {user, master, slave} = req.body;
+    let verify = Promise.all([
+        Device.findOne({user: user, device_id: master}),
+        Device.findOne({user: user, device_id: slave})
+    ]);
+
+    verify.then(docs => {
+        if(!docs[0] || !docs[1]){
+            return;
+        }
+
+
+        if( user == docs[0].user && user == docs[1].user){
+            let data = {
+                [getTypeDevice(docs[0])] : docs[0]._id,
+                [getTypeDevice(docs[1])] : docs[1]._id
+            };
+
+            let isExists = Promise.all([
+                Dependent.findOne({sensor: data.sensor}),
+                Dependent.findOne({motor: data.motor}),
+            ]);
+
+            isExists.then(valid => {
+                if(valid[0] || valid[1]){
+                    return;
+                }
+
+                let constraint = new Dependent(data);
+                constraint.save();
+            });
+        }
+    });
+
+    res.json({}).end();
+});
+
+router.delete("/device-remove-constraint", function(req, res){
+    let {master, slave} = req.body;
+    let verify = Promise.all([
+        Device.findOne({device_id: master}),
+        Device.findOne({device_id: slave})
+    ]);
+
+    verify.then(docs => {
+        if(!docs[0] || !docs[1]){
+            return;
+        }
+
+        let data = {
+            [getTypeDevice(docs[0])] : docs[0]._id,
+            [getTypeDevice(docs[1])] : docs[1]._id
+        };
+
+        Dependent.deleteOne(data).exec();
+    });
+    res.json({}).end();
+});
 module.exports = router;

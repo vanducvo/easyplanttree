@@ -472,7 +472,22 @@
             } else if (event.target.tagName === "SPAN") {
                 let message = "Bạn có chắc muốn xóa thiết bị khỏi tài khoản?";
                 confirm(message, () => {
+                    let token = document.getElementById('_csrf').getAttribute('content');
+                    let id = event.target.parentElement.querySelector("button").id;
                     event.target.parentElement.remove();
+                    // Send to Server
+                    fetch('/admin/user-remove-device', {
+                        credentials: "same-origin",
+                        method: "PUT",
+                        headers: {
+                            'Content-type': 'application/json; charset=UTF-8',
+                            'CSRF-Token': token
+                        },
+                        body: JSON.stringify({
+                            device: id
+                        })
+
+                    });
                 });
             }
         });
@@ -540,9 +555,9 @@
                     }
 
                     let button = content.closest(".modal-body").querySelector(".device-add-depend");
-                    if(doc.constraint.length >= 1){
+                    if (doc.constraint.length >= 1) {
                         button.disabled = true;
-                    }else{
+                    } else {
                         button.disabled = false;
                     }
 
@@ -601,8 +616,28 @@
             if (e.target.className.match(/close/)) {
                 let message = "Bạn có chắc chắn muốn xóa ràng buộc thiết bị?";
                 confirm(message, () => {
+                    
+                    // get Data
+                    let master = belong.getAttribute("data-type");
+                    let slave = belong.querySelector(".device").textContent;
                     e.target.parentElement.remove();
+
                     // send to server
+                    let token = document.getElementById('_csrf').getAttribute('content');
+                    fetch('/admin/device-remove-constraint', {
+                        credentials: "same-origin",
+                        method: "DELETE",
+                        headers: {
+                            'Content-type': 'application/json; charset=UTF-8',
+                            'CSRF-Token': token
+                        },
+                        body: JSON.stringify({
+                            master: master,
+                            slave: slave
+                        })
+                    });
+
+                    document.querySelector("#device-modal .device-add-depend").disabled = false;
                 });
             } else if (e.target.className.match(/device-add-depend/)) {
                 let body = e.target.closest('.modal-body');
@@ -617,15 +652,30 @@
                     document.getElementById("constraint-title").textContent = title;
                 }
                 let devices = body.querySelector(".devices");
-                let addConstraint = (e) => {
+                let addConstraint = (event) => {
                     let slave = $("#slave-device").val();
-                    let master = $("#slave-master").val();
-                    let user = $("constraint-user").val();
+                    let master = $("#master-device").val();
+                    let user = $("#constraint-user").val();
 
-                    if (slave === "ID") {
+                    if(!slave){
                         return;
                     }
+
                     //Send to server
+                    let token = document.getElementById('_csrf').getAttribute('content');
+                    fetch('/admin/device-add-constraint', {
+                        credentials: "same-origin",
+                        method: "PUT",
+                        headers: {
+                            'Content-type': 'application/json; charset=UTF-8',
+                            'CSRF-Token': token
+                        },
+                        body: JSON.stringify({
+                            user: user,
+                            master: master,
+                            slave: slave
+                        })
+                    });
 
                     //Show UI
                     devices.insertAdjacentHTML("beforeend", `
@@ -634,15 +684,21 @@
                             <span class="close" aria-hidden="true">&times;</span>
                         </div>
                     `)
-                    $("#constraint-yes").off("click", addConstraint);
+
                     $("#constraint-device").modal("hide");
+
+                    e.target.disabled = true;
                 };
 
                 $("#constraint-yes").on("click", addConstraint);
 
-                $("#constraint-no").on("click", (e) => {
+                let handleHide = (e) => {
                     $("#constraint-yes").off("click", addConstraint);
-                });
+                    $('#constraint-device').off('hidden.bs.modal', handleHide);
+                };
+
+                $('#constraint-device').on('hidden.bs.modal', handleHide);
+
                 $("#constraint-device").modal("show");
             }
         });
@@ -652,13 +708,33 @@
             let user = document.getElementById("user-of-device").value;
             let device = document.getElementById("device-ids").value;
             let content = document.getElementById(user).closest(".row").querySelector(".devices");
+            
+            if(!device){
+                return;
+            }
 
             content.insertAdjacentHTML("beforeend", `
                 <div>
-                    <button data-type="device" type="button" class="device btn btn-info">${device}</button>
+                    <button data-type="device" type="button" class="device btn btn-info" id="${device}">${device}</button>
                     <span class="close" aria-hidden="true">&times;</span>
                 </div>
             `);
+
+            //Send to Server
+            let token = document.getElementById('_csrf').getAttribute('content');
+            fetch('/admin/user-add-device', {
+                credentials: "same-origin",
+                method: "PUT",
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                    'CSRF-Token': token
+                },
+                body: JSON.stringify({
+                    user: user,
+                    device: device
+                })
+
+            });
 
             $("#add-device-to-user").modal("hide");
         });
@@ -709,10 +785,10 @@
                     $('#device-ids').selectpicker('refresh');
                 });
         })
-    
+
         let constraintBtn = document.querySelector("#device-modal .device-add-depend");
 
-        constraintBtn.addEventListener("click", function(event){
+        constraintBtn.addEventListener("click", function (event) {
             let info = event.target.closest(".modal-body");
             let user = info.getAttribute("data-user");
             let deviceID = info.getAttribute("data-type");
@@ -721,18 +797,18 @@
             fetch(url, {
                 credentials: "same-origin"
             })
-            .then(res => res.json())
-            .then(devices => {
-                let content = document.getElementById("slave-device");
-                content.innerHTML = "";
-                for(let device of devices){
-                    content.insertAdjacentHTML("beforeend", `
+                .then(res => res.json())
+                .then(devices => {
+                    let content = document.getElementById("slave-device");
+                    content.innerHTML = "";
+                    for (let device of devices) {
+                        content.insertAdjacentHTML("beforeend", `
                         <option value="${device}">${device}</option>
                     `);
-                }
+                    }
 
-                $('#slave-device').selectpicker('refresh');
-            });
+                    $('#slave-device').selectpicker('refresh');
+                });
         });
     </script>
 </body>
