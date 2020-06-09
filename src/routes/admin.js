@@ -4,8 +4,11 @@ const Admin = require('../models/admin');
 const { Device } = require('../models/device');
 const User = require('../models/user');
 const Token = require('../models/token');
+const Dependent = require('../models/dependent');
 
 const {
+    sensorPattern,
+    motorPattern,
     promiseVerifyScrypt,
     jwtCreateWithExpire,
     jwtVerify
@@ -180,16 +183,136 @@ router.get('/user-management', function (req, res) {
     });
 });
 
-router.get("/getloginsuser", function(req, res){
+router.get("/loginsession", function (req, res) {
     let userID = req.query.userID;
     Token
-    .find({user: userID})
-    .select({browser: 1, ip: 1})
-    .exec()
-    .then(docs => {
-        res.json(docs).end();
-    });
+        .find({ user: userID })
+        .select({ browser: 1, ip: 1 })
+        .exec()
+        .then(docs => {
+            res.json(docs).end();
+        });
 
+});
+
+router.delete("/loginsession", function (req, res) {
+    let id = req.body.id;
+
+    if (!id) {
+        res.json({ error: "id not include" }).end();
+    }
+
+    Token.deleteOne({ _id: id }).then(doc => {
+        res.json(doc).end();
+    });
+});
+
+router.get("/sensorindepend", function (req, res) {
+    Device.find({
+        user: {
+            "$exists": false
+        },
+        device_id: {
+            "$regex": sensorPattern
+        }
+    })
+        .select({ _id: 0, device_id: 1 })
+        .then(docs => {
+            res.json(docs).end();
+        });
+});
+
+router.get("/motorindepend", function (req, res) {
+    Device.find({
+        user: {
+            "$exists": false
+        },
+        device_id: {
+            "$regex": motorPattern
+        }
+    })
+        .select({ _id: 0, device_id: 1 })
+        .then(docs => {
+            res.json(docs).end();
+        });
+});
+
+router.get("/dependent", function (req, res) {
+    let { type, user, device } = req.query;
+    if (type !== "sensor" && type !== "motor") {
+        return res.status(204).end();
+    }
+
+    let opposite = {
+        "motor": "sensor",
+        "sensor": "motor"
+    }
+
+    let result = {
+        location: {},
+        constraint: []
+    };
+
+    Device
+        .findOne({
+            user: user,
+            device_id: device
+        })
+        .select({ lat: 1, long: 1 })
+        .exec()
+        .then(doc => {
+            if (!doc) {
+                return res.status(204).end();
+            }
+
+            result.location = doc;
+            let commands = [
+                {
+                    "$match": {
+                        [type]: doc._id
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "devices",
+                        localField: `${opposite[type]}`,
+                        foreignField: "_id",
+                        as: `${opposite[type]}_info`
+                    }
+                },
+                {
+                    $replaceRoot: {
+                        newRoot: {
+                            $mergeObjects: [
+                                {
+                                    $arrayElemAt: [`$${opposite[type]}_info`, 0]
+                                },
+                                "$$ROOT"
+                            ]
+                        }
+                    }
+                },
+                {
+                    $project: { 
+                        [type]: 0, 
+                        [opposite[type]]: 0 , 
+                        [`${opposite[type]}_info`]: 0,
+                        user: 0
+                    },
+                }
+
+            ];
+
+            Dependent
+                .aggregate(commands)
+                .then(doc => {
+                    if (doc) {
+                        result.constraint = doc;
+                    }
+
+                    res.json(result).end();
+                });
+        });
 });
 
 module.exports = router;

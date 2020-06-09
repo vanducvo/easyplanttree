@@ -168,3 +168,5 @@ exports.classifyDevice = classifyDevice;
 exports.getTypeDevice = getTypeDevice;
 exports.jwtDecode = jwtDecode;
 exports.getSensorDevices = getSensorDevices;
+exports.sensorPattern = /^id7_(\d+)$/;
+exports.motorPattern = /^id9_(\d+)$/;
