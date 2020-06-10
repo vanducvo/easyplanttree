@@ -396,7 +396,7 @@
         let modify = false;
 
         map.on('click', function (e) {
-            if(!modify){
+            if (!modify) {
                 return;
             }
             if (old) {
@@ -418,8 +418,8 @@
             let lat = document.querySelector(".modal-body .cords .lat span");
             lng.parentElement.setAttribute("data-value", point.lng);
             lat.parentElement.setAttribute("data-value", point.lat);
-            lng.textContent = String(point.lng).match(/^(\d+.\d{4})\d*$/)[1];
-            lat.textContent = String(point.lat).match(/^(\d+.\d{4})\d*$/)[1];
+            lng.textContent = point.lng && String(point.lng).match(/^(\d+.\d{4})\d*$/)[1];
+            lat.textContent = point.lat && String(point.lat).match(/^(\d+.\d{4})\d*$/)[1];
         }
 
         // Comfirm UI
@@ -480,7 +480,7 @@
                     let id = event.target.parentElement.querySelector("button").id;
                     event.target.parentElement.remove();
                     // Send to Server
-                    fetch('/admin/user-remove-device', {
+                    fetch('user-management/user-remove-device', {
                         credentials: "same-origin",
                         method: "PUT",
                         headers: {
@@ -499,7 +499,7 @@
         // Load user to Modal
         function loadUserToModal(user, target) {
             let logins = document.querySelector("#info-modal .modal-body");
-            let url = "/admin/loginsession?userID=" + user;
+            let url = "user-management/loginsession?userID=" + user;
             logins.innerHTML = "";
 
             fetch(url, {
@@ -553,7 +553,7 @@
 
         function loadContent(type, content, userID, deviceID) {
             // Send to Server
-            let url = `/admin/dependent?type=${type}&user=${userID}&device=${deviceID}`;
+            let url = `user-management/dependent?type=${type}&user=${userID}&device=${deviceID}`;
             fetch(url, {
                 credentials: "same-origin"
             })
@@ -583,10 +583,20 @@
 
                     //Set Location
                     if (doc.location.lat && doc.location.long) {
-                        setLocation(doc.location);
-                        new mapboxgl.Marker()
+                        // Change interface
+                        doc.location.lng = doc.location.long;
+                        let point = doc.location;
+                        setLocation(point);
+                        old = new mapboxgl.Marker()
                             .setLngLat([point.lng, point.lat])
                             .addTo(map);
+
+                        map.flyTo({
+                            center: [point.lng, point.lat],
+                            essential: true
+                        });
+                    }else{
+                        setLocation({lat: "", lng: ""});
                     }
                 });
         }
@@ -616,7 +626,7 @@
         //Update location services
         $("#update-location").on("click", function (e) {
             let current = e.target.className;
-            if(current.match('success')){
+            if (current.match('success')) {
                 e.target.className = current.replace('success', 'danger');
                 e.target.textContent = "Cập nhật";
                 modify = true;
@@ -625,7 +635,24 @@
                 e.target.textContent = "Sửa";
                 modify = false;
                 // Send to Server
-                
+                let content = e.target.closest('.modal-body');
+                let device = content.getAttribute("data-type");
+                let long = content.querySelector(".lng").getAttribute("data-value");
+                let lat = content.querySelector(".lat").getAttribute("data-value");
+                let token = document.getElementById('_csrf').getAttribute('content');
+                fetch('user-management/set-device-location', {
+                    credentials: "same-origin",
+                    method: "PUT",
+                    headers: {
+                        'Content-type': 'application/json; charset=UTF-8',
+                        'CSRF-Token': token
+                    },
+                    body: JSON.stringify({
+                        device: device,
+                        long: long,
+                        lat: lat
+                    })
+                });
             }
         });
 
@@ -635,7 +662,7 @@
             if (e.target.className.match(/close/)) {
                 let message = "Bạn có chắc chắn muốn xóa ràng buộc thiết bị?";
                 confirm(message, () => {
-                    
+
                     // get Data
                     let master = belong.getAttribute("data-type");
                     let slave = belong.querySelector(".device").textContent;
@@ -643,7 +670,7 @@
 
                     // send to server
                     let token = document.getElementById('_csrf').getAttribute('content');
-                    fetch('/admin/device-remove-constraint', {
+                    fetch('user-management/device-remove-constraint', {
                         credentials: "same-origin",
                         method: "DELETE",
                         headers: {
@@ -676,13 +703,13 @@
                     let master = $("#master-device").val();
                     let user = $("#constraint-user").val();
 
-                    if(!slave){
+                    if (!slave) {
                         return;
                     }
 
                     //Send to server
                     let token = document.getElementById('_csrf').getAttribute('content');
-                    fetch('/admin/device-add-constraint', {
+                    fetch('user-management/device-add-constraint', {
                         credentials: "same-origin",
                         method: "PUT",
                         headers: {
@@ -727,8 +754,8 @@
             let user = document.getElementById("user-of-device").value;
             let device = document.getElementById("device-ids").value;
             let content = document.getElementById(user).closest(".row").querySelector(".devices");
-            
-            if(!device){
+
+            if (!device) {
                 return;
             }
 
@@ -741,7 +768,7 @@
 
             //Send to Server
             let token = document.getElementById('_csrf').getAttribute('content');
-            fetch('/admin/user-add-device', {
+            fetch('user-management/user-add-device', {
                 credentials: "same-origin",
                 method: "PUT",
                 headers: {
@@ -768,7 +795,7 @@
             let message = "Bạn có chắn chắn xóa phiên đăng nhập này?";
             confirm(message, () => {
                 event.target.closest(".login-info").remove();
-                fetch("/admin/loginsession", {
+                fetch("user-management/loginsession", {
                     method: "DELETE",
                     credentials: "same-origin",
                     headers: {
@@ -789,7 +816,7 @@
         let options = document.getElementById("device-ids");
         select.addEventListener("change", (event) => {
             options.innerHTML = "";
-            url = `/admin/${event.target.value}independ`;
+            url = `user-management/${event.target.value}independ`;
             fetch(url, {
                 credentials: "same-origin"
             })
@@ -812,7 +839,7 @@
             let user = info.getAttribute("data-user");
             let deviceID = info.getAttribute("data-type");
             let type = deviceID.match(/^id7_\d+$/) ? 'motor' : deviceID.match(/^id9_\d+$/) ? 'sensor' : '';
-            url = `/admin/independent?user=${user}&type=${type}&device=${deviceID}`;
+            url = `user-management/independent?user=${user}&type=${type}&device=${deviceID}`;
             fetch(url, {
                 credentials: "same-origin"
             })

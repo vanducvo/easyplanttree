@@ -94,7 +94,9 @@ let DeviceSchema = new Schema({
     user: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'User'
-    }
+    },
+    lat: String,
+    long: String
 });
 DeviceSchema.index({user: 1});
 let Device =  mongoose.model('Device', DeviceSchema);

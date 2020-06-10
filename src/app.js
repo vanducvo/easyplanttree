@@ -34,7 +34,7 @@ const account = require('./routes/account');
 const api = require('./routes/api');
 const controller = require('./routes/controller');
 const dashboard = require('./routes/dashboard');
-const admin = require('./routes/admin');
+const admin = require('./routes/admin/admin');
 
 // Middleware Implement
 const authorization = require('./services/authorization');
