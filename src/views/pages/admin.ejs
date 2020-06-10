@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Plant Tree</title>
+    <meta content="<%= _csrf %>" id="_csrf" />
+    <%- include('../partials/require') %>
+    <script src="/public/js/bootstrap/bootstrap-select.min.js"></script>
+    <link rel="stylesheet" href="/public/css/bootstrap/bootstrap-select.min.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            background-color: #f7fafc;
+        }
+
+        .navbar {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        .number-users,
+        .number-devices {
+            font-size: xx-large;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
+        }
+
+        .number-users {
+            color: #4299e1;
+        }
+
+        .number-devices {
+            color: #48bb78;
+        }
+
+        .info-users>.text-center,
+        .info-devices>.text-center {
+            font-size: x-large;
+            color: #2c7a7b;
+            background-color: #f8f9fa;
+            margin-top: 0.5rem;
+            border-radius: 1rem;
+            padding-left: 0.1rem;
+            padding-right: 0.1rem;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .table-name {
+            font-size: large;
+            color: #667eea;
+            font-weight: bolder;
+        }
+
+        .wrapper {
+            background-color: #f8f9fa;
+            border-radius: 1rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            padding-left: 0.5rem;
+            padding-right: 0.25rem;
+        }
+
+        .list-r{
+            margin-top: 0.5rem;
+        }
+
+
+        @media screen and (min-width: 960px) {
+            .list-l {
+                padding-right: 0.25rem !important;
+            }
+
+            .list-r {
+                padding-left: 0.25rem !important;
+                margin-top: 0;
+            }
+        }
+
+        .dropdown.bootstrap-select{
+            width: auto !important;
+        }
+
+        .handmade-table-content {
+            height: 50vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .handmade-table-header .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-top: 0.5rem;
+            border-radius: 0.5rem;
+            border-top: #2c7a7b solid 2px;
+            text-align: center;
+        }
+
+        .handmade-table-header .row .text-break:nth-child(1) {
+            border-bottom: #2c7a7b solid 1px;
+            padding-bottom: 0.5rem;
+        }
+
+        .handmade-table-header .row .text-break:nth-child(2) {
+            border-bottom: #2c7a7b solid 1px;
+            padding-bottom: 0.5rem;
+        }
+
+        .handmade-table-content .row{
+            padding: 1rem;
+            border-bottom: #2c7a7b solid 1px;
+            text-align: center;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .handmade-table-content .row .text-break:nth-child(1) {
+            border-right: #2c7a7b solid 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="page-header">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">
+                <img src="/public/assets/images/logo.png" alt="East Plan Tree">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu" aria-controls="menu"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse row justify-content-between" id="menu">
+                <ul class="navbar-nav col-lg-8 justify-content-start">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/admin">Trang Chủ</a>
+                    </li>
+                    <li class="nav-item nav-item">
+                        <a class="nav-link" href="/admin/user-management">Quản Lí Người Dùng</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav col-lg-4 justify-content-end guest">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/logout">Logout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Admin: <%= admin.name %></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid main">
+        <div class="row justify-content-center">
+            <div class="col-md-4 info-users">
+                <p class="text-center shadow">Số người dùng <span class="number-users"><%= data[1] && data[1].length %></span></p>
+            </div>
+            <div class="col-md-4 info-devices">
+                <p class="text-center shadow">Số thiết bị <span class="number-devices"><%= data[1] && data[0].length %></span></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 list-l">
+                <div class="wrapper shadow">
+                    <p class="table-name">Danh sách người dùng</p>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <select class="selectpicker" id="search-type">
+                                <option selected>Theo...</option>
+                                <option value="email">Email</option>
+                                <option value="name">Tên</option>
+                            </select>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
+                            aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                            <button class="btn btn-info" type="button">Tìm</button>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="handmade-table container-fluid">
+                        <div class="handmade-table-header">
+                            <div class="row row-cols-2">
+                                <div class="col-* text-break">Khách Hàng</div>
+                                <div class="col-* text-break">Email</div>
+                            </div>
+                        </div>
+                        <div class="handmade-table-content">
+                            <% for (let user of data[1]) { %>
+                                <div class="row row-cols-2">
+                                    <div class="col-* text-break"><%= user.name %></div>
+                                    <div class="col-* text-break"><%= user.email %></div>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-6 list-r">
+                <div class="wrapper shadow">
+                    <p class="table-name">Danh sách thiết bị</p>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <select class="selectpicker" id="search-type-devices">
+                                <option selected>Theo...</option>
+                                <option value="email">ID</option>
+                                <option value="name">Loại</option>
+                            </select>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
+                            aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-info" type="button">Tìm</button>
+                            </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="handmade-table container-fluid">
+                        <div class="handmade-table-header">
+                            <div class="row row-cols-2">
+                                <div class="col-* text-break">ID</div>
+                                <div class="col-* text-break">Loại</div>
+                            </div>
+                        </div>
+                        <div class="handmade-table-content">
+                            <%
+                                function getNameDevice(id){
+                                    let type = id.match(/^id(\d+)_\d+$/)[1];
+                                    switch(type){
+                                        case '7':
+                                            return 'Cảm biến độ ẩm đất';
+                                        case '9':
+                                            return 'Motor';
+                                    }
+                                }
+                            %>
+                            <% for (let device of data[0]) { %>
+                                <% if (device.device_id) { %>
+                                    <div class="row row-cols-2">
+                                        <div class="col-* text-break">
+                                            <%= device.device_id.replace(/^id(\d+)_(\d+)$/, 'ID-$1-$2') %>
+                                        </div>
+                                        <div class="col-* text-break">
+                                            <%= getNameDevice(device.device_id) %>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

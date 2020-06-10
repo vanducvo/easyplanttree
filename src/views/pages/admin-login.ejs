@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <%- include ('../partials/require') %>
+    <link rel="stylesheet" href="/public/css/login.css">
+    <style>
+        .title {
+            font-weight: bold;
+            padding-top: 1rem;
+            color: #38a169;
+        }
+
+        hr{
+            margin-top: 0 !important;
+        }
+
+        button{
+            margin-bottom: 0 !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-fluid d-flex justify-content-center">
+            <h1 class="title">ADMIN PAGE - EASY PLANT TREE</h1>
+        </div>
+    </header>
+    <div class="container-fluid d-flex justify-content-center form">
+        <div class="d-flex flex-column login col-sm-6 col-md-5 col-lg-4">
+            <div>Log in to Continue to:</div>
+            <div><b>Eassy Plant Tree - ADMIN PAGE</b></div>
+            <form action="/admin/login" method="POST" id="login-form">
+                <input type="hidden" value="<%= _csrf %>" name="_csrf">
+                <% if (wrong) {%>
+                    <div class="alert alert-danger wrong" role="alert">
+                        Wrong: <%= wrong %>
+                    </div>
+                <% } %>
+                <input type="email" class="form-control" name="email" id="email" placeholder="Enter email" required>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                <button type="submit" id="submit" class="btn btn-primary container-fluid">Login</button>
+            </form>
+            <hr>
+            <div id="more">
+                <a href="#">Can't Log in?</a>
+                <span>&bull;</span>
+                <a href="#">Contact To Your Admin</a>
+            </div>
+        </div>
+    </div>
+    <footer class="container-fluid d-flex justify-content-center">
+        <span>&copy; 2019-2020</span>
+    </footer>
+    <script>
+        let wrong = document.querySelector('.wrong');
+        if(wrong){
+            setTimeout(() => wrong.remove(), 5000);
+        }
+    </script>
+</body>
+</html>

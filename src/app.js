@@ -33,6 +33,8 @@ const auth = require('./routes/authentication');
 const account = require('./routes/account');
 const api = require('./routes/api');
 const controller = require('./routes/controller');
+const dashboard = require('./routes/dashboard');
+const admin = require('./routes/admin');
 
 // Middleware Implement
 const authorization = require('./services/authorization');
@@ -88,7 +90,10 @@ app.use(bodyParser.json());
 
 // Middleware security protect webapp csrf attaction
 app.use(csrf({
-  cookie: true,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'strict'
+  },
   sessionKey: process.env.CSRF_SECRET_KEY
 }));
 
@@ -96,13 +101,14 @@ app.use(csrf({
 app.use('/auth', auth);
 app.use('/account', account);
 
+// Admin page
+app.use('/admin', admin);
+
 // Middleware require user login
 app.use(authorization);
 
 // Dashbboard
-app.get('/', function(req, res) {
-  res.render('pages/index.ejs', {user: req.user, _csrf: req.csrfToken()});
-});
+app.use('/', dashboard);
 
 // Map
 app.get('/map', function(req, res) {
@@ -125,12 +131,17 @@ app.use(function(err, req, res, next) {
 
 // Demon services
 const {connect} = require('./services/broker');
-const {createDBSaver} = require('./services/demon');
+const {createDBSaver, dashBoardUpdate} = require('./services/demon');
 const client =  connect(
                     settings.clientBroker, settings.subTopic, settings.pubTopic,
                     process.env.MQTT_BROKER
                     );
-//createDBSaver(client, settings.subTopic, utils.classifyDevice);
+// createDBSaver(client, settings.subTopic, utils.classifyDevice);
 
-//Express App Listen Port
-app.listen(settings.port);
+// Socket
+io.use(authorizationSocket);
+io.setMaxListeners(Infinity);
+dashBoardUpdate(io, client, settings.subTopic, utils.getSensorDevices);
+
+// Express App Listen Port
+server.listen(settings.port);

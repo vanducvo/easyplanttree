@@ -1,18 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easy Plant Tree</title>
-    <meta content="<%= _csrf %>" id="_csrf" />
-    <link rel="manifest" href="public/manifest.json">
-    <script src="/public/js/initsw.js"></script>
-    <%- include('../partials/require') %>
-</head>
-<body>
-  <%- include('../partials/nav', {page: 'dasboard', user: user}) %>
-  <div>
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Easy Plant Tree</title>
+  <meta content="<%= _csrf %>" id="_csrf" />
+  <link rel="manifest" href="/public/manifest.json">
+  <script src="/public/js/initsw.js"></script>
+  <script src="/public/js/chartjs/Chart.bundle.min.js"></script>
+  <script src="/public/js/palette.js"></script>
+  <%- include('../partials/require') %>
+  <script src="/public/js/bootstrap/bootstrap-select.min.js"></script>
+  <script src="/public//js/socket/socket.io.js"></script>
+  <link rel="stylesheet" href="/public/css/bootstrap/bootstrap-select.min.css">
+  <style>
+    .right-chart-wrapper,
+    .left-chart-wrapper {
+      background-color: #f8f9fa;
+      margin-top: 0.3rem;
+      border-radius: 1rem;
+      height: 100%;
+      padding-top: 2rem;
+    }
+
+    .left-chart {
+      padding-left: 0.3rem;
+      padding-right: 0.3rem;
+    }
+
+    .right-chart {
+      margin-top: 0.3rem;
+      padding-left: 0.3rem;
+      padding-right: 0.3rem;
+    }
+
+    .waters-chart {
+      margin-top: 2rem;
+    }
+
+    @media screen and (min-width: 960px) {
+      .right-chart {
+        margin-top: 0 !important;
+      }
+
+      .left-chart {
+        padding-right: 0 !important;
+      }
+
+      #average {
+        position: relative;
+        top: 25%;
+      }
+
+      .left-chart-wrapper>.dropdown {
+        margin-bottom: 0.5rem !important;
+        margin-left: 0.5rem !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <%- include('../partials/nav', {page: 'dasboard', user: user}) %>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-8 left-chart">
+        <div class="left-chart-wrapper">
+          <canvas id="soil-chart"></canvas>
+          <select id="picker" class="selectpicker">
+            <% for (let sensor of devices.sensor){ %>
+            <option value="<%= sensor %>">Sensor <%= sensor.match(/id\d+_(\d+)/)[1] %></option>
+            <% } %>
+
+          </select>
+          <script>
+            let canvas = document.getElementById('soil-chart').getContext('2d');
+            let soilMoisture = null;
+            function createNewSoilMoistureChart(chart) {
+              return function () {
+                if (soilMoisture != null) {
+                  soilMoisture.destroy();
+                }
+                soilMoisture = new Chart(chart, {
+                  type: 'line',
+                  data: {
+                    labels: [],
+                    datasets: [
+                      {
+                        label: 'Độ Ẩm',
+                        data: []
+                      }
+                    ]
+                  },
+                  options: {
+                    responsiveAnimationDuration: 500,
+                    scales: {
+                      yAxes: [{
+                        ticks: {
+                          minx: 0,
+                          max: 100,
+                          stepSize: 20,
+                          callback: function (value, index, values) {
+                            return value + '%';
+                          }
+                        },
+                      }],
+                      xAxes: [{
+                        type: 'time',
+                        time: {
+                          unit: 'minute',
+                          round: 'minute',
+                          unitStepSize: 30,
+                          displayFormats: {
+                            minute: 'HH:mm'
+                          }
+                        }
+                      }]
+                    },
+                    title: {
+                      position: 'bottom',
+                      display: true,
+                      text: 'Cảm biến độ ẩm đất trong 3h'
+                    },
+                    legend: {
+                      display: true,
+                    },
+                    elements: {
+                      point: {
+                        pointStyle: 'rectRounded'
+                      },
+                      line: {
+                        fill: false,
+                        tension: 0,
+                        borderColor: '#48bb78',
+                        borderWidth: 2
+                      }
+                    },
+                    layout: {
+                      padding: {
+                        right: 20
+                      }
+                    }
+                  }
+                });
+
+                return soilMoisture;
+              }
+            }
+            let chart = createNewSoilMoistureChart(canvas);
+
+            async function drawSoilMoistureChart(sensor, chart) {
+              let json = null;
+              while (!json || json.begin) {
+                let url = `/getdatasensor?id=${sensor}` + (json && json.begin ? `&begin=${json.begin}` : '');
+                let data = await fetch(url, {
+                  method: 'GET',
+                  credentials: "same-origin"
+                });
+
+                if (data.status != 200) {
+                  return;
+                }
+
+                json = await data.json();
+                if (json.docs) {
+                  for (let doc of json.docs) {
+                    chart.data.labels.push(new Date(doc.time));
+                    chart.data.datasets[0].data.push(Math.round(Number(doc.moisture) * 10000 / 1023) / 100);
+                    chart.update();
+                  }
+                }
+              }
+            };
+
+            drawSoilMoistureChart(document.getElementById("picker").value, chart());
+
+            document.getElementById("picker").addEventListener("change", function (e) {
+              drawSoilMoistureChart(e.target.value, chart());
+            });
+
+          </script>
+        </div>
+      </div>
+
+      <div class="col-lg-4 right-chart">
+        <div class="right-chart-wrapper">
+          <div class="average-chart">
+            <canvas id="average"></canvas>
+            <select id="average-picker" class="selectpicker">
+              <option>Tuần Hiện Tại</option>
+              <option value="preweek">Tuần Trước</option>
+            </select>
+            <script>
+              let averageCanvas = document.getElementById('average');
+              let averageSoilMoisture = null;
+              function createAverageChart(chart) {
+                return function () {
+                  if (averageSoilMoisture) {
+                    averageSoilMoisture.destroy();
+                  }
+                  averageSoilMoisture = new Chart(averageCanvas, {
+                    type: 'bar',
+                    data: {
+                      datasets: [{
+                        data: [],
+                        backgroundColor: palette('cb-Pastel2', document.getElementById("picker").children.length).map(color => `#${color}`)
+                      }],
+                      labels: []
+                    },
+                    options: {
+                      scales: {
+                        yAxes: [{
+                          ticks: {
+                            beginAtZero: true,
+                          }
+                        }]
+                      },
+                      title: {
+                        text: 'Độ ẩm đất trung bình theo tuần',
+                        position: 'bottom',
+                        display: true
+                      },
+                      legend: {
+                        display: false,
+                      },
+                      scales: {
+                        yAxes: [{
+                          ticks: {
+                            min: 0,
+                            max: 100,
+                            stepSize: 20,
+                            callback: function (value, index, values) {
+                              return value + '%';
+                            }
+                          }
+                        }],
+                      }
+                    }
+                  });
+
+                  return averageSoilMoisture;
+                }
+              }
+              let averageChart = createAverageChart(averageCanvas);
+
+              async function drawAverageChart(type, chart) {
+                let url = '/averageallsensor';
+                if (type === "preweek") {
+                  url += '?type=preweek'
+                }
+
+                fetch(url, {
+                  method: 'GET',
+                  credentials: "same-origin"
+                })
+                  .then(res => res.json())
+                  .then(json =>
+                    json.sort((a, b) =>
+                      (a._id > b._id) ? 1 : (a._id < b._id) ? -1 : 0
+                    )
+                  )
+                  .then(sorted => {
+                    sorted.forEach(value => {
+                      chart.data.labels.push(value._id.replace(/^id7_/,'Sensor '));
+                      chart.data.datasets[0].data.push(Math.round(value.average * 10000 / 1023) / 100);
+                      chart.update();
+                    });
+                  });
+              }
+              drawAverageChart(null, averageChart());
+              document.getElementById("average-picker").addEventListener("change", function (e) {
+                drawAverageChart(e.target.value, averageChart());
+              });
+            </script>
+          </div>
+          <div class="waters-chart">
+            <canvas id="waters"></canvas>
+            <select id="waters-picker" class="selectpicker col-6 col-lg-5">
+              <option>Tuần Hiện Tại</option>
+              <option>Tuần Trước</option>
+            </select>
+            <script>
+              let waters = document.getElementById('waters');
+              let watersChart = new Chart(waters, {
+                type: 'bar',
+                data: {
+                  datasets: [{
+                    data: [1, 2, 3, 4, 5, 6, 7, 8],
+                    backgroundColor: palette('cb-Pastel1', 7).map(color => `#${color}`),
+                    type: 'line'
+                  }, {
+                    data: [1, 2, 3, 4, 5, 6, 7, 8],
+                    backgroundColor: palette('cb-Pastel1', 7).map(color => `#${color}`)
+                  },
+                  ],
+                  labels: ['2', '3', '4', '5', '6', '7', 'CN']
+                },
+                options: {
+                  scales: {
+                    yAxes: [{
+                      ticks: {
+                        beginAtZero: true,
+                      }
+                    }]
+                  },
+                  title: {
+                    text: 'Thống kê tưới nước trong tuần',
+                    position: 'bottom',
+                    display: true
+                  },
+                  legend: {
+                    display: false,
+                  },
+                  elements: {
+                    line: {
+                      fill: false,
+                      tension: 0,
+                      borderColor: '#b3e2cd',
+                      borderWidth: 2
+                    }
+                  }
+                }
+              });
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+  <script>
+
+    // Socket
+    const chat = io.connect('/dashboard');
+
+    chat.on('new', message => {
+      let sensor = document.getElementById("picker").value;
+      if (sensor === message.device_id && message.value[0] === "1") {
+        soilMoisture.data.labels.push(new Date());
+        soilMoisture.data.labels.shift();
+        soilMoisture.data.datasets[0].data.shift();
+        soilMoisture.data.datasets[0].data.push(Math.round(Number(message.value[1]) * 10000 / 1023) / 100);
+        soilMoisture.update();
+      }
+    })
+  </script>
 </body>
+
 </html>

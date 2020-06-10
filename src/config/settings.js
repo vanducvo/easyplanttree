@@ -1,8 +1,8 @@
 const settings = {
   clientBroker:{
-    id: 'App_2',
-    username: 'App_2',
-    password: 'App_2'
+    id: 'App_2_1',
+    username: 'App_2_1',
+    password: 'App_2_1'
   },
   subTopic: 'T_3',
   pubTopic: 'T_4',
