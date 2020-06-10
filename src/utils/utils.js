@@ -128,6 +128,33 @@ function classifyDevice(data){
   }
 }
 
+function getTypeDevice(data){
+  if (
+    !data.device_id || 
+    typeof(data.device_id) !== 'string'
+    ){
+    return;
+  }
+  let device = data.device_id.match(/^id(\d+)/);
+
+  if(!device || device.length < 1){
+    return;
+  }
+
+  device = device[1];
+
+  switch(device){
+    case '4':
+      return 'gps';
+    case '7':
+      return 'sensor'
+    case '9':
+      return 'motor';
+  }
+
+  return;
+}
+
 exports.createTextResepondJSONBeaufy = createTextResepondJSONBeaufy;
 exports.promiseScrypt = promiseScrypt;
 exports.jwtCreate = jwtCreate;
@@ -136,3 +163,4 @@ exports.jwtCreateWithExpire = jwtCreateWithExpire;
 exports.promiseVerifyScrypt = promiseVerifyScrypt;
 exports.checkEmail = checkEmail;
 exports.classifyDevice = classifyDevice;
+exports.getTypeDevice = getTypeDevice;

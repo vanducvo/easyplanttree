@@ -39,7 +39,26 @@
                     </div>
                 </div>
                 <div class="handmade-table-content" style="height: 240px;">
-                    <div class="hover">
+
+                     <% for (let row of wh){ %>
+                        <div class="hover">
+                            <div class="row row-cols-3">
+                                <div class="col-3 text-break"><%= row.device_id %></div>
+                                <div class="col-6 text-break"><%= row.time.toLocaleString() %></div>
+                                <div class="col-3 text-break"><%= row.value[2] %></div>                     
+                            </div>
+                        </div>
+                        <% } %>
+                  
+                    <!-- <div class="hover">
+                        <div class="row row-cols-3">
+                            <div class="col-3 text-break">id9_1</div>
+                            <div class="col-6 text-break">"2020-05-22T05:58:21.935+00:00".toLocaleDateString()</div>
+                            <div class="col-3 text-break">7</div>                     
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="hover">
                         <div class="row row-cols-3">
                             <div class="col-3 text-break">id9_1</div>
                             <div class="col-6 text-break">2020-05-22T05:58:21.935+00:00</div>
@@ -87,14 +106,7 @@
                             <div class="col-6 text-break">2020-05-22T05:58:21.935+00:00</div>
                             <div class="col-3 text-break">7</div>                     
                         </div>
-                    </div>
-                    <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-3 text-break">id9_1</div>
-                            <div class="col-6 text-break">2020-05-22T05:58:21.935+00:00</div>
-                            <div class="col-3 text-break">7</div>                     
-                        </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>   
             <div class="text-center">
@@ -116,6 +128,8 @@
                     </div>
                 </div>
                 <div class="handmade-table-content" style="height: 240px;">
+                    
+
                     <div class="hover">
                         <div class="row row-cols-3">
                             <div class="col-2 text-break">1</div>
@@ -150,10 +164,10 @@
                             <div class="col-4 text-break">id9_5</div>
                             <div class="col-6 text-break">Mạnh</div>          
                         </div>
-                    </div>
-                   
                 </div>
-            </div> 
+                   
+            </div>
+        </div> 
         
         
         
@@ -165,10 +179,11 @@
             </div>
             
             <form >
-                <div class="form-group pmd-textfield ">
+                <div class="form-group pmd-textfield " method="POST" id="form-watering" >
                   <label for="exampleFormControlSelect1">Chọn motor:</label>
-                  <select class="form-control" id="exampleFormControlSelect1" style="margin-right: 25%;">
-                    <option>Motor 1</option>
+                  <select class="form-control" id="exampleFormControlSelect1" style="margin-right: 25%; text-indent: 45%;">
+                   
+                    <option selected >Motor 1</option>
                     <option>Motor 2</option>
                     <option>Motor 3</option>
                     <option>Motor 4</option>
@@ -180,31 +195,56 @@
                     <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6" >
                         <div class="form-group">
                             <label class="control-label" for="regular1">Select Date</label>
-                            <input type="date" class="form-control" >    
+                            <input type="date" id = "datepicker" class="form-control" style="text-align: center;" >    
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6" >
                         <div class="form-group">
                             <label class="control-label" for="regular1">Select Time</label>
-                            <input type="time" class="form-control" id = "timepicker" >    
+                            <input type="time" class="form-control" id = "timepicker" style="text-align: center;" >    
                         </div>
                     </div>
                 </div>
                 
 
                 <div class="form-group">
-                    <div style="text-align:center;">
-                        <label class="control-label" for="regular1">Thời lượng tưới (phút):</label>
+                    <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6" >
+                        <div class="form-group">
+                            <div style="text-align:center;">
+                                <label class="control-label" for="regular1">Thời lượng tưới (phút):</label>
+                            </div>
+                            <div>
+                                <input type="number" id = "time_w" class="form-control" value="5" min="0" style="text-align: center;">
+                            </div>
+                        </div>
                     </div>
-                    <div style="text-align:center;">
-                        <input type="number" class="form-control" value="5" min="0" style="width: 20%; margin-left: 40%;">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6" >
+                        <div class="form-group">
+                            
+                            <div >
+                                <label class="control-label" for="regular1">Cường độ tưới:</label>
+                            </div>
+                            
+                            <select class="form-control" id="" style="text-indent: 45%;">
+                   
+                                <option value = "1" selected>Yếu</option>
+                                <option value = "2">Trung bình</option>
+                                <option value = "3">Mạnh</option>
+                                
+                              </select>
+                        </div>
                     </div>
+                </div>
+
+
+                    
                     
                 </div>
                
                 <div class="form-group">
                     <div style="text-align:center;" >
-                        <input type="submit" class="btn btn-primary" id="" value="Bơm" style="width:20%">
+                        <input type="submit" class="btn btn-primary" id="btn_watering" value="Bơm" style="width:20%">
                     </div>
                 </div>
                 
@@ -213,5 +253,109 @@
     </div>
     
   </div>
+  <!-- <script>
+    document.getElementById('btn_watering').onclick = function (event) {
+        event.preventDefault();
+        let token = document.getElementById('_csrf').getAttribute('content');
+        //let email = document.getElementById('email').value;
+        let device= document.getElementById('exampleFormControlSelect1').value;
+        let datepicker = document.getElementById('datepicker').value;
+        let timepicker = document.getElementById('timepicker').value;
+        let time_w = document.getElementById('time_w').value;
+
+        fetch('/controller/watering', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'CSRF-Token': token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.status) {
+                    let next = document.getElementById('next');
+                    next.remove();
+                    let email = document.getElementById('email');
+                    email.setAttribute('disabled' , true);
+                    email.insertAdjacentHTML('afterend', `
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Full Name" required>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                    `);
+
+                    let submit = document.querySelector('.check-mail .container-fuild');
+                    submit.innerHTML =  `
+                    <button type="submit" id="submit" class="btn btn-success col-10">Create Account</button>
+                    `;
+
+                    let form = document.getElementById("form-create");
+                    form.onsubmit = signup;
+                } else {
+                    let notify = document.createElement('div');
+                    notify.classList.add('alert', 'alert-danger');
+                    notify.setAttribute('role' , 'alert');
+                    notify.textContent = 'Email Exists';
+                    let parent =  document.querySelector('.form-name');
+                    parent.after(notify);
+                    setTimeout(()=> notify.remove(), 5000);
+                }
+            })
+            .catch(function (error) {
+                console.log(error.name);
+            });
+    }
+
+    function signup(event){
+        event.preventDefault();
+        let token = document.getElementById('_csrf').getAttribute('content');
+        //let email = document.getElementById('email').value;
+        //let name = document.getElementById('name').value;
+        //let password = document.getElementById('password').value;
+        let device= document.getElementById('exampleFormControlSelect1').value;
+
+
+
+
+        fetch('/account/signup', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'CSRF-Token': token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                name: name,
+                password: password
+            })
+        })
+        .then((res) => {
+            if (res.status == 200){
+                let mainpage = document.querySelector('.check-mail');
+                mainpage.innerHTML = `
+                <div class="alert alert-success" role="alert">
+                    Check Mail to Verify Account!
+                </div>
+                `;
+            } else {
+                throw new Error(res.statusText);
+            }
+
+        })
+        .catch((err) => {
+            let mainpage = document.querySelector('.check-mail');
+                mainpage.innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    Fails! Reload and try again!
+                </div>
+            `;
+        });
+    }
+</script> -->
+
+
 </body>
 </html>

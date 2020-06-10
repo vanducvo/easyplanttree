@@ -80,6 +80,36 @@ let DeviceSchema = new Schema({
 DeviceSchema.index({user: 1});
 let Device =  mongoose.model('Device', DeviceSchema);
 
+
+let WateringSchema = new Schema({
+    device_id: {
+        required: true,
+        type: String
+    },
+    value: {
+        type: [String],
+        required: function(){
+            return (
+                this.length == 1 && this[0] === '0'
+                ) || (
+                    this.length == 3 &&
+                    this[0] == 1 &&
+                    0 <= Number(this[1]) && Number(this[1]) <= 3 &&
+                    0 <= Number(this[2])
+                )
+        }
+    },
+    time: {
+        type: Date,
+        default: Date.now
+    }
+});
+WateringSchema.index({device_id: 1});
+let Watering =  mongoose.model('Watering', WateringSchema);
+
+
+module.exports.Watering = Watering;
+
 module.exports.SoilMoisture = SoilMoisture;
 module.exports.GPS = GPS;
 module.exports.MotorSchema = Motor;

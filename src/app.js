@@ -12,9 +12,11 @@ if (process.env.NODE_ENV == "development"){
 
 
 // Express Framework
+const http = require('http');
 const express = require('express');
 const app = express();
-
+const server = http.createServer(app);
+const io = require("socket.io")(server);
 // Database ODM
 const mongoose = require('mongoose');
 
@@ -30,9 +32,11 @@ const morgan = require('morgan');
 const auth = require('./routes/authentication');
 const account = require('./routes/account');
 const api = require('./routes/api');
+const controller = require('./routes/controller');
 
 // Middleware Implement
 const authorization = require('./services/authorization');
+const {authorizationSocket} = require('./services/authorization');
 
 // Logger
 const serverLogger = require('./utils/logger').serverLogger(module);
@@ -105,10 +109,8 @@ app.get('/map', function(req, res) {
   res.render('pages/map.ejs', {user: req.user, _csrf: req.csrfToken()});
 });
 
-// Map
-app.get('/controller', function(req, res) {
-  res.render('pages/controller.ejs', {user: req.user, _csrf: req.csrfToken()});
-});
+// Controlller
+app.use('/controller', controller);
 
 app.use('/api', api);
 
