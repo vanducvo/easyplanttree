@@ -110,11 +110,11 @@
                       xAxes: [{
                         type: 'time',
                         time: {
-                          unit: 'minute',
-                          round: 'minute',
+                          unit: 'second',
+                          round: 'second',
                           unitStepSize: 30,
                           displayFormats: {
-                            minute: 'HH:mm'
+                            minute: 'HH:mm:ss'
                           }
                         }
                       }]
@@ -339,8 +339,10 @@
       let sensor = document.getElementById("picker").value;
       if (sensor === message.device_id && message.value[0] === "1") {
         soilMoisture.data.labels.push(new Date());
-        soilMoisture.data.labels.shift();
-        soilMoisture.data.datasets[0].data.shift();
+        if(soilMoisture.data.labels.length > 60){
+          soilMoisture.data.labels.shift();
+          soilMoisture.data.datasets[0].data.shift();
+        }
         soilMoisture.data.datasets[0].data.push(Math.round(Number(message.value[1]) * 10000 / 1023) / 100);
         soilMoisture.update();
       }
