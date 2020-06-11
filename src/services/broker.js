@@ -14,13 +14,7 @@ function connect(info, subtopic, pubtopic, url){
     });
 
     client.on('connect', () => {
-        client.subscribe(subtopic, function(err){
-            if(err){
-                serverLogger.error(err);
-            }
-        });
-
-        client.subscribe(pubtopic, function(err){
+        client.subscribe(subtopic, {qos: 2}, function(err){
             if(err){
                 serverLogger.error(err);
             }

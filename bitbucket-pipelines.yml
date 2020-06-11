@@ -16,16 +16,16 @@ pipelines:
     - step:
         name: Create artifact
         script:
-          - tar czfv easy-plant-tree.tgz src/ package-lock.json package.json .env
+          - tar czfv demo-dadn.tgz src/ package-lock.json package.json .env
         artifacts:
-          - easy-plant-tree.tgz
+          - demo-dadn.tgz
     - step:
-        name: Easy Plant Tree
+        name: demo-dadn
         deployment: production
         script:
           - pipe: atlassian/heroku-deploy:1.1.2
             variables:
               HEROKU_API_KEY: $HEROKU_API_KEY
               HEROKU_APP_NAME: $HEROKU_APP_NAME
-              ZIP_FILE: "easy-plant-tree.tgz"
+              ZIP_FILE: "demo-dadn.tgz"
 

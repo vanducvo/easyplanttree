@@ -1,11 +1,11 @@
 const settings = {
   clientBroker:{
-    id: 'App_2_1',
-    username: 'App_2_1',
-    password: 'App_2_1'
+    id: 'APP_1711096',
+    username: 'BKvm2',
+    password: 'Hcmut_CSE_2020'
   },
-  subTopic: 'T_3',
-  pubTopic: 'T_4',
+  subTopic: 'Topic/Mois',
+  pubTopic: 'Topic/Speaker',
   port: process.env.PORT || 5000,
   type: process.env.NODE_ENV || 'production',
   logFolder: './logs',

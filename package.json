@@ -1,5 +1,5 @@
 {
-  "name": "iotserver",
+  "name": "demo-dadn",
   "version": "1.0.0",
   "description": "server provide API for IoT devices and application",
   "main": "src/app.js",

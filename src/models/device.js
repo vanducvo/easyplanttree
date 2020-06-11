@@ -8,18 +8,7 @@ let SoilMoistureSchema = new Schema({
     },
     value: {
         type: [String],
-        required: function(){
-            return  (
-                        this.length == 1 &&
-                        this[0] === '0'
-                    ) 
-                    ||
-                    (
-                        this.length === 2 &&
-                        this[0] === '1' && 
-                        0 <= Number(this[1]) && Number(this[1]) <= 1023
-                    );
-        }
+        required: true
     },
     time: {
         type: Date,
@@ -29,35 +18,6 @@ let SoilMoistureSchema = new Schema({
 SoilMoistureSchema.index({device_id: 1});
 let SoilMoisture =  mongoose.model('SoilMoisture', SoilMoistureSchema);
 
-let GPSSchema  = new Schema({
-    device_id: {
-        required: true,
-        type: String
-    },
-    value: {
-        type: [String],
-        required: function(){
-            return  (
-                        this.length === 1 &&
-                        this[0] === '0'
-                    )
-                    ||
-                    (
-                        this.length === 3 &&
-                        this[0] === '1' &&
-                        0 <= Number(this[1]) && Number(this[1]) <= 360 &&
-                        0 <= Number(this[2]) && Number(this[2]) <= 360
-                    );
-        }
-    },
-    time: {
-        type: Date,
-        default: Date.now
-    }
-});
-GPSSchema.index({device_id: 1});
-let GPS =  mongoose.model('GPS', GPSSchema);
-
 let MotorSchema = new Schema({
     device_id: {
         required: true,
@@ -65,18 +25,7 @@ let MotorSchema = new Schema({
     },
     value: {
         type: [String],
-        required: function(){
-            return  (
-                        this.length == 1 &&
-                        this[0] === '0'
-                    )
-                    ||
-                    (
-                        this.length == 2 &&
-                        this[0] === '1' &&
-                        0 <= Number(this[1]) && Number(this[1]) <= 3
-                    );
-        }
+        required: true
     },
     time: {
         type: Date,
@@ -132,6 +81,5 @@ let Watering =  mongoose.model('Watering', WateringSchema);
 module.exports.Watering = Watering;
 
 module.exports.SoilMoisture = SoilMoisture;
-module.exports.GPS = GPS;
 module.exports.MotorSchema = Motor;
 module.exports.Device = Device;

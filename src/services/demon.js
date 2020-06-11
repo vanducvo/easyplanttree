@@ -1,4 +1,5 @@
 const serverLogger = require('../utils/logger').serverLogger(module);
+const {forceAPI} = require('../utils/utils');
 
 function createDBSaver(client, traceTopic, classifyCollection){
     client.on('message', (topic, message) => {
@@ -10,13 +11,15 @@ function createDBSaver(client, traceTopic, classifyCollection){
         
         try{
             data = JSON.parse(data);
+            data = forceAPI(data);
         } catch(err){
             serverLogger.error(err);
             return;
         }
-        
+
         let collection = classifyCollection(data);
         if(collection && collection.save){
+            
             collection.save();
         }
     });
@@ -38,6 +41,7 @@ function dashBoardUpdate(io, client, traceTopic, getDevices){
                 
                 try{
                     data = JSON.parse(data);
+                    data = forceAPI(data);
                 } catch(err){
                     serverLogger.error(err);
                     return;

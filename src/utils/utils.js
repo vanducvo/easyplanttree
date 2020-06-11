@@ -109,8 +109,6 @@ function classifyDevice(data){
   }
   
   switch(device){
-    case '4':
-      return new Device.GPS(data);
     case '7':
       return new Device.SoilMoisture(data);
     case '9':
@@ -136,8 +134,6 @@ function getTypeDevice(data){
   device = device[1];
 
   switch(device){
-    case '4':
-      return 'gps';
     case '7':
       return 'sensor'
     case '9':
@@ -173,8 +169,6 @@ function getTypeDevice(data){
   device = device[1];
 
   switch(device){
-    case '4':
-      return 'gps';
     case '7':
       return 'sensor'
     case '9':
@@ -182,6 +176,27 @@ function getTypeDevice(data){
   }
 
   return;
+}
+
+function forceAPI(data){
+  if(
+    !data.device_id || 
+    !data.values || 
+    !data.values[0] || 
+    !data.values[0].match(/^\d+$/)
+    ){
+    throw Error("Not Support Data Fromat" + JSON.stringify(data));
+  }
+
+  switch(data.device_id){
+    case 'Mois':
+      return  {
+        device_id: 'id7_1',
+        value: ["1", data.values[0]]
+      };
+    default:
+      throw Error("Not Support Data Fromat");
+  }
 }
 
 exports.createTextResepondJSONBeaufy = createTextResepondJSONBeaufy;
@@ -197,3 +212,4 @@ exports.jwtDecode = jwtDecode;
 exports.getSensorDevices = getSensorDevices;
 exports.sensorPattern = /^id7_(\d+)$/;
 exports.motorPattern = /^id9_(\d+)$/;
+exports.forceAPI = forceAPI;
