@@ -179,6 +179,7 @@ function getTypeDevice(data){
 }
 
 function forceAPI(data){
+  data = data[0];
   if(
     !data.device_id || 
     !data.values || 
