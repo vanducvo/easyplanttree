@@ -179,7 +179,7 @@
             </div>
             
             <form >
-                <div class="form-group pmd-textfield " method="POST" id="form-watering" >
+                <div class="form-group pmd-textfield " method="POST" action = "/controller/watering" id="form-watering" >
                   <label for="exampleFormControlSelect1">Chọn motor:</label>
                   <select class="form-control" id="exampleFormControlSelect1" style="margin-right: 25%; text-indent: 45%;">
                    
@@ -226,13 +226,9 @@
                                 <label class="control-label" for="regular1">Cường độ tưới:</label>
                             </div>
                             
-                            <select class="form-control" id="" style="text-indent: 45%;">
-                   
-                                <option value = "1" selected>Yếu</option>
-                                <option value = "2">Trung bình</option>
-                                <option value = "3">Mạnh</option>
-                                
-                              </select>
+                            <div>
+                                <input type="number" id = "intensity" class="form-control" value="2500" min="0" max ="5000" style="text-align: center;">
+                            </div>
                         </div>
                     </div>
                 </div>
