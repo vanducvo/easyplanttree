@@ -22,11 +22,21 @@
   border-bottom: #2c7a7b solid 1px;
   padding-bottom: 0.5rem;
 }
+
 .handmade-table-header .row .text-break:nth-child(3) {
   border-bottom: #2c7a7b solid 1px;
   padding-bottom: 0.5rem;
 }
 
+.handmade-table-header .row .text-break:nth-child(4) {
+  border-bottom: #2c7a7b solid 1px;
+  padding-bottom: 0.5rem;
+}
+
+.handmade-table-header .row .text-break:nth-child(5) {
+  border-bottom: #2c7a7b solid 1px;
+  padding-bottom: 0.5rem;
+}
 
 .handmade-table-content .row{
   padding: 1rem;
@@ -39,9 +49,15 @@
 .handmade-table-content .row .text-break:nth-child(1) {
   border-right: #2c7a7b solid 1px;
 }
+
 .handmade-table-content .row .text-break:nth-child(2) {
   border-right: #2c7a7b solid 1px;
 }
+
+.handmade-table-content .row .text-break:nth-child(3) {
+  border-right: #2c7a7b solid 1px;
+}
+
 .handmade-table-content  .hover :hover{
   background-color: #feebc8;
 }

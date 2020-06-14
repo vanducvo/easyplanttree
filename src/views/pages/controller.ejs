@@ -15,6 +15,12 @@
     <script src="/public/js/bootstrap/bootstrap-select.min.js"></script>
     <link rel="stylesheet" href="/public/css/bootstrap/bootstrap-select.min.css">
     <script src="/public/js/socket/socket.io.js"></script>
+    <style>
+        #future button {
+            padding-bottom: 0 !important;
+            padding-top: 0 !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -23,137 +29,65 @@
         <div class="row">
             <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
                 <div class="text-center">
+                    <h3>Lịch Tưới</h3>
+                </div>
+                <div class="handmade-table container-fluid">
+                    <div class="handmade-table-header">
+                        <div class="row row-cols-4" style="background-color: #00D97E ;">
+                            <div class="col-2 text-break">
+                                <b>Motor</b>
+                            </div>
+                            <div class="col-5 text-break"> <b>Thời gian tưới</b></div>
+                            <div class="col-2 text-break"><b>Tưới trong (phút)</b></div>
+                            <div class="col-2 text-break"><b>Cường độ (ml/phút)</b></div>
+                            <div class="col-1 text-break"></div>
+                        </div>
+                    </div>
+                    <div class="handmade-table-content" style="height: 240px;" id="future">
+                        <% for (let future of futures){ %>
+                            <div class="hover" id="future_<%= future._id %>">
+                                <div class="row row-cols-4">
+                                    <div class="col-2 text-break">
+                                        <b><%= future.data.device_id %></b>
+                                    </div>
+                                    <div class="col-5 text-break"><%= future.nextRunAt.toLocaleString() %></div>
+                                    <div class="col-2 text-break"><%= future.data.watering_time %></div>
+                                    <div class="col-2 text-break"><%= future.data.intensity %></div>
+                                    <div class="col-1"><button type="button" class="btn btn-danger">Xoá</button></div>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <div class="text-center">
                     <h3>Lịch sử tưới</h3>
                 </div>
 
                 <div class="handmade-table container-fluid">
                     <div class="handmade-table-header">
-                        <div class="row row-cols-3" style="background-color: #00D97E;">
+                        <div class="row row-cols-4" style="background-color: #00D97E;">
                             <div class="col-3 text-break">
-                                <b>Thiết bị</b>
+                                <b>Motor</b>
                             </div>
-                            <div class="col-5 text-break"> <b>Lịch tưới</b></div>
-                            <div class="col-4 text-break"><b>Thời gian tưới (phút)</b></div>
-
+                            <div class="col-5 text-break"> <b>Thời gian tưới</b></div>
+                            <div class="col-2 text-break"><b>Tưới trong (phút)</b></div>
+                            <div class="col-2 text-break"><b>Cường độ (ml/phút)</b></div>
                         </div>
                     </div>
-                    <div class="handmade-table-content" style="height: 240px;">
-                        <!-- <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-3 text-break">id9_1</div>
-                            <div class="col-6 text-break">"2020-05-22T05:58:21.935+00:00".toLocaleDateString()</div>
-                            <div class="col-3 text-break">7</div>                     
-                        </div>
-                    </div> -->
-
-                        <!-- <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-3 text-break">id9_1</div>
-                            <div class="col-6 text-break">2020-05-22T05:58:21.935+00:00</div>
-                            <div class="col-3 text-break">7</div>                     
-                        </div>
-                    </div>
-                    <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-3 text-break">id9_1</div>
-                            <div class="col-6 text-break">2020-05-22T05:58:21.935+00:00</div>
-                            <div class="col-3 text-break">7</div>                     
-                        </div>
-                    </div>
-                    <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-3 text-break">id9_1</div>
-                            <div class="col-6 text-break">2020-05-22T05:58:21.935+00:00</div>
-                            <div class="col-3 text-break">7</div>                     
-                        </div>
-                    </div>
-                    <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-3 text-break">id9_1</div>
-                            <div class="col-6 text-break">2020-05-22T05:58:21.935+00:00</div>
-                            <div class="col-3 text-break">7</div>                     
-                        </div>
-                    </div>
-                    <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-3 text-break">id9_1</div>
-                            <div class="col-6 text-break">2020-05-22T05:58:21.935+00:00</div>
-                            <div class="col-3 text-break">7</div>                     
-                        </div>
-                    </div>
-                    <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-3 text-break">id9_1</div>
-                            <div class="col-6 text-break">2020-05-22T05:58:21.935+00:00</div>
-                            <div class="col-3 text-break">7</div>                     
-                        </div>
-                    </div>
-                    <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-3 text-break">id9_1</div>
-                            <div class="col-6 text-break">2020-05-22T05:58:21.935+00:00</div>
-                            <div class="col-3 text-break">7</div>                     
-                        </div>
-                    </div> -->
-                    </div>
-                </div>
-                <div class="text-center">
-                    <h3>Danh sách Motor</h3>
-                </div>
-                <div class="handmade-table container-fluid">
-                    <div class="handmade-table-header">
-                        <div class="row row-cols-3" style="background-color: #00D97E ;">
-                            <div class="col-2 text-break">
-                                <b>#</b>
+                    <div class="handmade-table-content" style="height: 240px;" id="history">
+                        <% for (let history of histories){ %>
+                            <div class="hover" id="history_<%= history._id %>">
+                                <div class="row row-cols-4">
+                                    <div class="col-3 text-break">
+                                        <b><%= history.data.device_id %></b>
+                                    </div>
+                                    <div class="col-5 text-break"><%= history.lastRunAt.toLocaleString() %></div>
+                                    <div class="col-2 text-break"><%= history.data.watering_time %></div>
+                                    <div class="col-2 text-break"><%= history.data.intensity %></div>
+                                </div>
                             </div>
-                            <div class="col-4 text-break">
-                                <b>Thiết bị</b>
-                            </div>
-                            <div class="col-6 text-break">
-                                <b>Trạng thái</b>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="handmade-table-content" style="height: 240px;">
-
-
-                        <div class="hover">
-                            <div class="row row-cols-3">
-                                <div class="col-2 text-break">1</div>
-                                <div class="col-4 text-break">id9_1</div>
-                                <div class="col-6 text-break">Yếu</div>
-                            </div>
-                        </div>
-                        <div class="hover">
-                            <div class="row row-cols-3">
-                                <div class="col-2 text-break">2</div>
-                                <div class="col-4 text-break">id9_2</div>
-                                <div class="col-6 text-break">Yếu</div>
-                            </div>
-                        </div>
-                        <div class="hover">
-                            <div class="row row-cols-3">
-                                <div class="col-2 text-break">3</div>
-                                <div class="col-4 text-break">id9_3</div>
-                                <div class="col-6 text-break">Trung bình</div>
-                            </div>
-                        </div>
-                        <div class="hover">
-                            <div class="row row-cols-3">
-                                <div class="col-2 text-break">4</div>
-                                <div class="col-4 text-break">id9_4</div>
-                                <div class="col-6 text-break">Mạnh</div>
-                            </div>
-                        </div>
-                        <div class="hover">
-                            <div class="row row-cols-3">
-                                <div class="col-2 text-break">5</div>
-                                <div class="col-4 text-break">id9_5</div>
-                                <div class="col-6 text-break">Mạnh</div>
-                            </div>
-                        </div>
-
+                        <% } %>
                     </div>
                 </div>
 
@@ -240,7 +174,7 @@
 
     </div>
     <script>
-        $("#form-watering").on('submit', function(e){
+        $("#form-watering").on('submit', function (e) {
             e.preventDefault();
             $("#btn_watering").prop('disabled', true);
 
@@ -269,18 +203,65 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data);
+                    $("#future").prepend(`
+                        <div class="hover" id="future_${data._id}">
+                            <div class="row row-cols-4">
+                                <div class="col-3 text-break">
+                                    <b>${data.data.device_id}</b>
+                                </div>
+                                <div class="col-5 text-break">${new Date(data.nextRunAt).toLocaleString()}</div>
+                                <div class="col-2 text-break">${data.data.watering_time}</div>
+                                <div class="col-2 text-break">${data.data.intensity}</div>
+                            </div>
+                        </div>
+                    `);
+
                     setTimeout(() => {
                         $("#btn_watering").prop('disabled', false);
-                    }, 5000);
+                    }, 1000);
                 });
         });
 
         const chat = io.connect('/controller');
         chat.on('watering', data => {
-            console.log("Socket");
-            console.log(data);
+            $('#history').prepend(`
+            <div class="hover" id="history_${data._id}">
+                <div class="row row-cols-4">
+                    <div class="col-3 text-break">
+                        <b>${data.data.device_id}</b>
+                    </div>
+                    <div class="col-5 text-break">${new Date(data.lastRunAt).toLocaleString()}</div>
+                    <div class="col-2 text-break">${data.data.watering_time}</div>
+                    <div class="col-2 text-break">${data.data.intensity}</div>
+                </div>
+            </div>
+            `);
+            $(`#future_${data._id}`).remove();
         });
+
+        $("#future").on('click', function(e){
+            if(e.target.type !== "button"){
+                return;
+            }
+
+            let id = e.target.closest('.hover').id;
+
+            let token = $('#_csrf').attr('content');
+            fetch("controller/", {
+                method: "DELETE",
+                credentials: "same-origin",
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                    'CSRF-Token': token
+                },
+                body: JSON.stringify({id: id.match(/^future_(.*)$/)[1]})
+            })
+                .then(res => res.json())
+                .then(doc => {
+                    $(`#future_${doc.id}`).remove();
+                });
+
+        })
     </script>
 </body>
 

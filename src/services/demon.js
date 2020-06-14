@@ -64,7 +64,7 @@ function controllerUpdate(io, brige, getUser){
         brige.on('watering', data => {
             if(data.data.user === user.id){
                 socket.emit('watering', {
-                    _id: data.id,
+                    _id: data._id,
                     lastRunAt: data.lastRunAt,
                     data: data.data
                 });
