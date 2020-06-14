@@ -57,5 +57,22 @@ function dashBoardUpdate(io, client, traceTopic, getDevices){
     });
 }
 
+function controllerUpdate(io, brige, getUser){
+    io.of('/controller').on('connection', (socket) => {
+        let jwt = socket.request.headers.cookie.match(/jwt=([^;]*)/)[1];
+        let user = getUser(jwt);
+        brige.on('watering', data => {
+            if(data.data.user === user.id){
+                socket.emit('watering', {
+                    _id: data.id,
+                    lastRunAt: data.lastRunAt,
+                    data: data.data
+                });
+            }
+        });
+    });
+}
+
 exports.createDBSaver = createDBSaver;
 exports.dashBoardUpdate = dashBoardUpdate;
+exports.controllerUpdate = controllerUpdate;

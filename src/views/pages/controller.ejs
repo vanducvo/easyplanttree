@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,47 +11,34 @@
     <%- include('../partials/require') %>
     <link rel="stylesheet" href="/public/css/map.css">
     <link rel="stylesheet" href="/public/css/table.css">
-    
-   
     <script type="text/javascript" language="javascript" src="/public/js/moment-with-locales.js"></script>
-
-   
-
-   
+    <script src="/public/js/bootstrap/bootstrap-select.min.js"></script>
+    <link rel="stylesheet" href="/public/css/bootstrap/bootstrap-select.min.css">
+    <script src="/public/js/socket/socket.io.js"></script>
 </head>
+
 <body>
-  <%- include('../partials/nav', {page: 'controller', user: user}) %>
-  <div class="container-fluid" style="margin-top: 1%">
-    <div class="row">
-        <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8" >
-            <div class="text-center">
-                <h3>Lịch sử tưới</h3>
-            </div>
-
-            <div class="handmade-table container-fluid">
-                <div class="handmade-table-header">
-                    <div class="row row-cols-3" style="background-color: #00D97E;">
-                        <div class="col-3 text-break">
-                            <b>Thiết bị</b>
-                         </div>
-                        <div class="col-5 text-break"> <b>Lịch tưới</b></div>
-                        <div class="col-4 text-break"><b>Thời gian tưới (phút)</b></div>
-    
-                    </div>
+    <%- include('../partials/nav', {page: 'controller', user: user}) %>
+    <div class="container-fluid" style="margin-top: 1%">
+        <div class="row">
+            <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
+                <div class="text-center">
+                    <h3>Lịch sử tưới</h3>
                 </div>
-                <div class="handmade-table-content" style="height: 240px;">
 
-                     <% for (let row of wh){ %>
-                        <div class="hover">
-                            <div class="row row-cols-3">
-                                <div class="col-3 text-break"><%= row.device_id %></div>
-                                <div class="col-6 text-break"><%= row.time.toLocaleString() %></div>
-                                <div class="col-3 text-break"><%= row.value[2] %></div>                     
+                <div class="handmade-table container-fluid">
+                    <div class="handmade-table-header">
+                        <div class="row row-cols-3" style="background-color: #00D97E;">
+                            <div class="col-3 text-break">
+                                <b>Thiết bị</b>
                             </div>
+                            <div class="col-5 text-break"> <b>Lịch tưới</b></div>
+                            <div class="col-4 text-break"><b>Thời gian tưới (phút)</b></div>
+
                         </div>
-                        <% } %>
-                  
-                    <!-- <div class="hover">
+                    </div>
+                    <div class="handmade-table-content" style="height: 240px;">
+                        <!-- <div class="hover">
                         <div class="row row-cols-3">
                             <div class="col-3 text-break">id9_1</div>
                             <div class="col-6 text-break">"2020-05-22T05:58:21.935+00:00".toLocaleDateString()</div>
@@ -58,7 +46,7 @@
                         </div>
                     </div> -->
 
-                    <!-- <div class="hover">
+                        <!-- <div class="hover">
                         <div class="row row-cols-3">
                             <div class="col-3 text-break">id9_1</div>
                             <div class="col-6 text-break">2020-05-22T05:58:21.935+00:00</div>
@@ -107,251 +95,193 @@
                             <div class="col-3 text-break">7</div>                     
                         </div>
                     </div> -->
-                </div>
-            </div>   
-            <div class="text-center">
-                <h3>Danh sách Motor</h3>
-            </div>
-            <div class="handmade-table container-fluid">
-                <div class="handmade-table-header">
-                    <div class="row row-cols-3" style="background-color: #00D97E ;">
-                        <div class="col-2 text-break">
-                            <b>#</b>    
-                        </div>
-                        <div class="col-4 text-break">
-                            <b>Thiết bị</b>
-                        </div>
-                        <div class="col-6 text-break">
-                            <b>Trạng thái</b>
-                        </div>
-    
                     </div>
                 </div>
-                <div class="handmade-table-content" style="height: 240px;">
-                    
+                <div class="text-center">
+                    <h3>Danh sách Motor</h3>
+                </div>
+                <div class="handmade-table container-fluid">
+                    <div class="handmade-table-header">
+                        <div class="row row-cols-3" style="background-color: #00D97E ;">
+                            <div class="col-2 text-break">
+                                <b>#</b>
+                            </div>
+                            <div class="col-4 text-break">
+                                <b>Thiết bị</b>
+                            </div>
+                            <div class="col-6 text-break">
+                                <b>Trạng thái</b>
+                            </div>
 
-                    <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-2 text-break">1</div>
-                            <div class="col-4 text-break">id9_1</div>
-                            <div class="col-6 text-break">Yếu</div>          
                         </div>
                     </div>
-                    <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-2 text-break">2</div>
-                            <div class="col-4 text-break">id9_2</div>
-                            <div class="col-6 text-break">Yếu</div>          
-                        </div>
-                    </div>
-                   <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-2 text-break">3</div>
-                            <div class="col-4 text-break">id9_3</div>
-                            <div class="col-6 text-break">Trung bình</div>          
-                        </div>
-                   </div>
-                   <div class="hover">
-                    <div class="row row-cols-3">
-                        <div class="col-2 text-break">4</div>
-                        <div class="col-4 text-break">id9_4</div>
-                        <div class="col-6 text-break">Mạnh</div>          
-                    </div>
-                   </div>
-                    <div class="hover">
-                        <div class="row row-cols-3">
-                            <div class="col-2 text-break">5</div>
-                            <div class="col-4 text-break">id9_5</div>
-                            <div class="col-6 text-break">Mạnh</div>          
-                        </div>
-                </div>
-                   
-            </div>
-        </div> 
-        
-        
-        
-        
-        </div>
-        <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4" >
-            <div class="text-center">
-                <h3>Tưới nước</h3>
-            </div>
-            
-            <form >
-                <div class="form-group pmd-textfield " method="POST" action = "/controller/watering" id="form-watering" >
-                  <label for="exampleFormControlSelect1">Chọn motor:</label>
-                  <select class="form-control" id="exampleFormControlSelect1" style="margin-right: 25%; text-indent: 45%;">
-                   
-                    <option selected >Motor 1</option>
-                    <option>Motor 2</option>
-                    <option>Motor 3</option>
-                    <option>Motor 4</option>
-                    <option>Motor 5</option>
-                  </select>
-                </div>
-                
-                <div class="row">
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6" >
-                        <div class="form-group">
-                            <label class="control-label" for="regular1">Select Date</label>
-                            <input type="date" id = "datepicker" class="form-control" style="text-align: center;" >    
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6" >
-                        <div class="form-group">
-                            <label class="control-label" for="regular1">Select Time</label>
-                            <input type="time" class="form-control" id = "timepicker" style="text-align: center;" >    
-                        </div>
-                    </div>
-                </div>
-                
+                    <div class="handmade-table-content" style="height: 240px;">
 
-                <div class="form-group">
+
+                        <div class="hover">
+                            <div class="row row-cols-3">
+                                <div class="col-2 text-break">1</div>
+                                <div class="col-4 text-break">id9_1</div>
+                                <div class="col-6 text-break">Yếu</div>
+                            </div>
+                        </div>
+                        <div class="hover">
+                            <div class="row row-cols-3">
+                                <div class="col-2 text-break">2</div>
+                                <div class="col-4 text-break">id9_2</div>
+                                <div class="col-6 text-break">Yếu</div>
+                            </div>
+                        </div>
+                        <div class="hover">
+                            <div class="row row-cols-3">
+                                <div class="col-2 text-break">3</div>
+                                <div class="col-4 text-break">id9_3</div>
+                                <div class="col-6 text-break">Trung bình</div>
+                            </div>
+                        </div>
+                        <div class="hover">
+                            <div class="row row-cols-3">
+                                <div class="col-2 text-break">4</div>
+                                <div class="col-4 text-break">id9_4</div>
+                                <div class="col-6 text-break">Mạnh</div>
+                            </div>
+                        </div>
+                        <div class="hover">
+                            <div class="row row-cols-3">
+                                <div class="col-2 text-break">5</div>
+                                <div class="col-4 text-break">id9_5</div>
+                                <div class="col-6 text-break">Mạnh</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                <div class="text-center">
+                    <h3>Tưới nước</h3>
+                </div>
+
+                <form id="form-watering">
+                    <div class="form-group pmd-textfield">
+                        <label for="device">Chọn motor:</label>
+                        <select class="selectpicker" id="device" style="margin-right: 25%; text-indent: 45%;">
+                            <% for (let motor of motors) { %>
+                            <option value="<%= motor.device_id %>"><%= motor.device_id %></option>
+                            <% } %>
+                        </select>
+                    </div>
+
                     <div class="row">
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6" >
-                        <div class="form-group">
-                            <div style="text-align:center;">
-                                <label class="control-label" for="regular1">Thời lượng tưới (phút):</label>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="form-group">
+                                <label class="control-label" for="regular1">Chọn ngày:</label>
+                                <input type="date" id="datepicker" class="form-control" style="text-align: center;"
+                                    required>
                             </div>
-                            <div>
-                                <input type="number" id = "time_w" class="form-control" value="5" min="0" style="text-align: center;">
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="form-group">
+                                <label class="control-label" for="regular1">Chọn thời gian:</label>
+                                <input type="time" class="form-control" id="timepicker" style="text-align: center;"
+                                    required>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6" >
-                        <div class="form-group">
-                            
-                            <div >
-                                <label class="control-label" for="regular1">Cường độ tưới:</label>
+
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                <div class="form-group">
+                                    <div style="text-align:center;">
+                                        <label class="control-label" for="regular1">Thời lượng tưới (phút):</label>
+                                    </div>
+                                    <div>
+                                        <input type="number" id="time_w" class="form-control" value="5" min="0"
+                                            style="text-align: center;" required>
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <div>
-                                <input type="number" id = "intensity" class="form-control" value="2500" min="0" max ="5000" style="text-align: center;">
+                            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                <div class="form-group">
+
+                                    <div>
+                                        <label class="control-label" for="regular1">Cường độ tưới:</label>
+                                    </div>
+
+                                    <div>
+                                        <input type="number" id="intensity" class="form-control" value="2500" min="0"
+                                            max="5000" style="text-align: center;" required>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
 
-                    
-                    
-                </div>
-               
-                <div class="form-group">
-                    <div style="text-align:center;" >
-                        <input type="submit" class="btn btn-primary" id="btn_watering" value="Bơm" style="width:20%">
+
+
                     </div>
-                </div>
-                
-            </form>
+
+                    <div class="form-group">
+                        <div style="text-align:center;">
+                            <input type="submit" class="btn btn-primary" id="btn_watering" value="Bơm"
+                                style="width:20%">
+                        </div>
+                    </div>
+
+                </form>
+            </div>
         </div>
+
     </div>
-    
-  </div>
-  <!-- <script>
-    document.getElementById('btn_watering').onclick = function (event) {
-        event.preventDefault();
-        let token = document.getElementById('_csrf').getAttribute('content');
-        //let email = document.getElementById('email').value;
-        let device= document.getElementById('exampleFormControlSelect1').value;
-        let datepicker = document.getElementById('datepicker').value;
-        let timepicker = document.getElementById('timepicker').value;
-        let time_w = document.getElementById('time_w').value;
+    <script>
+        $("#form-watering").on('submit', function(e){
+            e.preventDefault();
+            $("#btn_watering").prop('disabled', true);
 
-        fetch('/controller/watering', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'CSRF-Token': token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: email
+            let device = $("#device").val();
+            let date = $("#datepicker").val();
+            let time = $("#timepicker").val();
+            let watering_time = $("#time_w").val();
+            let intensity = $("#intensity").val();
+
+            let data = {
+                device: device,
+                when: new Date(date + ' ' + time),
+                watering_time: watering_time,
+                intensity: intensity
+            };
+
+            let token = $('#_csrf').attr('content');
+            fetch("controller/", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                    'CSRF-Token': token
+                },
+                body: JSON.stringify(data)
             })
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.status) {
-                    let next = document.getElementById('next');
-                    next.remove();
-                    let email = document.getElementById('email');
-                    email.setAttribute('disabled' , true);
-                    email.insertAdjacentHTML('afterend', `
-                    <input type="text" id="name" name="name" class="form-control" placeholder="Full Name" required>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
-                    `);
-
-                    let submit = document.querySelector('.check-mail .container-fuild');
-                    submit.innerHTML =  `
-                    <button type="submit" id="submit" class="btn btn-success col-10">Create Account</button>
-                    `;
-
-                    let form = document.getElementById("form-create");
-                    form.onsubmit = signup;
-                } else {
-                    let notify = document.createElement('div');
-                    notify.classList.add('alert', 'alert-danger');
-                    notify.setAttribute('role' , 'alert');
-                    notify.textContent = 'Email Exists';
-                    let parent =  document.querySelector('.form-name');
-                    parent.after(notify);
-                    setTimeout(()=> notify.remove(), 5000);
-                }
-            })
-            .catch(function (error) {
-                console.log(error.name);
-            });
-    }
-
-    function signup(event){
-        event.preventDefault();
-        let token = document.getElementById('_csrf').getAttribute('content');
-        //let email = document.getElementById('email').value;
-        //let name = document.getElementById('name').value;
-        //let password = document.getElementById('password').value;
-        let device= document.getElementById('exampleFormControlSelect1').value;
-
-
-
-
-        fetch('/account/signup', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'CSRF-Token': token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: email,
-                name: name,
-                password: password
-            })
-        })
-        .then((res) => {
-            if (res.status == 200){
-                let mainpage = document.querySelector('.check-mail');
-                mainpage.innerHTML = `
-                <div class="alert alert-success" role="alert">
-                    Check Mail to Verify Account!
-                </div>
-                `;
-            } else {
-                throw new Error(res.statusText);
-            }
-
-        })
-        .catch((err) => {
-            let mainpage = document.querySelector('.check-mail');
-                mainpage.innerHTML = `
-                <div class="alert alert-danger" role="alert">
-                    Fails! Reload and try again!
-                </div>
-            `;
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    setTimeout(() => {
+                        $("#btn_watering").prop('disabled', false);
+                    }, 5000);
+                });
         });
-    }
-</script> -->
 
-
+        const chat = io.connect('/controller');
+        chat.on('watering', data => {
+            console.log("Socket");
+            console.log(data);
+        });
+    </script>
 </body>
+
 </html>

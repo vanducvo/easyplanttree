@@ -8,7 +8,7 @@ const Device = require('../models/device');
  * @param {string} email
  * @returns {boolean} valid mail?
  */
-function checkEmail(email){
+function checkEmail(email) {
   return emailPattern.test(email);
 }
 
@@ -26,12 +26,12 @@ function createTextResepondJSONBeaufy(json) {
  * @param {string} data
  * @returns {string} data have crypto
  */
-function promiseScrypt (data){
+function promiseScrypt(data) {
   return new Promise((resolve, reject) => {
-    crypto.scrypt(data, process.env.CRYTO_SECRET_KEY, 64, function(err, key){
-      if(err)
+    crypto.scrypt(data, process.env.CRYTO_SECRET_KEY, 64, function (err, key) {
+      if (err)
         reject(err);
-      
+
       resolve(key.toString('hex'));
     });
   });
@@ -42,7 +42,7 @@ function promiseScrypt (data){
  * @param {string} origindata 
  * @returns {boolean} valid data ? 
  */
-function promiseVerifyScrypt(origindata, data){
+function promiseVerifyScrypt(origindata, data) {
   return promiseScrypt(origindata).then(key => {
     return compare(data, key);
   });
@@ -53,7 +53,7 @@ function promiseVerifyScrypt(origindata, data){
  * @param {string} data
  * @return {string} tooken have sign 
  */
-function jwtCreate(data){
+function jwtCreate(data) {
   return jwt.sign(data, process.env.JWT_SECRET_KEY);
 }
 
@@ -62,7 +62,7 @@ function jwtCreate(data){
  * @param {string} data
  * @return {string} tooken have sign 
  */
-function jwtCreateWithExpire(data, exprire){
+function jwtCreateWithExpire(data, exprire) {
   return jwt.sign(data, process.env.JWT_SECRET_KEY, {
     expiresIn: exprire
   });
@@ -73,42 +73,42 @@ function jwtCreateWithExpire(data, exprire){
  * @param {string} data 
  * @returns {boolean} valid data ? 
  */
-function jwtVerify(data){
+function jwtVerify(data) {
   return new Promise((resolve, reject) => {
-    jwt.verify(data, process.env.JWT_SECRET_KEY, function(err, decoded){
-      if(err)
+    jwt.verify(data, process.env.JWT_SECRET_KEY, function (err, decoded) {
+      if (err)
         reject(err);
-      
+
       resolve(decoded);
     });
   })
 }
 
-function jwtDecode(token){
+function jwtDecode(token) {
   return jwt.decode(token);
 }
 
-function classifyDevice(data){
+function classifyDevice(data) {
   if (
-    !data.device_id || 
-    typeof(data.device_id) !== 'string'||
+    !data.device_id ||
+    typeof (data.device_id) !== 'string' ||
     !data.value
-    ){
+  ) {
     return;
   }
   let device = data.device_id.match(/^id(\d+)/);
 
-  if(!device || device.length < 1){
+  if (!device || device.length < 1) {
     return;
   }
 
   device = device[1];
 
-  if(data.value.length && data.value[0] === '0'){
+  if (data.value.length && data.value[0] === '0') {
     data.value = ['0'];
   }
-  
-  switch(device){
+
+  switch (device) {
     case '7':
       return new Device.SoilMoisture(data);
     case '9':
@@ -118,22 +118,22 @@ function classifyDevice(data){
   return;
 }
 
-function getTypeDevice(data){
+function getTypeDevice(data) {
   if (
-    !data.device_id || 
-    typeof(data.device_id) !== 'string'
-    ){
+    !data.device_id ||
+    typeof (data.device_id) !== 'string'
+  ) {
     return;
   }
   let device = data.device_id.match(/^id(\d+)/);
 
-  if(!device || device.length < 1){
+  if (!device || device.length < 1) {
     return;
   }
 
   device = device[1];
 
-  switch(device){
+  switch (device) {
     case '7':
       return 'sensor'
     case '9':
@@ -143,32 +143,32 @@ function getTypeDevice(data){
   return;
 }
 
-function getSensorDevices(token){
+function getSensorDevices(token) {
   let user = jwtDecode(token);
   return Device.Device.find({
-    user: user.id, 
-    device_id:{
+    user: user.id,
+    device_id: {
       '$regex': /^id7_\d+$/
     }
-  }).select({device_id: 1});
+  }).select({ device_id: 1 });
 }
 
-function getTypeDevice(data){
+function getTypeDevice(data) {
   if (
-    !data.device_id || 
-    typeof(data.device_id) !== 'string'
-    ){
+    !data.device_id ||
+    typeof (data.device_id) !== 'string'
+  ) {
     return;
   }
   let device = data.device_id.match(/^id(\d+)/);
 
-  if(!device || device.length < 1){
+  if (!device || device.length < 1) {
     return;
   }
 
   device = device[1];
 
-  switch(device){
+  switch (device) {
     case '7':
       return 'sensor'
     case '9':
@@ -178,25 +178,46 @@ function getTypeDevice(data){
   return;
 }
 
-function forceAPI(data){
+function forceAPI(data) {
   data = data[0];
-  if(
-    !data.device_id || 
-    !data.values || 
-    !data.values[0] || 
+  if (
+    !data.device_id ||
+    !data.values ||
+    !data.values[0] ||
     !data.values[0].match(/^\d+$/)
-    ){
-    throw Error("Not Support Data Fromat" + JSON.stringify(data));
+  ) {
+    throw new Error("Not Support Data Fromat" + JSON.stringify(data));
   }
 
-  switch(data.device_id){
+  switch (data.device_id) {
     case 'Mois':
-      return  {
+      return {
         device_id: 'id7_1',
         value: ["1", data.values[0]]
       };
     default:
-      throw Error("Not Support Data Fromat");
+      throw new Error("Not Support Data Fromat");
+  }
+}
+
+function createPayloadMotorToSpeaker(payload) {
+  if(
+    !payload ||
+    !payload.intensity ||
+    !payload.intensity.match(/^\d+$/) ||
+    !(Number(payload.intensity) <= 2500)
+    ){
+      throw new Error("Not Support Data Format");
+    }
+
+  switch (payload.device_id) {
+    case 'id9_1':
+      return JSON.stringify([{
+        device_id: 'Speaker',
+        values: [String(Number(payload.intensity > 0)), payload.intensity]
+      }]);
+    default:
+      throw new Error("Not Support Data Format");
   }
 }
 
@@ -214,3 +235,4 @@ exports.getSensorDevices = getSensorDevices;
 exports.sensorPattern = /^id7_(\d+)$/;
 exports.motorPattern = /^id9_(\d+)$/;
 exports.forceAPI = forceAPI;
+exports.createPayloadMotorToSpeaker = createPayloadMotorToSpeaker;
