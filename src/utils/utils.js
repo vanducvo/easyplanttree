@@ -205,7 +205,7 @@ function createPayloadMotorToSpeaker(payload) {
     !payload ||
     !payload.intensity ||
     !payload.intensity.match(/^\d+$/) ||
-    !(Number(payload.intensity) <= 2500)
+    !(Number(payload.intensity) <= 5000)
     ){
       throw new Error("Not Support Data Format");
     }

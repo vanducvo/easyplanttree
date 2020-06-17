@@ -1,6 +1,6 @@
 const settings = {
   clientBroker:{
-    id: 'APP_CONTROLLER_BRANCH',
+    id: 'DEMO_28072020',
     username: 'BKvm2',
     password: 'Hcmut_CSE_2020'
   },
