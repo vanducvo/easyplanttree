@@ -7,8 +7,6 @@ const databaseLogger = require('../utils/logger').databaseLogger(module);
 const Agenda = require('../services/agenda');
 
 router.get('/', function (req, res) {
-  Agenda.getHistory().then(docs => docs.map(doc => doc.attrs)).then(console.log);
-  Agenda.getFuture().then(docs => docs.map(doc => doc.attrs)).then(console.log);
   let user = req.user.id;
   let datas = Promise.all([
     Agenda.getHistory(user),

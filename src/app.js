@@ -139,7 +139,8 @@ const client =  connect(
                     settings.clientBroker, settings.subTopic, settings.pubTopic,
                     process.env.MQTT_BROKER
                     );
-// createDBSaver(client, settings.subTopic, utils.classifyDevice);
+createDBSaver(client, settings.subTopic, utils.classifyDevice);
+client.setMaxListeners(Infinity);
 
 // Socket
 io.use(authorizationSocket);
@@ -149,11 +150,15 @@ dashBoardUpdate(io, client, settings.subTopic, utils.getSensorDevices);
 // Agenda
 const Emitter = require('events');
 const brige = new Emitter();
+brige.setMaxListeners(Infinity);
 
 controllerUpdate(io, brige, utils.jwtDecode);
 Agenda.initAgenda(process.env.DATABASE_URL);
-Agenda.addSchedule('watering', watering(brige, client, settings.pubTopic, 
+Agenda.addSchedule('watering', watering.watering(brige, client, settings.pubTopic, 
                                           utils.createPayloadMotorToSpeaker));
+
+Agenda.addSchedule('stop_watering', watering.stopWatering(client, settings.pubTopic, 
+                                            utils.createPayloadMotorToSpeaker));
 
 // Express App Listen Port
 server.listen(settings.port);

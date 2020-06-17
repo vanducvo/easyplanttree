@@ -100,8 +100,6 @@
                       yAxes: [{
                         ticks: {
                           minx: 0,
-                          max: 100,
-                          stepSize: 20,
                           callback: function (value, index, values) {
                             return value + '%';
                           }
@@ -175,7 +173,9 @@
               }
             };
 
-            drawSoilMoistureChart(document.getElementById("picker").value, chart());
+            drawSoilMoistureChart(document.getElementById("picker").value, chart()).then(() => {
+              IO();
+            });
 
             document.getElementById("picker").addEventListener("change", function (e) {
               drawSoilMoistureChart(e.target.value, chart());
@@ -230,8 +230,6 @@
                         yAxes: [{
                           ticks: {
                             min: 0,
-                            max: 100,
-                            stepSize: 20,
                             callback: function (value, index, values) {
                               return value + '%';
                             }
@@ -264,7 +262,7 @@
                   )
                   .then(sorted => {
                     sorted.forEach(value => {
-                      chart.data.labels.push(value._id.replace(/^id7_/,'Sensor '));
+                      chart.data.labels.push(value._id.replace(/^id7_/, 'Sensor '));
                       chart.data.datasets[0].data.push(Math.round(value.average * 10000 / 1023) / 100);
                       chart.update();
                     });
@@ -331,22 +329,25 @@
     </div>
   </div>
   <script>
+    function IO() {
 
-    // Socket
-    const chat = io.connect('/dashboard');
 
-    chat.on('new', message => {
-      let sensor = document.getElementById("picker").value;
-      if (sensor === message.device_id && message.value[0] === "1") {
-        soilMoisture.data.labels.push(new Date());
-        if(soilMoisture.data.labels.length > 60){
-          soilMoisture.data.labels.shift();
-          soilMoisture.data.datasets[0].data.shift();
+      // Socket
+      const chat = io.connect('/dashboard');
+
+      chat.on('new', message => {
+        let sensor = document.getElementById("picker").value;
+        if (sensor === message.device_id && message.value[0] === "1") {
+          soilMoisture.data.labels.push(new Date());
+          if (soilMoisture.data.labels.length > 60) {
+            soilMoisture.data.labels.shift();
+            soilMoisture.data.datasets[0].data.shift();
+          }
+          soilMoisture.data.datasets[0].data.push(Math.round(Number(message.value[1]) * 10000 / 1023) / 100);
+          soilMoisture.update();
         }
-        soilMoisture.data.datasets[0].data.push(Math.round(Number(message.value[1]) * 10000 / 1023) / 100);
-        soilMoisture.update();
-      }
-    })
+      })
+    }
   </script>
 </body>
 
