@@ -32,7 +32,8 @@ function dashBoardUpdate(io, client, traceTopic, getDevices){
             let devices = docs.reduce((mapper, doc) => 
                 mapper.set(doc.device_id, true), new Map()
             );
-            client.on('message', (topic, message) => {
+
+            let sender = (topic, message) => {
                 if(topic !== traceTopic){
                     return;
                 }
@@ -51,17 +52,26 @@ function dashBoardUpdate(io, client, traceTopic, getDevices){
                     return;
                 }
                 socket.emit('new', data);
+            };
+
+            client.on('message', sender);
+
+            socket.on('disconnect' , (socket) => {
+                client.off('message', sender);
             });
+
         });
 
     });
 }
 
 function controllerUpdate(io, brige, getUser){
+
     io.of('/controller').on('connection', (socket) => {
         let jwt = socket.request.headers.cookie.match(/jwt=([^;]*)/)[1];
         let user = getUser(jwt);
-        brige.on('watering', data => {
+
+        let sender = data => {
             if(data.data.user === user.id){
                 socket.emit('watering', {
                     _id: data._id,
@@ -69,6 +79,12 @@ function controllerUpdate(io, brige, getUser){
                     data: data.data
                 });
             }
+        };
+
+        brige.on('watering', sender);
+
+        socket.on('disconnect', (socket) => {
+            brige.off('watering', sender);
         });
     });
 }
