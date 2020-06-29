@@ -35,6 +35,7 @@ const api = require('./routes/api');
 const controller = require('./routes/controller');
 const dashboard = require('./routes/dashboard');
 const admin = require('./routes/admin/admin');
+const user = require('./routes/user');
 
 // Middleware Implement
 const authorization = require('./services/authorization');
@@ -118,6 +119,9 @@ app.get('/map', function(req, res) {
 // Controlller
 app.use('/controller', controller);
 
+// User
+app.use('/user', user);
+
 app.use('/api', api);
 
 // Handle error
@@ -149,6 +153,7 @@ dashBoardUpdate(io, client, settings.subTopic, utils.getSensorDevices);
 
 // Agenda
 const Emitter = require('events');
+const { use } = require('chai');
 const brige = new Emitter();
 brige.setMaxListeners(Infinity);
 

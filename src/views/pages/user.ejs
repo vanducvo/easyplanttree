@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Plant Tree</title>
+    <meta content="<%= _csrf %>" id="_csrf" />
+    <link rel="manifest" href="public/manifest.json">
+    <script src="/public/js/initsw.js"></script>
+    <%- include('../partials/require') %>
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        #main {
+            height: 90%;
+        }
+
+        #session {
+            height: 84vh;
+            overflow: auto;
+        }
+
+        /* width */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+
+<body>
+    <%- include('../partials/nav', {page: 'user', user: user}) %>
+    <div id="main" class="row mx-1">
+        <div class="col-lg-3 info p-1">
+            <div class="card">
+                <h5 class="card-header mb-3">Thông Tin Người Dùng</h5>
+                <img src="/public/assets/images/info.jpg" class="card-title w-25 m-auto rounded-circle">
+                <div class="card-body">
+                    <div class="form-group card-text">
+                        <label>Tên</label>
+                        <input type="email" class="form-control" placeholder="<%= user.name %>" disabled>
+                    </div>
+                    <div class="form-group card-text">
+                        <label>Email</label>
+                        <input type="email" class="form-control" placeholder="<%= user.email %>" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 info p-1">
+            <div class="card">
+                <h5 class="card-header">Phiên Đăng Nhập</h5>
+                <div class="card-body" id="session">
+                    <% for (let session of sessions) { %>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= session._id %></h5>
+                            <h6 class="card-subtitle mb-2 text-muted"><b>IP:</b> <span><%= session.ip %></span></h6>
+                            <p class="card-text"><b>Browser:</b> <span><%= session.browser %></span></p>
+                            <div class="d-flex flex-row-reverse">
+                                <button class="btn btn-danger" type="button">
+                                    Xoá
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">5edf744ba9d21c31a0954f8c</h5>
+                            <h6 class="card-subtitle mb-2 text-muted"><b>IP:</b> <span>192.168.0.1</span></h6>
+                            <p class="card-text"><b>Browser:</b> <span>Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+                                    AppleWebKit/537.36 (KHTML,
+                                    like Gecko) Chrome/83.0.4103.97 Safari/537.36</span></p>
+                            <div class="d-flex flex-row-reverse">
+                                <button class="btn btn-danger" type="button">
+                                    Xoá
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">5edf744ba9d21c31a0954f8c</h5>
+                            <h6 class="card-subtitle mb-2 text-muted"><b>IP:</b> <span>192.168.0.1</span></h6>
+                            <p class="card-text"><b>Browser:</b> <span>Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+                                    AppleWebKit/537.36 (KHTML,
+                                    like Gecko) Chrome/83.0.4103.97 Safari/537.36</span></p>
+                            <div class="d-flex flex-row-reverse">
+                                <button class="btn btn-danger" type="button">
+                                    Xoá
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">5edf744ba9d21c31a0954f8c</h5>
+                            <h6 class="card-subtitle mb-2 text-muted"><b>IP:</b> <span>192.168.0.1</span></h6>
+                            <p class="card-text"><b>Browser:</b> <span>Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+                                    AppleWebKit/537.36 (KHTML,
+                                    like Gecko) Chrome/83.0.4103.97 Safari/537.36</span></p>
+                            <div class="d-flex flex-row-reverse">
+                                <button class="btn btn-danger" type="button">
+                                    Xoá
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 devices">
+
+        </div>
+    </div>
+</body>
+
+</html>
