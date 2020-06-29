@@ -9,16 +9,6 @@ function watering(brige, client, topic, createPayload){
         
         brige.emit('watering', job.attrs);
         
-        job.agenda.schedule(
-            `${info.watering_time} minutes`,
-            'stop_watering', 
-            {
-                watering: job.attrs._id,
-                device_id: info.device_id,
-                intensity: "0"
-            }
-        );
- 
         done();
     }
 }

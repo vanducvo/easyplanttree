@@ -45,21 +45,21 @@
                     </div>
                     <div class="handmade-table-content" style="height: 240px;" id="future">
                         <% for (let future of futures){ %>
-                            <div class="hover" id="future_<%= future._id %>">
-                                <div class="row row-cols-4">
-                                    <div class="col-2 text-break">
-                                        <b><%= future.data.device_id %></b>
-                                    </div>
-                                    <div class="col-5 text-break"><%= future.nextRunAt.toLocaleString() %></div>
-                                    <div class="col-2 text-break"><%= future.data.watering_time %></div>
-                                    <div class="col-2 text-break"><%= future.data.intensity %></div>
-                                    <div class="col-1"><button type="button" class="btn btn-danger">Xoá</button></div>
+                        <div class="hover" id="future_<%= future._id %>">
+                            <div class="row row-cols-4">
+                                <div class="col-2 text-break">
+                                    <b><%= future.data.device_id %></b>
                                 </div>
+                                <div class="col-5 text-break"><%= future.nextRunAt.toLocaleString() %></div>
+                                <div class="col-2 text-break"><%= future.data.watering_time %></div>
+                                <div class="col-2 text-break"><%= future.data.intensity %></div>
+                                <div class="col-1"><button type="button" class="btn btn-danger">Xoá</button></div>
                             </div>
+                        </div>
                         <% } %>
                     </div>
                 </div>
-                
+
                 <div class="text-center">
                     <h3>Lịch sử tưới</h3>
                 </div>
@@ -77,16 +77,16 @@
                     </div>
                     <div class="handmade-table-content" style="height: 240px;" id="history">
                         <% for (let history of histories){ %>
-                            <div class="hover" id="history_<%= history._id %>">
-                                <div class="row row-cols-4">
-                                    <div class="col-3 text-break">
-                                        <b><%= history.data.device_id %></b>
-                                    </div>
-                                    <div class="col-5 text-break"><%= history.lastRunAt.toLocaleString() %></div>
-                                    <div class="col-2 text-break"><%= history.data.watering_time %></div>
-                                    <div class="col-2 text-break"><%= history.data.intensity %></div>
+                        <div class="hover" id="history_<%= history._id %>">
+                            <div class="row row-cols-4">
+                                <div class="col-3 text-break">
+                                    <b><%= history.data.device_id %></b>
                                 </div>
+                                <div class="col-5 text-break"><%= history.lastRunAt.toLocaleString() %></div>
+                                <div class="col-2 text-break"><%= history.data.watering_time %></div>
+                                <div class="col-2 text-break"><%= history.data.intensity %></div>
                             </div>
+                        </div>
                         <% } %>
                     </div>
                 </div>
@@ -173,10 +173,78 @@
         </div>
 
     </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal fade" id="confirm" tabindex="-1" role="dialog" aria-labelledby="confirm-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirm-title">Xác Nhận</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button id="confirm-no" type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button id="confirm-yes" type="button" class="btn btn-danger">Đồng ý</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Confirm Modal -->
+        <div class="modal fade" id="error" tabindex="-1" role="dialog" aria-labelledby="confirm-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Lỗi</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+    
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <script>
+        // Comfirm UI
+        function confirm(title, message, callback) {
+            document.querySelector("#confirm .modal-title").textContent = title;
+            document.querySelector("#confirm .modal-body").innerHTML = message;
+            $("#confirm").modal("show");
+            let handle = () => {
+                $("#confirm").modal("hide");
+                callback();
+            };
+
+            $("#confirm-yes").on("click", handle);
+
+            let handleHide = () => {
+                $("#confirm-yes").off("click", handle);
+                $('#confirm').off('hidden.bs.modal', handleHide);
+            }
+
+            $('#confirm').on('hidden.bs.modal', handleHide);
+        }
+
+                // Comfirm UI
+        function error(title, message) {
+            document.querySelector("#error .modal-body").innerHTML = message;
+            $("#error").modal("show");
+        }
+
         $("#form-watering").on('submit', function (e) {
             e.preventDefault();
-            $("#btn_watering").prop('disabled', true);
+            
 
             let device = $("#device").val();
             let date = $("#datepicker").val();
@@ -191,35 +259,58 @@
                 intensity: intensity
             };
 
-            let token = $('#_csrf').attr('content');
-            fetch("controller/", {
-                method: "POST",
-                credentials: "same-origin",
-                headers: {
-                    'Content-type': 'application/json; charset=UTF-8',
-                    'CSRF-Token': token
-                },
-                body: JSON.stringify(data)
-            })
-                .then(res => res.json())
-                .then(data => {
-                    $("#future").prepend(`
-                        <div class="hover" id="future_${data._id}">
-                            <div class="row row-cols-4">
-                                <div class="col-2 text-break">
-                                    <b>${data.data.device_id}</b>
-                                </div>
-                                <div class="col-5 text-break">${new Date(data.nextRunAt).toLocaleString()}</div>
-                                <div class="col-2 text-break">${data.data.watering_time}</div>
-                                <div class="col-2 text-break">${data.data.intensity}</div>
-                                <div class="col-1"><button type="button" class="btn btn-danger">Xoá</button></div>
-                            </div>
-                        </div>
-                    `);
+            if(data.when < new Date()){
+                return error("Lỗi", "Đặt lịch trong quá khứ");
+            }
 
-                    setTimeout(() => {
-                        $("#btn_watering").prop('disabled', false);
-                    }, 1000);
+            confirm(
+                "Xác Nhận Đặt Lịch",
+                `
+                <p><b>Thịết bị</b>: ${data.device}</p>
+                <p><b>Vào Lúc</b>: ${data.when.toLocaleString()}</p>
+                <p><b>Tưới trong</b>: ${data.watering_time} phút</p>
+                <p><b>Cường độ</b>: ${data.intensity}</p>
+                `,
+                () => {
+                    $("#btn_watering").prop('disabled', true);
+                    
+                    let token = $('#_csrf').attr('content');
+                    fetch("controller/", {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: {
+                            'Content-type': 'application/json; charset=UTF-8',
+                            'CSRF-Token': token
+                        },
+                        body: JSON.stringify(data)
+                    })
+                        .then()
+                        .then(res => res.json())
+                        .then(data => {
+                            setTimeout(() => {
+                                $("#btn_watering").prop('disabled', false);
+                            }, 1000);
+
+                            if (data.overlap) {
+                                error("Lỗi", "<p>Lịch đặt <b>bị trùng</b></p>")
+                                return;
+                            }
+
+                            $("#future").prepend(`
+                                <div class="hover" id="future_${data._id}">
+                                    <div class="row row-cols-4">
+                                        <div class="col-2 text-break">
+                                            <b>${data.data.device_id}</b>
+                                        </div>
+                                        <div class="col-5 text-break">${new Date(data.nextRunAt).toLocaleString()}</div>
+                                        <div class="col-2 text-break">${data.data.watering_time}</div>
+                                        <div class="col-2 text-break">${data.data.intensity}</div>
+                                        <div class="col-1"><button type="button" class="btn btn-danger">Xoá</button></div>
+                                    </div>
+                                </div>
+                            `);
+                        });
+
                 });
         });
 
@@ -240,26 +331,37 @@
             $(`#future_${data._id}`).remove();
         });
 
-        $("#future").on('click', function(e){
-            if(e.target.type !== "button"){
+        $("#future").on('click', function (e) {
+            if (e.target.type !== "button") {
                 return;
             }
 
             let id = e.target.closest('.hover').id;
-
-            let token = $('#_csrf').attr('content');
-            fetch("controller/", {
-                method: "DELETE",
-                credentials: "same-origin",
-                headers: {
-                    'Content-type': 'application/json; charset=UTF-8',
-                    'CSRF-Token': token
-                },
-                body: JSON.stringify({id: id.match(/^future_(.*)$/)[1]})
-            })
-                .then(res => res.json())
-                .then(doc => {
-                    $(`#future_${doc.id}`).remove();
+            let content = e.target.closest('.hover').querySelectorAll('.text-break');
+            confirm(
+                "Xác Nhận Xoá Lịch",
+                `
+                <p><b>Thịết bị</b>: ${content[0].textContent.trim()}</p>
+                <p><b>Vào Lúc</b>: ${content[1].textContent.trim()}</p>
+                <p><b>Tưới trong</b>: ${content[2].textContent.trim()} phút</p>
+                <p><b>Cường độ</b>: ${content[3].textContent.trim()}</p>
+                `
+                ,
+                () => {
+                    let token = $('#_csrf').attr('content');
+                    fetch("controller/", {
+                        method: "DELETE",
+                        credentials: "same-origin",
+                        headers: {
+                            'Content-type': 'application/json; charset=UTF-8',
+                            'CSRF-Token': token
+                        },
+                        body: JSON.stringify({ id: id.match(/^future_(.*)$/)[1] })
+                    })
+                    .then(res => res.json())
+                    .then(doc => {
+                        $(`#future_${doc.id}`).remove();
+                    });
                 });
 
         })

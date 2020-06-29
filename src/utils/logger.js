@@ -10,56 +10,40 @@ function logFile(name) {
     return path.resolve('./logs', name);
 }
 
+let logger = winston.createLogger({
+    transports: [
+        new winston.transports.Console({
+            silent: process.env.NODE_ENV == "production"
+        }),
+        new winston.transports.File({
+            filename: logFile('debug.log'),
+            level: 'error'
+        })
+    ],
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.printf(
+            function ({ level, message, timestamp }) {
+                return `${timestamp} ${level}: ${message}`;
+            }
+        )
+    ),
+});
+
 /**
- * @description 
- * @param {Array.<winston.transports>} transports 
- * @param {string} label
+ * @description
  * @returns {(filemodule:Object) => winston} create logger function
  */
-function createLogger(transports, label) {
-    return function (filemodule) {
-        let filename = path.basename(filemodule.filename)
-        return winston.createLogger({
-            transports,
-            format: winston.format.combine(
-                winston.format.label({ label }),
-                winston.format.timestamp(),
-                winston.format.printf(
-                    function ({ level, message, label, timestamp }) {
-                        return `${timestamp} [${filename}] [${label}] ${level}: ${message}`;
-                    }
-                )
-            ),
-            silent: label == 'Debug' && process.env.NODE_ENV == "production"
-        });
+function createLogger() {
+    return function () {
+        return logger;
     }
 }
 
-module.exports.debugLogger = createLogger([
-    new winston.transports.Console(),
-    new winston.transports.File({
-        filename: logFile('debug.log'),
-        level: 'error'
-    })
-], 'Debug');
+module.exports.debugLogger = createLogger();
 
-module.exports.serverLogger = createLogger([
-    new winston.transports.File({
-        filename: logFile('server.log'),
-        level: 'error'
-    })
-], 'Server');
+module.exports.serverLogger = createLogger();
 
-module.exports.databaseLogger = createLogger([
-    new winston.transports.File({
-        filename: logFile('database.log'),
-        level: 'error'
-    })
-], 'Database');
+module.exports.databaseLogger = createLogger();
 
-module.exports.hardwareLogger = createLogger([
-    new winston.transports.File({
-        filename: logFile('database.log'),
-        level: 'error'
-    })
-], 'Hardware');
+module.exports.hardwareLogger = createLogger();

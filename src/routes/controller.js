@@ -1,5 +1,4 @@
 const express = require('express');
-// eslint-disable-next-line new-cap
 const router = express.Router();
 const { Device, Watering, Motor } = require('../models/device');
 const { getTypeDevice, motorPattern } = require('../utils/utils');
@@ -40,25 +39,54 @@ router.post('/', function (req, res) {
     intensity: info.intensity
   };
 
-  let schedule = Agenda.once(new Date(info.when), 'watering', data);
-  schedule.then(doc => {
-    res.json({
-      _id: doc._id,
-      data: doc.data,
-      nextRunAt: doc.nextRunAt
-    }).end();
-  });
+  Agenda
+    .getConflict(req.user.id, info.when, info.watering_time, info.device)
+    .then(isConflict => {
+      
+      if(isConflict){
+        return res.json({overlap: true}).end();
+      }
+
+
+      let start = new Date(info.when);
+      let end = new Date(start.getTime() + Number(info.watering_time) * 60000);
+
+      // Set Start
+      let schedule = Agenda.once(start, 'watering', data);
+
+      schedule.then(doc => {
+
+        // Set stop
+        Agenda.once(end, 'stop_watering', {
+          user: data.user,
+          watering: doc._id,
+          device_id: data.device_id,
+          intensity: "0"
+        }).then(() => {
+
+          // Response to client
+          res.json({
+            _id: doc._id,
+            data: doc.data,
+            nextRunAt: doc.nextRunAt
+          }).end();
+
+        });
+      });
+
+    });
+
 });
 
-router.delete('/', function(req, res){
+router.delete('/', function (req, res) {
   Agenda.cancel(req.body.id).then(success => {
-    if(success){
-      res.json({id: req.body.id}).end();
-    }else{
+    if (success) {
+      res.json({ id: req.body.id }).end();
+    } else {
       res.json({}).end()
     }
   });
-  
+
 });
 
 module.exports = router;
