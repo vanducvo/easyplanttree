@@ -27,7 +27,7 @@
 
         /* width */
         ::-webkit-scrollbar {
-            width: 5px;
+            width: 4px;
         }
 
         /* Track */
@@ -38,6 +38,7 @@
         /* Handle */
         ::-webkit-scrollbar-thumb {
             background: #888;
+            border-radius: 10px;
         }
 
         /* Handle on hover */
@@ -70,69 +71,160 @@
                 <h5 class="card-header">Phiên Đăng Nhập</h5>
                 <div class="card-body" id="session">
                     <% for (let session of sessions) { %>
-                    <div class="card">
+                    <div class="card" id="<%= session._id %>">
                         <div class="card-body">
-                            <h5 class="card-title"><%= session._id %></h5>
-                            <h6 class="card-subtitle mb-2 text-muted"><b>IP:</b> <span><%= session.ip %></span></h6>
-                            <p class="card-text"><b>Browser:</b> <span><%= session.browser %></span></p>
+                            <div class="info">
+                                <h5 class="card-title"><%= session._id %></h5>
+                                <h6 class="card-subtitle mb-2 text-muted"><b>IP:</b> <span><%= session.ip %></span></h6>
+                                <p class="card-text"><b>Browser:</b> <span><%= session.browser %></span></p>
+                            </div>
+                            <% if (user.token != session._id){ %>
                             <div class="d-flex flex-row-reverse">
                                 <button class="btn btn-danger" type="button">
                                     Xoá
                                 </button>
                             </div>
+                            <% } else {%>
+                            <div class="d-flex flex-row-reverse">
+                                <div class="spinner-grow text-success" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                            <% } %>
                         </div>
                     </div>
                     <% } %>
 
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">5edf744ba9d21c31a0954f8c</h5>
-                            <h6 class="card-subtitle mb-2 text-muted"><b>IP:</b> <span>192.168.0.1</span></h6>
-                            <p class="card-text"><b>Browser:</b> <span>Mozilla/5.0 (Windows NT 10.0; Win64; x64)
-                                    AppleWebKit/537.36 (KHTML,
-                                    like Gecko) Chrome/83.0.4103.97 Safari/537.36</span></p>
-                            <div class="d-flex flex-row-reverse">
-                                <button class="btn btn-danger" type="button">
-                                    Xoá
-                                </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 devices pt-1">
+            <div class="card">
+                <h5 class="card-header">Thông tin thiết bị và ràng buộc</h5>
+                <div class="card-body" id="session">
+                    <% for (let device of devices) { %>
+                        <% if (device.device_id) { %>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="info">
+                                        <h5 class="card-title"><b>ID:</b> <%= device.device_id %></h5>
+                                        <% if (device.lat) { %>
+                                            <h6 class="card-subtitle mb-2 text-muted"><b>Lat:</b> <span><%= device.lat %></span></h6>
+                                            <h6 class="card-subtitle mb-2 text-muted"><b>Long:</b> <span><%= device.long %></span></h6>
+                                        <% } %>
+                                        <p class="card-text"><b>Loại:</b> <span><%= device.device_id.match(/^id7_\d+$/) ? 'Cảm biến độ ẩm đất' : 'Motor' %></span></p>
+                                    </div>
+
+                                </div>
                             </div>
-                        </div>
+                        <% } else { %>
+                        <% } %>
+                    <% } %>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Modal -->
+        <div class="modal fade" id="confirm" tabindex="-1" role="dialog" aria-labelledby="confirm-title"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirm-title">Xác Nhận</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">5edf744ba9d21c31a0954f8c</h5>
-                            <h6 class="card-subtitle mb-2 text-muted"><b>IP:</b> <span>192.168.0.1</span></h6>
-                            <p class="card-text"><b>Browser:</b> <span>Mozilla/5.0 (Windows NT 10.0; Win64; x64)
-                                    AppleWebKit/537.36 (KHTML,
-                                    like Gecko) Chrome/83.0.4103.97 Safari/537.36</span></p>
-                            <div class="d-flex flex-row-reverse">
-                                <button class="btn btn-danger" type="button">
-                                    Xoá
-                                </button>
-                            </div>
-                        </div>
+                    <div class="modal-body">
+
                     </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">5edf744ba9d21c31a0954f8c</h5>
-                            <h6 class="card-subtitle mb-2 text-muted"><b>IP:</b> <span>192.168.0.1</span></h6>
-                            <p class="card-text"><b>Browser:</b> <span>Mozilla/5.0 (Windows NT 10.0; Win64; x64)
-                                    AppleWebKit/537.36 (KHTML,
-                                    like Gecko) Chrome/83.0.4103.97 Safari/537.36</span></p>
-                            <div class="d-flex flex-row-reverse">
-                                <button class="btn btn-danger" type="button">
-                                    Xoá
-                                </button>
-                            </div>
-                        </div>
+                    <div class="modal-footer">
+                        <button id="confirm-no" type="button" class="btn btn-secondary"
+                            data-dismiss="modal">Đóng</button>
+                        <button id="confirm-yes" type="button" class="btn btn-danger">Đồng ý</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 devices">
+    </div>
 
+    <!-- Error Modal -->
+    <div class="modal fade" id="error" tabindex="-1" role="dialog" aria-labelledby="confirm-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Lỗi</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
         </div>
     </div>
+    <script>
+        // Comfirm UI
+        function confirm(title, message, callback) {
+            document.querySelector("#confirm .modal-title").textContent = title;
+            document.querySelector("#confirm .modal-body").innerHTML = message;
+            $("#confirm").modal("show");
+            let handle = () => {
+                $("#confirm").modal("hide");
+                callback();
+            };
+
+            $("#confirm-yes").on("click", handle);
+
+            let handleHide = () => {
+                $("#confirm-yes").off("click", handle);
+                $('#confirm').off('hidden.bs.modal', handleHide);
+            }
+
+            $('#confirm').on('hidden.bs.modal', handleHide);
+        }
+
+        // Error notify
+        function error(title, message) {
+            document.querySelector("#error .modal-body").innerHTML = message;
+            $("#error").modal("show");
+        }
+
+        let token = document.getElementById('_csrf').getAttribute('content');
+        $("#session").on("click", function (e) {
+            if (e.target.type == "button") {
+                card = e.target.closest(".card").id;
+                confirm(
+                    'Bạn có chắc muốn xoá session này?',
+                    e.target.closest(".card").querySelector(".info").innerHTML,
+                    () => {
+                        fetch('/user/session/', {
+                            method: 'DELETE',
+                            credentials: "same-origin",
+                            headers: {
+                                'Content-type': 'application/json; charset=UTF-8',
+                                'CSRF-Token': token
+                            },
+                            body: JSON.stringify({ _id: card })
+                        })
+                            .then(doc => doc.json())
+                            .then(res => {
+                                e.target.closest(".card").remove();
+                            })
+                            .catch(err => {
+                                error('Lỗi', 'Xoá phiên đăng nhập không thành công!');
+                            });
+
+                    }
+                );
+            }
+        });
+    </script>
 </body>
 
 </html>

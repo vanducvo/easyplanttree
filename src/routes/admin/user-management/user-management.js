@@ -382,7 +382,7 @@ router.put('/user-remove-device', function (req, res) {
     });
 
     Device
-    .updateOne({ device_id: device }, { "$unset": { user: 1 } })
+    .updateOne({ device_id: device }, { "$unset": { user: 1, lat: 1, long: 1} })
     .exec();
 
     res.status(200).end();
