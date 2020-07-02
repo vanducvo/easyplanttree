@@ -49,26 +49,21 @@ router.get('/', function(req, res){
 
                 common.push(doc);
 
-                for (let sensor of results[0]){
-                    if (sensor.device_id != doc.sensor.device_id){
-                        sensors.push(sensor);
-                    }
-                };
-
-                for (let motor of results[1]){
-                    if (motor.device_id != doc.motor.device_id){
-                        motors.push(motor);
-                    }
-                };
+                sensors.push(doc.sensor.device_id);
+                motors.push(doc.motor.device_id);
             }
 
-            console.log(sensors, motors, docs);
+            console.log(sensors, motors, common);
 
             res.render("pages/user.ejs", {
                 _csrf: req.csrfToken(),
                 user: req.user,
                 sessions: results[2],
-                devices: [...common, ...motors, ...sensors]
+                devices: [
+                    ...common, 
+                    ...results[0].filter(v => sensors.indexOf(v.device_id) < 0), 
+                    ...results[1].filter(v => motors.indexOf(v.device_id) < 0), 
+                ]
             });
         });
     });

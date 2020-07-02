@@ -10,7 +10,9 @@ let DependentSchema = new Schema({
         ref: true,
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Device'
-    }
+    },
+    max: Number,
+    min: Number
 });
-DependentSchema.index({user: 1});
+
 module.exports =  mongoose.model('Dependent', DependentSchema);

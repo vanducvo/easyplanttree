@@ -101,24 +101,75 @@
         <div class="col-lg-5 devices pt-1">
             <div class="card">
                 <h5 class="card-header">Thông tin thiết bị và ràng buộc</h5>
-                <div class="card-body" id="session">
+                <div class="card-body" id="devices">
                     <% for (let device of devices) { %>
-                        <% if (device.device_id) { %>
+                    <% if (device.device_id) { %>
+                    <div class="card mb-1">
+                        <div class="card-body">
+                            <div class="info">
+                                <h5 class="card-title"><b>ID:</b> <%= device.device_id %></h5>
+                                <% if (device.lat) { %>
+                                <h6 class="card-subtitle mb-2 text-muted"><b>Lat:</b> <span><%= device.lat %></span>
+                                </h6>
+                                <h6 class="card-subtitle mb-2 text-muted"><b>Long:</b> <span><%= device.long %></span>
+                                </h6>
+                                <% } %>
+                                <p class="card-text"><b>Loại:</b>
+                                    <span><%= device.device_id.match(/^id7_\d+$/) ? 'Cảm biến độ ẩm đất' : 'Motor' %></span>
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                    <% } else { %>
+                    <div class="card mb-1" id="<%= device._id %>">
+                        <div class="card-body">
+                            <div class="info">
+                                <h5 class="card-title"><b>ID:</b> <%= device.sensor.device_id %></h5>
+                                <% if (device.sensor.lat) { %>
+                                <h6 class="card-subtitle mb-2 text-muted"><b>Lat:</b>
+                                    <span><%= device.sensor.lat %></span></h6>
+                                <h6 class="card-subtitle mb-2 text-muted"><b>Long:</b>
+                                    <span><%= device.sensor.long %></span></h6>
+                                <% } %>
+                                <p class="card-text"><b>Loại:</b> <span>Cảm biến độ ẩm đất</span></p>
+                            </div>
+                            <p class="card-text my-1"><b>Phụ thuộc:</b></p>
                             <div class="card">
                                 <div class="card-body">
                                     <div class="info">
-                                        <h5 class="card-title"><b>ID:</b> <%= device.device_id %></h5>
-                                        <% if (device.lat) { %>
-                                            <h6 class="card-subtitle mb-2 text-muted"><b>Lat:</b> <span><%= device.lat %></span></h6>
-                                            <h6 class="card-subtitle mb-2 text-muted"><b>Long:</b> <span><%= device.long %></span></h6>
+                                        <h5 class="card-title"><b>ID:</b> <%= device.motor.device_id %></h5>
+                                        <% if (device.motor.lat) { %>
+                                        <h6 class="card-subtitle mb-2 text-muted"><b>Lat:</b>
+                                            <span><%= device.motor.lat %></span></h6>
+                                        <h6 class="card-subtitle mb-2 text-muted"><b>Long:</b>
+                                            <span><%= device.motor.long %></span></h6>
                                         <% } %>
-                                        <p class="card-text"><b>Loại:</b> <span><%= device.device_id.match(/^id7_\d+$/) ? 'Cảm biến độ ẩm đất' : 'Motor' %></span></p>
+                                        <p class="card-text"><b>Loại:</b> <span>Motor</span></p>
                                     </div>
 
                                 </div>
                             </div>
-                        <% } else { %>
-                        <% } %>
+                            <p class="card-text my-1"><b>Ngưỡng cho phép:</b></p>
+                            <form class="limit ml-1 show">
+                                <div class="form-row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="max">Nhỏ nhất</label>
+                                        <input min="0" max="5000" type="number" class="form-control min" required
+                                            disabled>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="validationCustom02">Lớn nhất</label>
+                                        <input min="0" max="5000" type="number" class="form-control max" required
+                                            disabled>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success" type="submit">Sửa</button>
+                                <button class="btn btn-danger" type="button">Xoá</button>
+                            </form>
+                        </div>
+                    </div>
+                    <% } %>
                     <% } %>
 
                 </div>
@@ -222,6 +273,58 @@
 
                     }
                 );
+            }
+        });
+
+        $("#devices").on("submit", function (e) {
+
+            e.preventDefault();
+
+            if (e.target.classList.contains("show")) {
+                inputs = e.target.querySelectorAll('input');
+
+                e.target.classList.remove("show");
+                e.target.classList.add("need-validation");
+
+                for (let input of inputs) {
+                    input.disabled = false;
+                }
+
+                button = e.target.querySelector(".btn");
+
+                button.className = "btn btn-warning";
+                button.textContent = "Cập nhật";
+
+            } else if (e.target.classList.contains("need-validation")) {
+                max = Number(e.target.querySelector(".max").value);
+                min = Number(e.target.querySelector(".min").value);
+                if (min <= max) {
+                    e.target.classList.remove("need-validation");
+                    e.target.classList.add("validation");
+
+                    $(e.target).submit();
+                } else {
+                    error("Lỗi", "Ngưỡng nhỏ nhất phải nhỏ hơn hoặc bằng ngưỡng cao nhất");
+                }
+            } else if (e.target.classList.contains("validation")) {
+                inputs = e.target.querySelectorAll('input');
+
+                e.target.classList.remove("validation");
+                e.target.classList.add("show");
+
+                for (let input of inputs) {
+                    input.disabled = true;
+                }
+
+                // Send to server
+                max = e.target.querySelector(".max").value;
+                min = e.target.querySelector(".min").value;
+                id = e.target.closest(".card").id;
+
+                button = e.target.querySelector(".btn");
+
+                button.className = "btn btn-success";
+                button.textContent = "Sửa";
             }
         });
     </script>
