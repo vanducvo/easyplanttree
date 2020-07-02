@@ -155,13 +155,13 @@
                                 <div class="form-row">
                                     <div class="col-md-4 mb-3">
                                         <label for="max">Nhỏ nhất</label>
-                                        <input min="0" max="5000" type="number" class="form-control min" required
-                                            disabled>
+                                        <input min="0" max="5000" type="number" class="form-control min"
+                                            value="<%= device.min ? device.min : ''%>" required disabled>
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="validationCustom02">Lớn nhất</label>
-                                        <input min="0" max="5000" type="number" class="form-control max" required
-                                            disabled>
+                                        <input min="0" max="5000" type="number" class="form-control max"
+                                            value="<%= device.max ? device.max : ''%>" required disabled>
                                     </div>
                                 </div>
                                 <button class="btn btn-success" type="submit">Sửa</button>
@@ -249,7 +249,7 @@
         let token = document.getElementById('_csrf').getAttribute('content');
         $("#session").on("click", function (e) {
             if (e.target.type == "button") {
-                card = e.target.closest(".card").id;
+                let card = e.target.closest(".card").id;
                 confirm(
                     'Bạn có chắc muốn xoá session này?',
                     e.target.closest(".card").querySelector(".info").innerHTML,
@@ -281,7 +281,7 @@
             e.preventDefault();
 
             if (e.target.classList.contains("show")) {
-                inputs = e.target.querySelectorAll('input');
+                let inputs = e.target.querySelectorAll('input');
 
                 e.target.classList.remove("show");
                 e.target.classList.add("need-validation");
@@ -296,8 +296,8 @@
                 button.textContent = "Cập nhật";
 
             } else if (e.target.classList.contains("need-validation")) {
-                max = Number(e.target.querySelector(".max").value);
-                min = Number(e.target.querySelector(".min").value);
+                let max = Number(e.target.querySelector(".max").value);
+                let min = Number(e.target.querySelector(".min").value);
                 if (min <= max) {
                     e.target.classList.remove("need-validation");
                     e.target.classList.add("validation");
@@ -307,7 +307,7 @@
                     error("Lỗi", "Ngưỡng nhỏ nhất phải nhỏ hơn hoặc bằng ngưỡng cao nhất");
                 }
             } else if (e.target.classList.contains("validation")) {
-                inputs = e.target.querySelectorAll('input');
+                let inputs = e.target.querySelectorAll('input');
 
                 e.target.classList.remove("validation");
                 e.target.classList.add("show");
@@ -321,10 +321,51 @@
                 min = e.target.querySelector(".min").value;
                 id = e.target.closest(".card").id;
 
-                button = e.target.querySelector(".btn");
+                fetch('/user/limit/', {
+                    method: 'PUT',
+                    credentials: "same-origin",
+                    headers: {
+                        'Content-type': 'application/json; charset=UTF-8',
+                        'CSRF-Token': token
+                    },
+                    body: JSON.stringify({ _id: id, max: max, min: min })
+                })
+                    .then(doc => doc.json())
+                    .then(res => {
+                        button = e.target.querySelector(".btn");
 
-                button.className = "btn btn-success";
-                button.textContent = "Sửa";
+                        button.className = "btn btn-success";
+                        button.textContent = "Sửa";
+                    })
+                    .catch(err => {
+                        error("Lỗi", "Vui lòng thử lại sau.");
+                    });
+            }
+        });
+
+        $("#devices").on("click", function (e) {
+            if (e.target.type == "button") {
+                let id = e.target.closest(".card").id;
+                fetch('/user/limit/', {
+                    method: 'DELETE',
+                    credentials: "same-origin",
+                    headers: {
+                        'Content-type': 'application/json; charset=UTF-8',
+                        'CSRF-Token': token
+                    },
+                    body: JSON.stringify({ _id: id })
+                })
+                    .then(doc => doc.json())
+                    .then(res => {
+                        // Update
+                        let inputs = e.target.closest('.card').querySelectorAll('input');
+                        for (let input of inputs) {
+                            input.value = '';
+                        }
+                    })
+                    .catch(err => {
+                        error("Lỗi", "Vui lòng thử lại sau.");
+                    });
             }
         });
     </script>

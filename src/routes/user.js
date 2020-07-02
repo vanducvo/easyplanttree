@@ -53,8 +53,6 @@ router.get('/', function(req, res){
                 motors.push(doc.motor.device_id);
             }
 
-            console.log(sensors, motors, common);
-
             res.render("pages/user.ejs", {
                 _csrf: req.csrfToken(),
                 user: req.user,
@@ -83,6 +81,29 @@ router.delete('/session', function(req, res){
         return res.status(204).end()
     });
     
+});
+
+router.put('/limit', function(req, res){
+    Dependent
+    .updateOne({_id: req.body._id}, {
+        max: Number(req.body.max),
+        min: Number(req.body.min)
+    }).then(doc => {
+        res.json(doc).end();
+    }).catch(err => {
+        res.status(400).end();
+    })
+});
+
+router.delete('/limit', function(req, res){
+    Dependent
+    .updateOne({_id: req.body._id}, {"$unset": {max: 1, min: 1}})
+    .exec()
+    .then(doc => {
+        res.json(doc).end();
+    }).catch(err => {
+        res.status(400).end();
+    })
 });
 
 module.exports = router;
