@@ -1,5 +1,6 @@
 const serverLogger = require('../utils/logger').serverLogger(module);
-const {forceAPI} = require('../utils/utils');
+const {forceAPI, getTypeDevice} = require('../utils/utils');
+const Agenda = require('./agenda');
 
 function createDBSaver(client, traceTopic, classifyCollection){
     client.on('message', (topic, message) => {
@@ -89,6 +90,78 @@ function controllerUpdate(io, brige, getUser){
     });
 }
 
+function autoWatering(client, traceTopic, pubTopic, getAutoWateringInfo, createPayload){
+    client.on("message", function(topic, message){
+        if(topic !== traceTopic){
+            return;
+        }
+
+        let data = message.toString();
+        
+        try{
+            data = JSON.parse(data);
+            data = forceAPI(data);
+        } catch(err){
+            serverLogger.error(err);
+            return;
+        }
+
+        if(getTypeDevice(data) !== "sensor"){
+            return;
+        }
+
+        let info = getAutoWateringInfo(data);
+        let value = Number(data.value[1]);
+        info.then(doc => {
+            if(!doc || !doc.length){
+                return;
+            }
+
+            doc = doc[0];
+
+            if(!doc.dependent || !doc.dependent[0]){
+                return;
+            }
+
+            // When < Min
+            if(value < doc.dependent[0].min){
+                // Have watering or watering in 30s
+                Agenda
+                .getConflict(doc.motor[0].user, new Date(), "0.5", doc.motor[0].device_id)
+                .then(isConflict => {
+                    if(isConflict){
+                        return;
+                    }
+
+                    let payloadStart = {
+                        device_id: doc.motor[0].device_id,
+                        intensity: "1000"
+                    }
+                    client.publish(pubTopic, createPayload(payloadStart) ,{qos: 2});
+
+                    let payloadStop = {
+                        device_id: doc.motor[0].device_id,
+                        intensity: "0"
+                    }
+
+                    setTimeout( () => {
+                        client.publish(pubTopic, createPayload(payloadStop) ,{qos: 2});
+                    }, 20000);
+                });
+            }
+            // When > Max
+            if(value > doc.dependent[0].max){
+                let payload = {
+                    device_id: doc.motor[0].device_id,
+                    intensity: "0"
+                }
+                client.publish(pubTopic, createPayload(payload) ,{qos: 2});
+            }
+        });
+    });
+}
+
 exports.createDBSaver = createDBSaver;
 exports.dashBoardUpdate = dashBoardUpdate;
 exports.controllerUpdate = controllerUpdate;
+exports.autoWatering = autoWatering;

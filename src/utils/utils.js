@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const compare = require('tsscmp');
 const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 const Device = require('../models/device');
+const { resolve } = require('path');
 /**
  * @description check mail valid
  * @param {string} email
@@ -201,14 +202,14 @@ function forceAPI(data) {
 }
 
 function createPayloadMotorToSpeaker(payload) {
-  if(
+  if (
     !payload ||
     !payload.intensity ||
     !payload.intensity.match(/^\d+$/) ||
     !(Number(payload.intensity) <= 5000)
-    ){
-      throw new Error("Not Support Data Format");
-    }
+  ) {
+    throw new Error("Not Support Data Format");
+  }
 
   switch (payload.device_id) {
     case 'id9_1':
@@ -219,6 +220,45 @@ function createPayloadMotorToSpeaker(payload) {
     default:
       throw new Error("Not Support Data Format");
   }
+}
+
+function getAutoWateringInfo(payload) {
+  let device_id = payload.device_id;
+  return new Promise((resolve, reject) => {
+    Device.Device.aggregate([
+      {
+        "$match": {
+          device_id: device_id
+        }
+
+      },
+      {
+        "$lookup": {
+          from: "dependents",
+          localField: "_id",
+          foreignField: "sensor",
+          as: `dependent`
+        }
+      },
+      {
+        "$lookup": {
+          from: "devices",
+          localField: "dependent.0.motor",
+          foreignField: "_id",
+          as: `motor`
+        }
+      },
+      {
+        "$project": {
+          _id: 0,
+          motor: 1,
+          dependent: 1
+        }
+      }
+    ])
+      .then(resolve)
+      .catch(reject);
+  });
 }
 
 exports.createTextResepondJSONBeaufy = createTextResepondJSONBeaufy;
@@ -236,3 +276,4 @@ exports.sensorPattern = /^id7_(\d+)$/;
 exports.motorPattern = /^id9_(\d+)$/;
 exports.forceAPI = forceAPI;
 exports.createPayloadMotorToSpeaker = createPayloadMotorToSpeaker;
+exports.getAutoWateringInfo = getAutoWateringInfo;

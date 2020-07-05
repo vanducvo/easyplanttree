@@ -138,7 +138,7 @@ const Agenda = require('./services/agenda');
 
 // Demon services
 const {connect} = require('./services/broker');
-const {createDBSaver, dashBoardUpdate, controllerUpdate} = require('./services/demon');
+const {createDBSaver, dashBoardUpdate, controllerUpdate, autoWatering} = require('./services/demon');
 const client =  connect(
                     settings.clientBroker, settings.subTopic, settings.pubTopic,
                     process.env.MQTT_BROKER
@@ -153,7 +153,6 @@ dashBoardUpdate(io, client, settings.subTopic, utils.getSensorDevices);
 
 // Agenda
 const Emitter = require('events');
-const { use } = require('chai');
 const brige = new Emitter();
 brige.setMaxListeners(Infinity);
 
@@ -164,6 +163,9 @@ Agenda.addSchedule('watering', watering.watering(brige, client, settings.pubTopi
 
 Agenda.addSchedule('stop_watering', watering.stopWatering(client, settings.pubTopic, 
                                             utils.createPayloadMotorToSpeaker));
+
+// Auto Watering
+autoWatering(client, settings.subTopic, settings.pubTopic, utils.getAutoWateringInfo, utils.createPayloadMotorToSpeaker);
 
 // Express App Listen Port
 server.listen(settings.port);
