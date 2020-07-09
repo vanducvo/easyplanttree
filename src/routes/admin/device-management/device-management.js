@@ -81,7 +81,6 @@ router.post('/add', function (req, res){
         });
 
         sensor.save().then(doc => {
-            console.log(doc);
             if(!doc){
                 return res.end(500).end();
             }
@@ -108,7 +107,7 @@ router.delete('/delete', function(req, res){
             return res.status(400).end();
         }
 
-        res.json(doc).end();
+        res.json({n: doc.n}).end();
     }).catch(err => {
 
     });
