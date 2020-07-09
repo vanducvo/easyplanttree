@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userManagement = require("./user-management/user-management");
+const deviceManagement = require('./device-management/device-management');
 
 //Models
 const Admin = require('../../models/admin');
@@ -138,5 +139,8 @@ router.get('/', function (req, res) {
 
 //Router to user management page
 router.use('/user-management', userManagement);
+
+//Router to device management page
+router.use('/device-management', deviceManagement);
 
 module.exports = router;

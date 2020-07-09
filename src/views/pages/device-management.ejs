@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Plant Tree</title>
+    <meta content="<%= _csrf %>" id="_csrf" />
+    <%- include('../partials/require') %>
+    <script src="/public/js/bootstrap/bootstrap-select.min.js"></script>
+    <link rel="stylesheet" href="/public/css/bootstrap/bootstrap-select.min.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            background-color: #f7fafc;
+        }
+
+        .navbar {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        .handmade-table-content {
+            height: 67vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .handmade-table-header .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-top: 0.5rem;
+            border-radius: 0.5rem;
+            border-top: #2c7a7b solid 2px;
+            text-align: center;
+        }
+
+        .handmade-table-header .row .text-break:nth-child(1) {
+            border-bottom: #2c7a7b solid 1px;
+            padding-bottom: 0.5rem;
+        }
+
+        .handmade-table-header .row .text-break:nth-child(2) {
+            border-bottom: #2c7a7b solid 1px;
+            padding-bottom: 0.5rem;
+        }
+
+        .handmade-table-content .row {
+            padding: 1rem;
+            border-bottom: #2c7a7b solid 1px;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .list-l {
+            width: 100%;
+        }
+
+        .wrapper {
+            background-color: #f8f9fa;
+            border-radius: 1rem;
+            padding: 0.5rem;
+            margin: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 0 !important;
+        }
+
+        .devices div {
+            align-items: center;
+            margin: 0.2rem;
+            min-width: 80px;
+        }
+
+        .devices div p {
+            background-color: #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.2rem;
+            text-align: center;
+        }
+
+        .handmade-table-content .task {
+            text-align: center;
+            margin: auto;
+        }
+
+        #device-modal .device,
+        .handmade-table-content .device {
+            min-width: 100px;
+        }
+
+        .handmade-table-content .device-add,
+        #device-modal .device-add-depend {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            padding: 0 !important;
+            font-weight: bolder;
+        }
+
+        .handmade-table-content .button-task {
+            min-width: 100px;
+            margin-top: 0.345rem;
+        }
+
+        #map {
+            height: 80vh;
+        }
+
+        .modal-body .cords div {
+            background-color: #bee3f8;
+            padding: 0.4rem;
+            border-radius: 0.345rem;
+            margin-right: 0.5rem;
+        }
+
+        .modal-body .cords .lat,
+        .modal-body .cords .lng {
+            width: 150px;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-body .cords button {
+            margin-bottom: 0.5rem;
+        }
+
+        #device-modal .devices .close,
+        .handmade-table-content .devices .close {
+            width: 0px;
+            height: 0px;
+            padding: 0 !important;
+            position: relative;
+            top: -5px;
+            left: -14px;
+            font-size: large;
+        }
+
+        .dropdown.bootstrap-select {
+            margin-bottom: 0.5rem;
+        }
+
+        #info-modal .login-info button {
+            float: right;
+            margin-bottom: 0.5rem;
+        }
+
+        #info-modal .login-info hr {
+            clear: both;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="page-header">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">
+                <img src="/public/assets/images/logo.png" alt="East Plan Tree">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu" aria-controls="menu"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse row justify-content-between" id="menu">
+                <ul class="navbar-nav col-lg-8 justify-content-start">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">Trang Chủ</a>
+                    </li>
+                    <li class="nav-item nav-item">
+                        <a class="nav-link" href="/admin/user-management">Quản Lí Người Dùng</a>
+                    </li>
+                    <li class="nav-item nav-item active">
+                        <a class="nav-link" href="/admin/device-management">Quản Lí Thiết Bị</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav col-lg-4 justify-content-end guest">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/logout">Logout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Admin: <%= admin.name %></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid main">
+        <!-- To do code here -->
+    </div>
+
+</body>
+
+</html>
