@@ -22,13 +22,16 @@ router.get('/login', function (req, res, next) {
     let token = req.cookies.jwt_admin;
     if (!token) {
         next();
+        return;
     }
 
     jwtVerify(token).then(valid => {
         if (!valid) {
             next();
+            return;
         }
-        return res.redirect('/admin');
+
+        res.redirect('/admin');
     }).catch(err => {
         serverLogger.error(err);
         next();
