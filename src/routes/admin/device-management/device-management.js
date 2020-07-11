@@ -4,10 +4,19 @@ const {Device} = require("../../../models/device");
 const {sensorPattern, motorPattern} = require("../../../utils/utils");
 
 router.get('/', function (req, res){
-    res.render('pages/device-management.ejs', {
-        _csrf: req.csrfToken(),
-        admin: req.admin
+    let getData = Promise.all([
+        Device.find({}).select({ _id: 0, device_id: 1 }),
+        //User.find({}).select({ _id: 0, email: 1, name: 1 })
+    ]);
+
+    getData.then(data => {
+        res.render('pages/device-management.ejs', {
+            _csrf: req.csrfToken(),
+            admin: req.admin,
+            data: data
+        });
     });
+
 });
 
 router.post('/add', function (req, res){

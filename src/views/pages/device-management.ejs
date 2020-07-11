@@ -213,24 +213,28 @@
                                         <div class="col-12 text-break">
                                             <div class="d-flex justify-content-center">
                                                 <button data-type="device-add" type="button"
-                                                    class="device-add btn btn-info">+</button>
+                                                    class="device-add btn btn-success">+</button>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="row row-cols-2" id="id9_2">
-                                        <div class="col-* text-break">
-                                            <div class="d-flex justify-content-center">
-                                                <button data-type="device" type="button"
-                                                    class="device btn btn-info">id9_2</button>
+                                    <% for (let device of data[0]) { %>
+                                        <% if (device.device_id && device.device_id.match(/^id(\d+)_\d+$/)[1]==9) { %>
+                                            <div class="row row-cols-2" id="<%=device.device_id%>">
+                                                <div class="col-* text-break">
+                                                    <div class="d-flex justify-content-center">
+                                                        <button data-type="device" type="button"
+                                                            class="device btn btn-info"><%=device.device_id%></button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-* text-break task">
+                                                    <div class="d-flex justify-content-center">
+                                                        <button data-type="delete" type="button"
+                                                        class="device btn btn-danger">Xóa</button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-* text-break task">
-                                            <button data-type="delete" type="button"
-                                                class="button-task btn btn-danger">Xóa</button>
-                                        </div>
-                                    </div>
-
+                                        <% } %>
+                                    <% } %>
 
                                 </div>
                             </div>
@@ -248,28 +252,26 @@
                                         <div class="col-12 text-break">
                                             <div class="d-flex justify-content-center">
                                                 <button data-type="device-add" type="button"
-                                                    class="device-add btn btn-info">+</button>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="row row-cols-2">
-                                        <div class="col-* text-break">
-                                            <div class="d-flex justify-content-center">
-                                                <button data-type="device" type="button" class="device btn btn-info"
-                                                    id="y">id7_1</button>
-                                            </div>
-                                        </div>
-                                        <div class="col-* text-break task">
-                                            <div id="x">
-                                                <button data-type="delete" type="button"
-                                                    class="button-task btn btn-danger">Xóa</button>
+                                                    class="device-add btn btn-success">+</button>
                                             </div>
                                         </div>
                                     </div>
-
+                                    <% for (let device of data[0]) { %>
+                                        <% if (device.device_id && device.device_id.match(/^id(\d+)_\d+$/)[1]==7) { %>
+                                            <div class="row row-cols-2" id="<%=device.device_id%>">
+                                                <div class="col-* text-break">
+                                                    <div class="d-flex justify-content-center">
+                                                        <button data-type="device" type="button" class="device btn btn-info"
+                                                            ><%=device.device_id%></button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-* text-break task">
+                                                        <button data-type="delete" type="button"
+                                                            class="device btn btn-danger">Xóa</button>
+                                                </div>
+                                            </div>
+                                        <% } %>
+                                    <% } %>
 
                                 </div>
                             </div>
@@ -310,13 +312,18 @@
                                 })
 
                             })
-                                // .then(response => response.json())
-                                // .then(data => {
-                                //     console.log('Success:', data);
-                                // })
-                                // .catch((error) => {
-                                //     console.error('Error:', error);
-                                // })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.n == 1){
+                                        alert("Xóa thiết bị thành công!");
+                                    }
+                                    else{
+                                        alert("Xóa thiết bị thất bại!");
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                })
                                 ;
                         }
                         break;
@@ -343,8 +350,8 @@
                                 .then(data => {
                                     //console.log('Success:', data);
                                     let tb_a = document.getElementById("content_motor");
-                                    // console.log(tb_a);
-                                    tb_a.insertAdjacentHTML("beforeend", `
+                                    //if (data.n == 1){
+                                        tb_a.insertAdjacentHTML("beforeend", `
                                         <div class="row row-cols-2"  id="${data.device_id}">
                                             <div class="col-* text-break">
                                                 <div class="d-flex justify-content-center">
@@ -354,10 +361,18 @@
                                             </div>
                                             <div class="col-* text-break task">
                                                     <button data-type="delete" type="button"
-                                                        class="button-task btn btn-danger">Xóa</button>
+                                                        class="device btn btn-danger">Xóa</button>
                                             </div>
                                         </div>
-            `);
+                                    `);
+                                        alert("Thêm thiết bị thành công!");
+                                    //}
+                                    //else{
+                                    //   alert("Thêm thiết bị thất bại!");
+                                    //}
+                                    
+                                    // console.log(tb_a);
+                                    
                                 })
                                 .catch((error) => {
                                     console.error('Error:', error);
@@ -385,7 +400,7 @@
                         if (r == true) {
                             let token = document.getElementById('_csrf').getAttribute('content');
                             let id = event.target.closest(".row").id;
-                            console.log(event.target.closest(".row").id);
+                            //console.log(event.target.closest(".row").id);
                             event.target.closest(".row").remove();
                             // Send to Server
                             fetch('device-management/delete', {
@@ -400,13 +415,19 @@
                                 })
 
                             })
-                                // .then(response => response.json())
-                                // .then(data => {
-                                //     console.log('Success:', data);
-                                // })
-                                // .catch((error) => {
-                                //     console.error('Error:', error);
-                                // })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.n == 1){
+                                        alert("Xóa thiết bị thành công!");
+                                    }
+                                    else{
+                                        alert("Xóa thiết bị thất bại!");
+                                    }
+                                   
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                })
                                 ;
                         }
 
@@ -445,7 +466,7 @@
                                             </div>
                                             <div class="col-* text-break task">
                                                     <button data-type="delete" type="button"
-                                                        class="button-task btn btn-danger">Xóa</button>
+                                                        class="device btn btn-danger">Xóa</button>
                                             </div>
                                         </div>
             `);
