@@ -101,7 +101,7 @@ router.delete('/delete', function(req, res){
     if(!id){
         return res.status(400).end();
     }
-    Device.deleteOne({_id: id})
+    Device.deleteOne({device_id: id})
     .then(doc => {
         if(!doc.n){
             return res.status(400).end();

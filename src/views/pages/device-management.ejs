@@ -188,8 +188,284 @@
     </header>
     <div class="container-fluid main">
         <!-- To do code here -->
+        <div class="row">
+            <div class="list-l">
+                <div class="wrapper shadow">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
+                            aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                            <button class="btn btn-info" type="button">Tìm</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="handmade-table container-fluid">
+                                <div class="handmade-table-header">
+                                    <div class="row row-cols-2">
+                                        <div class="col-12 text-break">Motor</div>
+
+                                    </div>
+                                </div>
+                                <div class="handmade-table-content" id="content_motor">
+
+                                    <div class="row row-cols-2">
+                                        <div class="col-12 text-break">
+                                            <div class="d-flex justify-content-center">
+                                                <button data-type="device-add" type="button"
+                                                    class="device-add btn btn-info">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row row-cols-2" id="id9_2">
+                                        <div class="col-* text-break">
+                                            <div class="d-flex justify-content-center">
+                                                <button data-type="device" type="button"
+                                                    class="device btn btn-info">id9_2</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-* text-break task">
+                                            <button data-type="delete" type="button"
+                                                class="button-task btn btn-danger">Xóa</button>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="handmade-table container-fluid">
+                                <div class="handmade-table-header">
+                                    <div class="row row-cols-2">
+                                        <div class="col-12 text-break">Cảm biến</div>
+
+                                    </div>
+                                </div>
+                                <div class="handmade-table-content" id="content_sensor">
+                                    <div class="row row-cols-2">
+                                        <div class="col-12 text-break">
+                                            <div class="d-flex justify-content-center">
+                                                <button data-type="device-add" type="button"
+                                                    class="device-add btn btn-info">+</button>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row row-cols-2">
+                                        <div class="col-* text-break">
+                                            <div class="d-flex justify-content-center">
+                                                <button data-type="device" type="button" class="device btn btn-info"
+                                                    id="y">id7_1</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-* text-break task">
+                                            <div id="x">
+                                                <button data-type="delete" type="button"
+                                                    class="button-task btn btn-danger">Xóa</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+
+    <script>
+        let handle_motor = document.getElementById("content_motor");
+        // Handle click in table
+        handle_motor.addEventListener('click', function (event) {
+            if (event.target.type === "button") {
+                let type = event.target.getAttribute("data-type");
+                let userID = event.target.parentElement.id;
+                switch (type) {
+                    case "delete":
+                        let message_d = "Bạn có chắc muốn xóa thiết bị khỏi hệ thống?";
+                        let r = confirm(message_d);
+                        if (r == true) {
+                            let token = document.getElementById('_csrf').getAttribute('content');
+                            let id = event.target.closest(".row").id;
+                            console.log(event.target.closest(".row").id);
+                            event.target.closest(".row").remove();
+                            // Send to Server
+                            fetch('device-management/delete', {
+                                credentials: "same-origin",
+                                method: "DELETE",
+                                headers: {
+                                    'Content-type': 'application/json; charset=UTF-8',
+                                    'CSRF-Token': token
+                                },
+                                body: JSON.stringify({
+                                    device: id
+                                })
+
+                            })
+                                // .then(response => response.json())
+                                // .then(data => {
+                                //     console.log('Success:', data);
+                                // })
+                                // .catch((error) => {
+                                //     console.error('Error:', error);
+                                // })
+                                ;
+                        }
+                        break;
+                    case "device":
+                        console.log("device");
+                        break;
+                    case "device-add":
+                        let message_a = "Bạn có chắc muốn thêm thiết bị mới khỏi hệ thống?";
+                        let a = confirm(message_a);
+                        if (a == true) {
+                            let token = document.getElementById('_csrf').getAttribute('content');
+                            fetch('device-management/add', {
+                                credentials: "same-origin",
+                                method: "POST",
+                                headers: {
+                                    'Content-type': 'application/json; charset=UTF-8',
+                                    'CSRF-Token': token
+                                },
+                                body: JSON.stringify({
+                                    type: "1"
+                                })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    //console.log('Success:', data);
+                                    let tb_a = document.getElementById("content_motor");
+                                    // console.log(tb_a);
+                                    tb_a.insertAdjacentHTML("beforeend", `
+                                        <div class="row row-cols-2"  id="${data.device_id}">
+                                            <div class="col-* text-break">
+                                                <div class="d-flex justify-content-center">
+                                                        <button data-type="device" type="button" class="device btn btn-info"
+                                                        >${data.device_id}</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-* text-break task">
+                                                    <button data-type="delete" type="button"
+                                                        class="button-task btn btn-danger">Xóa</button>
+                                            </div>
+                                        </div>
+            `);
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                });
+                        }
+
+                        break;
+                }
+            } else {
+                let message = "Có gì đó sai sai!!";
+
+            }
+        });
+
+        let handle_sensor = document.getElementById("content_sensor");
+        // Handle click in table
+        handle_sensor.addEventListener('click', function (event) {
+            if (event.target.type === "button") {
+                let type = event.target.getAttribute("data-type");
+                let userID = event.target.parentElement.id;
+                switch (type) {
+                    case "delete":
+                        let message_d = "Bạn có chắc muốn xóa thiết bị khỏi hệ thống?";
+                        let r = confirm(message_d);
+                        if (r == true) {
+                            let token = document.getElementById('_csrf').getAttribute('content');
+                            let id = event.target.closest(".row").id;
+                            console.log(event.target.closest(".row").id);
+                            event.target.closest(".row").remove();
+                            // Send to Server
+                            fetch('device-management/delete', {
+                                credentials: "same-origin",
+                                method: "DELETE",
+                                headers: {
+                                    'Content-type': 'application/json; charset=UTF-8',
+                                    'CSRF-Token': token
+                                },
+                                body: JSON.stringify({
+                                    device: id
+                                })
+
+                            })
+                                // .then(response => response.json())
+                                // .then(data => {
+                                //     console.log('Success:', data);
+                                // })
+                                // .catch((error) => {
+                                //     console.error('Error:', error);
+                                // })
+                                ;
+                        }
+
+                        break;
+                    case "device":
+                        console.log("device");
+                        break;
+                    case "device-add":
+                        let message_a = "Bạn có chắc muốn thêm thiết bị mới khỏi hệ thống?";
+                        let a = confirm(message_a);
+                        if (a == true) {
+                            let token = document.getElementById('_csrf').getAttribute('content');
+                            fetch('device-management/add', {
+                                credentials: "same-origin",
+                                method: "POST",
+                                headers: {
+                                    'Content-type': 'application/json; charset=UTF-8',
+                                    'CSRF-Token': token
+                                },
+                                body: JSON.stringify({
+                                    type: "0"
+                                })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    //console.log('Success:', data);
+                                    let tb_a = document.getElementById("content_sensor");
+                                    //console.log(tb_a);
+                                    tb_a.insertAdjacentHTML("beforeend", `
+                                        <div class="row row-cols-2"  id="${data.device_id}">
+                                            <div class="col-* text-break">
+                                                <div class="d-flex justify-content-center">
+                                                    <button data-type="device" type="button" class="device btn btn-info"
+                                                        >${data.device_id}</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-* text-break task">
+                                                    <button data-type="delete" type="button"
+                                                        class="button-task btn btn-danger">Xóa</button>
+                                            </div>
+                                        </div>
+            `);
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                });
+                        }
+
+                        break;
+                }
+            } else {
+                let message = "Có gì đó sai sai!!";
+
+            }
+        });
+
+
+
+    </script>
 </body>
 
 </html>
