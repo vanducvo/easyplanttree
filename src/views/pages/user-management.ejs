@@ -198,11 +198,14 @@
             <div class="list-l">
                 <div class="wrapper shadow">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
-                            aria-describedby="basic-addon2">
                         <div class="input-group-append">
-                            <button class="btn btn-info" type="button">Tìm</button>
+                            <select class="selectpicker" id="search-type" onchange="change_user_mode()">
+                                <option selected value="email">Email</option>
+                                <option value="name">Tên</option>
+                            </select>
                         </div>
+                        <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
+                            aria-describedby="basic-addon2" id="find" onkeyup="find_user()">
                     </div>
                     <!-- Table -->
                     <div class="handmade-table container-fluid">
@@ -859,6 +862,50 @@
                     $('#slave-device').selectpicker('refresh');
                 });
         });
+
+
+        function find_user(){
+            let filter, input, select_option;
+            input = document.getElementById("find");
+            filter = input.value.toUpperCase();
+            select_option = document.getElementById("search-type").value;
+            find_user_(filter,select_option);
+        }
+        function find_user_(filter,select_option){
+            let table, row, name;
+                table = document.getElementById("content");
+                row = table.getElementsByClassName("row row-cols-2");
+                // Loop through all table rows, and hide those who don't match the search query
+                for (i = 0; i < row.length; i++) {
+                    if (select_option=="email"){
+                        name = row[i].innerText.match(/[^\r\n]+/g)[1];
+                    } else if (select_option=="name"){
+                        name = row[i].innerText.match(/[^\r\n]+/g)[0];
+                    }
+                    if (name)  {
+                        if (name.toUpperCase().indexOf(filter) > -1) {
+                            row[i].style.display = "";
+                        } else {
+                            row[i].style.display = "none";
+                        }
+                    }
+                    else {
+                        if (filter != "") {
+                            row[i].style.display = "none";
+                        }
+                        else{
+                            row[i].style.display = "";
+                        }  
+                    }
+                }
+        }
+        function change_user_mode(){
+            let filter, input, select_option;
+            input = document.getElementById("find");
+            filter = input.value.toUpperCase();
+            select_option = document.getElementById("search-type").value;
+            find_user_(filter,select_option);
+        }
     </script>
 </body>
 

@@ -172,17 +172,13 @@
                     <p class="table-name">Danh sách người dùng</p>
                     <div class="input-group mb-3">
                         <div class="input-group-append">
-                            <select class="selectpicker" id="search-type">
-                                <option selected>Theo...</option>
-                                <option value="email">Email</option>
+                            <select class="selectpicker" id="search-type" onchange="change_user_mode()">
+                                <option selected value="email">Email</option>
                                 <option value="name">Tên</option>
                             </select>
                         </div>
                         <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
-                            aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-info" type="button">Tìm</button>
-                        </div>
+                            aria-describedby="basic-addon2" id="find_user" onkeyup="find_user()">
                     </div>
 
                     <!-- Table -->
@@ -193,11 +189,11 @@
                                 <div class="col-* text-break">Email</div>
                             </div>
                         </div>
-                        <div class="handmade-table-content">
+                        <div class="handmade-table-content" id="table_user">
                             <% for (let user of data[1]) { %>
                                 <div class="row row-cols-2">
-                                    <div class="col-* text-break"><%= user.name %></div>
-                                    <div class="col-* text-break"><%= user.email %></div>
+                                    <div class="col-* text-break name"><%= user.name %></div>
+                                    <div class="col-* text-break email"><%= user.email %></div>
                                 </div>
                             <% } %>
                         </div>
@@ -210,17 +206,13 @@
                     <p class="table-name">Danh sách thiết bị</p>
                     <div class="input-group mb-3">
                         <div class="input-group-append">
-                            <select class="selectpicker" id="search-type-devices">
-                                <option selected>Theo...</option>
-                                <option value="email">ID</option>
-                                <option value="name">Loại</option>
+                            <select class="selectpicker" id="search-type-devices" onchange="change_device_mode()">
+                                <option selected value="cata">Loại</option>
+                                <option value="name">ID</option>
                             </select>
                         </div>
                         <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
-                            aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                                <button class="btn btn-info" type="button">Tìm</button>
-                            </div>
+                            aria-describedby="basic-addon2" onkeyup="find_device()" id="find_device">
                     </div>
 
                     <!-- Table -->
@@ -231,7 +223,7 @@
                                 <div class="col-* text-break">Loại</div>
                             </div>
                         </div>
-                        <div class="handmade-table-content">
+                        <div class="handmade-table-content" id="table_device">
                             <%
                                 function getNameDevice(id){
                                     let type = id.match(/^id(\d+)_\d+$/)[1];
@@ -262,6 +254,94 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function find_user(){
+            let filter, input, select_option;
+            input = document.getElementById("find_user");
+            filter = input.value.toUpperCase();
+            select_option = document.getElementById("search-type").value;
+            find_user_(filter,select_option);
+        }
+        function find_user_(filter,select_option){
+            let table, row, name;
+                table = document.getElementById("table_user");
+                row = table.getElementsByClassName("row row-cols-2");
+                // Loop through all table rows, and hide those who don't match the search query
+                for (i = 0; i < row.length; i++) {
+                    if (select_option=="email"){
+                        name = row[i].innerText.match(/[^\r\n]+/g)[1];
+                    } else if (select_option=="name"){
+                        name = row[i].innerText.match(/[^\r\n]+/g)[0];
+                    }
+                    if (name)  {
+                        if (name.toUpperCase().indexOf(filter) > -1) {
+                            row[i].style.display = "";
+                        } else {
+                            row[i].style.display = "none";
+                        }
+                    }
+                    else {
+                        if (filter != "") {
+                            row[i].style.display = "none";
+                        }
+                        else{
+                            row[i].style.display = "";
+                        }  
+                    }
+                }
+        }
+        function change_user_mode(){
+            let filter, input, select_option;
+            input = document.getElementById("find_user");
+            filter = input.value.toUpperCase();
+            select_option = document.getElementById("search-type").value;
+            find_user_(filter,select_option);
+        }
+        function find_device(){
+            let filter, input, select_option;
+            input = document.getElementById("find_device");
+            filter = input.value.toUpperCase();
+            select_option = document.getElementById("search-type-devices").value;
+            find_device_(filter,select_option);
+        }
+        function find_device_(filter,select_option){
+            let table, row, name;
+                table = document.getElementById("table_device");
+                row = table.getElementsByClassName("row row-cols-2");
+                // Loop through all table rows, and hide those who don't match the search query
+                for (i = 0; i < row.length; i++) {
+                    if (select_option=="cata"){
+                        name = row[i].innerText.match(/[^\r\n]+/g)[1];
+                    } else if (select_option=="name"){
+                        name = row[i].innerText.match(/[^\r\n]+/g)[0];
+                    }
+                    if (name)  {
+                        if (name.toUpperCase().indexOf(filter) > -1) {
+                            row[i].style.display = "";
+                        } else {
+                            row[i].style.display = "none";
+                        }
+                    }
+                    else {
+                        if (filter != "") {
+                            row[i].style.display = "none";
+                        }
+                        else{
+                            row[i].style.display = "";
+                        }  
+                    }
+                }
+        }
+        function change_device_mode(){
+            let filter, input, select_option;
+            input = document.getElementById("find_device");
+            filter = input.value.toUpperCase();
+            select_option = document.getElementById("search-type-devices").value;
+            find_device_(filter,select_option);
+        }
+    </script>
+
 </body>
 
 </html>

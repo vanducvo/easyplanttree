@@ -192,11 +192,14 @@
             <div class="list-l">
                 <div class="wrapper shadow">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
-                            aria-describedby="basic-addon2">
                         <div class="input-group-append">
-                            <button class="btn btn-info" type="button">Tìm</button>
+                            <select class="browser-default custom-select" id="select_option" onchange="myChangeFunction()">
+                                <option selected value="Motor">Motor</option>
+                                <option value="Sensor">Cảm biến</option>                                  
+                              </select>
                         </div>
+                        <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
+                            aria-describedby="basic-addon2" id="myInput" onkeyup="myFunction()">
                     </div>
                     <div class="row">
                         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
@@ -483,8 +486,57 @@
 
             }
         });
-
-
+        function myFunction(){
+            let filter, input, select_option;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            select_option = document.getElementById("select_option").value;
+            myFunction_(filter,select_option);
+        }
+        function myFunction_(filter, select_option) {
+                // Declare variables
+                let table, row, name;
+                if (select_option == "Motor"){
+                    table = document.getElementById("content_motor");
+                    row = table.getElementsByClassName("row row-cols-2");
+                } else if (select_option == "Sensor"){
+                    table = document.getElementById("content_sensor");
+                    row = table.getElementsByClassName("row row-cols-2");
+                } else{
+                    alert("Có gì đó sai sai!!");
+                    return 0;
+                }
+                // Loop through all table rows, and hide those who don't match the search query
+                for (i = 0; i < row.length; i++) {
+                    name = row[i].id;
+                    if (name)  {
+                        if (name.toUpperCase().indexOf(filter) > -1) {
+                            row[i].style.display = "";
+                        } else {
+                            row[i].style.display = "none";
+                        }
+                    }
+                    else {
+                        if (filter != "") {
+                            row[i].style.display = "none";
+                        }
+                        else{
+                            row[i].style.display = "";
+                        }  
+                    }
+                }
+            }
+        function myChangeFunction(){
+            let select_option = document.getElementById("select_option").value;
+            let filter = document.getElementById("myInput").value;
+            if (select_option == "Motor"){
+                myFunction_("", "Sensor");
+            }
+            else{
+                myFunction_("", "Motor");
+            }
+            myFunction();
+        }
 
     </script>
 </body>
