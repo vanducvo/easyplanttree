@@ -878,9 +878,9 @@
                 // Loop through all table rows, and hide those who don't match the search query
                 for (i = 0; i < row.length; i++) {
                     if (select_option=="email"){
-                        name = row[i].innerText.match(/[^\r\n]+/g)[1];
+                        name = row[i].children[0].children[1].innerText.match(/[^\r\n]+/g)[0].replace("Email: ","");
                     } else if (select_option=="name"){
-                        name = row[i].innerText.match(/[^\r\n]+/g)[0];
+                        name = row[i].children[0].children[0].innerText.match(/[^\r\n]+/g)[0].split("Tên: ")[1];
                     }
                     if (name)  {
                         if (name.toUpperCase().indexOf(filter) > -1) {
@@ -888,14 +888,6 @@
                         } else {
                             row[i].style.display = "none";
                         }
-                    }
-                    else {
-                        if (filter != "") {
-                            row[i].style.display = "none";
-                        }
-                        else{
-                            row[i].style.display = "";
-                        }  
                     }
                 }
         }
