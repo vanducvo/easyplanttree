@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const {Device} = require("../../../models/device");
-const {sensorPattern, motorPattern} = require("../../../utils/utils");
+const {sensorPattern, motorPattern, getTypeDevice} = require("../../../utils/utils");
+const Dependent = require("../../../models/dependent");
+const { connect } = require("mongoose");
 
 router.get('/', function (req, res){
     let getData = Promise.all([
@@ -96,10 +98,10 @@ router.post('/add', function (req, res){
 
             res.json(doc).end();
         }).catch(err => {
-
+            return res.status(400).end();
         });
     }).catch(err => {
-        
+        return res.status(400).end();
     });
 
 
@@ -110,15 +112,29 @@ router.delete('/delete', function(req, res){
     if(!id){
         return res.status(400).end();
     }
-    Device.deleteOne({device_id: id})
-    .then(doc => {
-        if(!doc.n){
+
+    let type = getTypeDevice({device_id: id});
+
+    Device
+    .findOne({device_id: id})
+    .then(device => {
+        Promise.all([
+            Device.deleteOne({_id: device._id}),
+            Dependent.deleteOne({[type]: device._id})
+        ])
+        .then(docs => {
+            if(!docs[0].n){
+                return res.status(400).end();
+            }
+    
+            res.json({n: docs[0].n}).end();
+        })
+        .catch(err => {
             return res.status(400).end();
-        }
-
-        res.json({n: doc.n}).end();
-    }).catch(err => {
-
+        });
+    })
+    .catch(err => {
+        return res.status(400).end();
     });
 });
 
