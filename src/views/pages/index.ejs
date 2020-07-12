@@ -278,51 +278,102 @@
             <canvas id="waters"></canvas>
             <select id="waters-picker" class="selectpicker col-6 col-lg-5">
               <option>Tuần Hiện Tại</option>
-              <option>Tuần Trước</option>
+              <option value="preweek">Tuần Trước</option>
             </select>
             <script>
               let waters = document.getElementById('waters');
-              let watersChart = new Chart(waters, {
-                type: 'bar',
-                data: {
-                  datasets: [{
-                    data: [1, 2, 3, 4, 5, 6, 7, 8],
-                    backgroundColor: palette('cb-Pastel1', 7).map(color => `#${color}`),
-                    type: 'line'
-                  }, {
-                    data: [1, 2, 3, 4, 5, 6, 7, 8],
-                    backgroundColor: palette('cb-Pastel1', 7).map(color => `#${color}`)
-                  },
-                  ],
-                  labels: ['2', '3', '4', '5', '6', '7', 'CN']
-                },
-                options: {
-                  scales: {
-                    yAxes: [{
-                      ticks: {
-                        beginAtZero: true,
-                      }
-                    }]
-                  },
-                  title: {
-                    text: 'Thống kê tưới nước trong tuần',
-                    position: 'bottom',
-                    display: true
-                  },
-                  legend: {
-                    display: false,
-                  },
-                  elements: {
-                    line: {
-                      fill: false,
-                      tension: 0,
-                      borderColor: '#b3e2cd',
-                      borderWidth: 2
-                    }
+              let watering = null;
+              function createWateringChart(waters) {
+                return function () {
+                  if (watering) {
+                    watering.destroy();
                   }
+
+                  watering = new Chart(waters, {
+                    type: 'bar',
+                    data: {
+                      datasets: [{
+                        data: [],
+                        backgroundColor: palette('cb-Pastel1', 7).map(color => `#${color}`),
+                        type: 'line'
+                      }, {
+                        data: [],
+                        backgroundColor: palette('cb-Pastel1', 7).map(color => `#${color}`)
+                      },
+                      ],
+                      labels: ['2', '3', '4', '5', '6', '7', 'CN']
+                    },
+                    options: {
+                      scales: {
+                        yAxes: [{
+                          ticks: {
+                            beginAtZero: true,
+                          }
+                        }]
+                      },
+                      title: {
+                        text: 'Thống kê tưới nước trong tuần',
+                        position: 'bottom',
+                        display: true
+                      },
+                      legend: {
+                        display: false,
+                      },
+                      elements: {
+                        line: {
+                          fill: false,
+                          tension: 0,
+                          borderColor: '#b3e2cd',
+                          borderWidth: 2
+                        }
+                      }
+                    }
+                  });
+                  return watering;
                 }
-              });
+              }
               
+              let wateringCreater = createWateringChart(waters);
+              let mapper = new Map([
+                [1, 6],
+                [2, 0],
+                [3, 1],
+                [4, 2],
+                [5, 3],
+                [6, 4],
+                [7, 5]
+              ]);
+              async function drawWateringChart(type, chart){
+                let url = '/analysis-watering';
+                if (type === "preweek") {
+                  url += '?type=preweek'
+                }
+
+                let data = [null,null,null,null,null,null, null];
+
+                fetch(url, {
+                  method: 'GET',
+                  credentials: "same-origin"
+                })
+                .then(res => res.json())
+                .then(json => {
+                  for (let day of json){
+                    data[mapper.get(day._id)] = day.times;
+                    chart.data.datasets[0].data = data;
+                    chart.data.datasets[1].data = data;
+                  }
+                  chart.update();
+                })
+                .catch(err => {
+
+                });
+              }
+
+              drawWateringChart(null, wateringCreater());
+
+              document.getElementById("waters-picker").addEventListener("change", e => {
+                drawWateringChart(e.target.value, wateringCreater());
+              });
             </script>
           </div>
         </div>
