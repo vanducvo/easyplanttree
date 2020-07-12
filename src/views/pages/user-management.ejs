@@ -91,7 +91,18 @@
 
         .handmade-table-content .task {
             text-align: center;
+            width: 100%;
+            height: 100%;
             margin: auto;
+        }
+
+        .handmade-table-content .task div{
+            text-align: center;
+            margin: auto;
+        }
+
+        .handmade-table-content .task div button{
+            margin-left: 3rem;
         }
 
         #device-modal .device,
@@ -240,8 +251,8 @@
                                 </div>
                                 <div class="col-* text-break task">
                                     <div id="<%= user._id %>">
-                                        <button data-type="delete" type="button"
-                                            class="button-task btn btn-danger">Xóa</button>
+                                        <!-- <button data-type="delete" type="button"
+                                            class="button-task btn btn-danger">Xóa</button> -->
                                         <button data-type="info" type="button" class="button-task btn btn-success">Thông
                                             Tin</button>
                                     </div>

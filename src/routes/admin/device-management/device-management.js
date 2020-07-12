@@ -3,7 +3,6 @@ const router = express.Router();
 const {Device} = require("../../../models/device");
 const {sensorPattern, motorPattern, getTypeDevice} = require("../../../utils/utils");
 const Dependent = require("../../../models/dependent");
-const { connect } = require("mongoose");
 
 router.get('/', function (req, res){
     let getData = Promise.all([
