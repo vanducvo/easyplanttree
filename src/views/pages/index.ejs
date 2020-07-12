@@ -230,6 +230,8 @@
                         yAxes: [{
                           ticks: {
                             min: 0,
+                            max: 100,
+                            stepSize: 20,
                             callback: function (value, index, values) {
                               return value + '%';
                             }
@@ -308,6 +310,7 @@
                         yAxes: [{
                           ticks: {
                             beginAtZero: true,
+                            stepSize: 10
                           }
                         }]
                       },
