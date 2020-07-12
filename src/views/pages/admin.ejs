@@ -238,7 +238,7 @@
                             <% for (let device of data[0]) { %>
                                 <% if (device.device_id) { %>
                                     <div class="row row-cols-2">
-                                        <div class="col-* text-break"><%= device.device_id.replace(/^id(\d+)_(\d+)$/, 'ID-$1-$2') %></div>
+                                        <div class="col-* text-break"><%= device.device_id%></div>
                                         <div class="col-* text-break"><%= getNameDevice(device.device_id) %></div>
                                     </div>
                                 <% } %>
@@ -273,7 +273,6 @@
                     if (name)  {
                         if (name.toUpperCase().indexOf(filter) > -1) {
                             row[i].style.display = "";
-                            //console.log(filter + name);
                         } else {
                             row[i].style.display = "none";
                         }

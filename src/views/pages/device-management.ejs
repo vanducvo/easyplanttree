@@ -193,10 +193,11 @@
                 <div class="wrapper shadow">
                     <div class="input-group mb-3">
                         <div class="input-group-append">
-                            <select class="browser-default custom-select" id="select_option" onchange="myChangeFunction()">
+                            <select class="browser-default custom-select" id="select_option"
+                                onchange="myChangeFunction()">
                                 <option selected value="Motor">Motor</option>
-                                <option value="Sensor">Cảm biến</option>                                  
-                              </select>
+                                <option value="Sensor">Cảm biến</option>
+                            </select>
                         </div>
                         <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Email"
                             aria-describedby="basic-addon2" id="myInput" onkeyup="myFunction()">
@@ -212,7 +213,7 @@
                                 </div>
                                 <div class="handmade-table-content" id="content_motor">
 
-                                    <div class="row row-cols-2">
+                                    <div class="row">
                                         <div class="col-12 text-break">
                                             <div class="d-flex justify-content-center">
                                                 <button data-type="device-add" type="button"
@@ -221,22 +222,22 @@
                                         </div>
                                     </div>
                                     <% for (let device of data[0]) { %>
-                                        <% if (device.device_id && device.device_id.match(/^id(\d+)_\d+$/)[1]==9) { %>
-                                            <div class="row row-cols-2" id="<%=device.device_id%>">
-                                                <div class="col-* text-break">
-                                                    <div class="d-flex justify-content-center">
-                                                        <button data-type="device" type="button"
-                                                            class="device btn btn-info"><%=device.device_id%></button>
-                                                    </div>
-                                                </div>
-                                                <div class="col-* text-break task">
-                                                    <div class="d-flex justify-content-center">
-                                                        <button data-type="delete" type="button"
-                                                        class="device btn btn-danger">Xóa</button>
-                                                    </div>
-                                                </div>
+                                    <% if (device.device_id && device.device_id.match(/^id(\d+)_\d+$/)[1]==9) { %>
+                                    <div class="row row-cols-2" id="<%=device.device_id%>">
+                                        <div class="col-* text-break">
+                                            <div class="d-flex justify-content-center">
+                                                <button data-type="device" type="button"
+                                                    class="device btn btn-info"><%=device.device_id%></button>
                                             </div>
-                                        <% } %>
+                                        </div>
+                                        <div class="col-* text-break task">
+                                            <div class="d-flex justify-content-center">
+                                                <button data-type="delete" type="button"
+                                                    class="device btn btn-danger">Xóa</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
                                     <% } %>
 
                                 </div>
@@ -251,7 +252,7 @@
                                     </div>
                                 </div>
                                 <div class="handmade-table-content" id="content_sensor">
-                                    <div class="row row-cols-2">
+                                    <div class="row">
                                         <div class="col-12 text-break">
                                             <div class="d-flex justify-content-center">
                                                 <button data-type="device-add" type="button"
@@ -260,20 +261,20 @@
                                         </div>
                                     </div>
                                     <% for (let device of data[0]) { %>
-                                        <% if (device.device_id && device.device_id.match(/^id(\d+)_\d+$/)[1]==7) { %>
-                                            <div class="row row-cols-2" id="<%=device.device_id%>">
-                                                <div class="col-* text-break">
-                                                    <div class="d-flex justify-content-center">
-                                                        <button data-type="device" type="button" class="device btn btn-info"
-                                                            ><%=device.device_id%></button>
-                                                    </div>
-                                                </div>
-                                                <div class="col-* text-break task">
-                                                        <button data-type="delete" type="button"
-                                                            class="device btn btn-danger">Xóa</button>
-                                                </div>
+                                    <% if (device.device_id && device.device_id.match(/^id(\d+)_\d+$/)[1]==7) { %>
+                                    <div class="row row-cols-2" id="<%=device.device_id%>">
+                                        <div class="col-* text-break">
+                                            <div class="d-flex justify-content-center">
+                                                <button data-type="device" type="button"
+                                                    class="device btn btn-info"><%=device.device_id%></button>
                                             </div>
-                                        <% } %>
+                                        </div>
+                                        <div class="col-* text-break task">
+                                            <button data-type="delete" type="button"
+                                                class="device btn btn-danger">Xóa</button>
+                                        </div>
+                                    </div>
+                                    <% } %>
                                     <% } %>
 
                                 </div>
@@ -285,8 +286,76 @@
         </div>
     </div>
 
+    <!-- Confirm Modal -->
+    <div class="modal fade" id="confirm" tabindex="-1" role="dialog" aria-labelledby="confirm-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirm-title">Xác Nhận</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button id="confirm-no" type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button id="confirm-yes" type="button" class="btn btn-danger">Đồng ý</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="error" tabindex="-1" role="dialog" aria-labelledby="confirm-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
+        // Comfirm UI
+        function confirm(title, message, callback) {
+            document.querySelector("#confirm .modal-title").textContent = title;
+            document.querySelector("#confirm .modal-body").innerHTML = message;
+            $("#confirm").modal("show");
+            let handle = () => {
+                $("#confirm").modal("hide");
+                callback();
+            };
+
+            $("#confirm-yes").on("click", handle);
+
+            let handleHide = () => {
+                $("#confirm-yes").off("click", handle);
+                $('#confirm').off('hidden.bs.modal', handleHide);
+            }
+
+            $('#confirm').on('hidden.bs.modal', handleHide);
+        }
+
+        // Error UI
+        function error(title, message) {
+            document.querySelector("#error .modal-body").innerHTML = message;
+            document.querySelector("#error .modal-title").textContent = title;
+            $("#error").modal("show");
+        }
+
         let handle_motor = document.getElementById("content_motor");
         // Handle click in table
         handle_motor.addEventListener('click', function (event) {
@@ -296,8 +365,7 @@
                 switch (type) {
                     case "delete":
                         let message_d = "Bạn có chắc muốn xóa thiết bị khỏi hệ thống?";
-                        let r = confirm(message_d);
-                        if (r == true) {
+                        confirm("Xác Nhận", message_d, () => {
                             let token = document.getElementById('_csrf').getAttribute('content');
                             let id = event.target.closest(".row").id;
                             console.log(event.target.closest(".row").id);
@@ -317,26 +385,24 @@
                             })
                                 .then(response => response.json())
                                 .then(data => {
-                                    if (data.n == 1){
-                                        alert("Xóa thiết bị thành công!");
+                                    if (data.n == 1) {
+                                        error("Thông Báo", "Xóa thiết bị thành công!");
                                     }
-                                    else{
-                                        alert("Xóa thiết bị thất bại!");
+                                    else {
+                                        error("Lỗi", "Xóa thiết bị thất bại!");
                                     }
                                 })
-                                .catch((error) => {
-                                    console.error('Error:', error);
-                                })
-                                ;
-                        }
+                                .catch(e => {
+                                    error("Lỗi", "Xóa thiết bị thất bại!");
+                                });
+                        });
                         break;
                     case "device":
                         console.log("device");
                         break;
                     case "device-add":
-                        let message_a = "Bạn có chắc muốn thêm thiết bị mới khỏi hệ thống?";
-                        let a = confirm(message_a);
-                        if (a == true) {
+                        let message_a = "Bạn có chắc muốn thêm thiết bị mới hệ thống?";
+                        confirm("Xác Nhận", message_a, () => {
                             let token = document.getElementById('_csrf').getAttribute('content');
                             fetch('device-management/add', {
                                 credentials: "same-origin",
@@ -351,10 +417,8 @@
                             })
                                 .then(response => response.json())
                                 .then(data => {
-                                    //console.log('Success:', data);
                                     let tb_a = document.getElementById("content_motor");
-                                    //if (data.n == 1){
-                                        tb_a.insertAdjacentHTML("beforeend", `
+                                    tb_a.insertAdjacentHTML("beforeend", `
                                         <div class="row row-cols-2"  id="${data.device_id}">
                                             <div class="col-* text-break">
                                                 <div class="d-flex justify-content-center">
@@ -368,25 +432,14 @@
                                             </div>
                                         </div>
                                     `);
-                                        alert("Thêm thiết bị thành công!");
-                                    //}
-                                    //else{
-                                    //   alert("Thêm thiết bị thất bại!");
-                                    //}
-                                    
-                                    // console.log(tb_a);
-                                    
+                                    error("Thông báo", "Thêm thiết bị thành công!");
                                 })
-                                .catch((error) => {
-                                    console.error('Error:', error);
+                                .catch((e) => {
+                                    error("Lỗi", "Xoá thiết bị thất bại!");
                                 });
-                        }
-
+                        });
                         break;
                 }
-            } else {
-                let message = "Có gì đó sai sai!!";
-
             }
         });
 
@@ -399,11 +452,9 @@
                 switch (type) {
                     case "delete":
                         let message_d = "Bạn có chắc muốn xóa thiết bị khỏi hệ thống?";
-                        let r = confirm(message_d);
-                        if (r == true) {
+                        confirm("Xác Nhận", message_d, () => {
                             let token = document.getElementById('_csrf').getAttribute('content');
                             let id = event.target.closest(".row").id;
-                            //console.log(event.target.closest(".row").id);
                             event.target.closest(".row").remove();
                             // Send to Server
                             fetch('device-management/delete', {
@@ -420,28 +471,25 @@
                             })
                                 .then(response => response.json())
                                 .then(data => {
-                                    if (data.n == 1){
-                                        alert("Xóa thiết bị thành công!");
+                                    if (data.n == 1) {
+                                        error("Thông báo", "Xóa thiết bị thành công!");
                                     }
-                                    else{
-                                        alert("Xóa thiết bị thất bại!");
+                                    else {
+                                        error("Lỗi", "Xóa thiết bị thất bại!");
                                     }
-                                   
-                                })
-                                .catch((error) => {
-                                    console.error('Error:', error);
-                                })
-                                ;
-                        }
 
+                                })
+                                .catch(e => {
+                                    error("Lỗi", "Xóa thiết bị thất bại!");
+                                });
+                        });
                         break;
                     case "device":
                         console.log("device");
                         break;
                     case "device-add":
-                        let message_a = "Bạn có chắc muốn thêm thiết bị mới khỏi hệ thống?";
-                        let a = confirm(message_a);
-                        if (a == true) {
+                        let message_a = "Bạn có chắc muốn thêm thiết bị mới hệ thống?";
+                        confirm("Xác Nhận", message_a, () => {
                             let token = document.getElementById('_csrf').getAttribute('content');
                             fetch('device-management/add', {
                                 credentials: "same-origin",
@@ -472,67 +520,66 @@
                                                         class="device btn btn-danger">Xóa</button>
                                             </div>
                                         </div>
-            `);
+                                    `);
+                                    error("Thông báo", "Thêm thiết bị thành công!");
                                 })
-                                .catch((error) => {
-                                    console.error('Error:', error);
+                                .catch(e => {
+                                    error("Lỗi", "Thêm thiết bị thất bại!");
                                 });
-                        }
-
+                        });
                         break;
                 }
-            } else {
-                let message = "Có gì đó sai sai!!";
-
-            }
+            };
         });
-        function myFunction(){
+
+        function myFunction() {
             let filter, input, select_option;
             input = document.getElementById("myInput");
             filter = input.value.toUpperCase();
             select_option = document.getElementById("select_option").value;
-            myFunction_(filter,select_option);
+            myFunction_(filter, select_option);
         }
+
         function myFunction_(filter, select_option) {
-                // Declare variables
-                let table, row, name;
-                if (select_option == "Motor"){
-                    table = document.getElementById("content_motor");
-                    row = table.getElementsByClassName("row row-cols-2");
-                } else if (select_option == "Sensor"){
-                    table = document.getElementById("content_sensor");
-                    row = table.getElementsByClassName("row row-cols-2");
-                } else{
-                    alert("Có gì đó sai sai!!");
-                    return 0;
+            // Declare variables
+            let table, row, name;
+            if (select_option == "Motor") {
+                table = document.getElementById("content_motor");
+                row = table.getElementsByClassName("row row-cols-2");
+            } else if (select_option == "Sensor") {
+                table = document.getElementById("content_sensor");
+                row = table.getElementsByClassName("row row-cols-2");
+            } else {
+                alert("Có gì đó sai sai!!");
+                return 0;
+            }
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < row.length; i++) {
+                name = row[i].id;
+                if (name) {
+                    if (name.toUpperCase().indexOf(filter) > -1) {
+                        row[i].style.display = "";
+                    } else {
+                        row[i].style.display = "none";
+                    }
                 }
-                // Loop through all table rows, and hide those who don't match the search query
-                for (i = 0; i < row.length; i++) {
-                    name = row[i].id;
-                    if (name)  {
-                        if (name.toUpperCase().indexOf(filter) > -1) {
-                            row[i].style.display = "";
-                        } else {
-                            row[i].style.display = "none";
-                        }
+                else {
+                    if (filter != "") {
+                        row[i].style.display = "none";
                     }
                     else {
-                        if (filter != "") {
-                            row[i].style.display = "none";
-                        }
-                        else{
-                            row[i].style.display = "";
-                        }  
+                        row[i].style.display = "";
                     }
                 }
             }
-        function myChangeFunction(){
+        }
+        function myChangeFunction() {
             let select_option = document.getElementById("select_option").value;
             let filter = document.getElementById("myInput").value;
-            if (select_option == "Motor"){
+            if (select_option == "Motor") {
                 myFunction_("", "Sensor");
             }
-            else{
+            else {
                 myFunction_("", "Motor");
             }
             myFunction();

@@ -195,25 +195,25 @@
         </div>
     </div>
 
-        <!-- Confirm Modal -->
-        <div class="modal fade" id="error" tabindex="-1" role="dialog" aria-labelledby="confirm-title" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Lỗi</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-    
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                    </div>
+    <!-- Error Modal -->
+    <div class="modal fade" id="error" tabindex="-1" role="dialog" aria-labelledby="confirm-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Lỗi</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
                 </div>
             </div>
         </div>
+    </div>
 
     <script>
         // Comfirm UI
@@ -236,7 +236,7 @@
             $('#confirm').on('hidden.bs.modal', handleHide);
         }
 
-                // Comfirm UI
+        // Error UI
         function error(title, message) {
             document.querySelector("#error .modal-body").innerHTML = message;
             $("#error").modal("show");
@@ -244,7 +244,7 @@
 
         $("#form-watering").on('submit', function (e) {
             e.preventDefault();
-            
+
 
             let device = $("#device").val();
             let date = $("#datepicker").val();
@@ -259,7 +259,7 @@
                 intensity: intensity
             };
 
-            if(data.when < new Date()){
+            if (data.when < new Date()) {
                 return error("Lỗi", "Đặt lịch trong quá khứ");
             }
 
@@ -273,7 +273,7 @@
                 `,
                 () => {
                     $("#btn_watering").prop('disabled', true);
-                    
+
                     let token = $('#_csrf').attr('content');
                     fetch("controller/", {
                         method: "POST",
@@ -358,10 +358,10 @@
                         },
                         body: JSON.stringify({ id: id.match(/^future_(.*)$/)[1] })
                     })
-                    .then(res => res.json())
-                    .then(doc => {
-                        $(`#future_${doc.id}`).remove();
-                    });
+                        .then(res => res.json())
+                        .then(doc => {
+                            $(`#future_${doc.id}`).remove();
+                        });
                 });
 
         })
