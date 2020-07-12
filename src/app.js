@@ -36,6 +36,7 @@ const controller = require('./routes/controller');
 const dashboard = require('./routes/dashboard');
 const admin = require('./routes/admin/admin');
 const user = require('./routes/user');
+const map = require('./routes/map');
 
 // Middleware Implement
 const authorization = require('./services/authorization');
@@ -112,9 +113,7 @@ app.use(authorization);
 app.use('/', dashboard);
 
 // Map
-app.get('/map', function(req, res) {
-  res.render('pages/map.ejs', {user: req.user, _csrf: req.csrfToken()});
-});
+app.use('/map', map);
 
 // Controlller
 app.use('/controller', controller);

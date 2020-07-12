@@ -12,151 +12,144 @@
     <script src="/public/js/mapbox/mapbox-gl.js"></script>
     <link rel="stylesheet" href="/public/css/mapbox/mapbox-gl.css">
     <link rel="stylesheet" href="/public/css/map.css">
+    <style>
+        /* width */
+        ::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 1rem;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </head>
 
 <body>
     <%- include('../partials/nav', {page: 'map', user: user}) %>
     <div id="main" class="container-fluid">
         <div class="row">
-          <div id = map class="col-lg-8">
-          </div>
-          <div class="col-lg-4">
-            <div class="table-responsive">
+            <div id=map class="col-lg-8">
+            </div>
+            <div class="col-lg-4">
+                <div class="table-responsive">
                     <table class="table table-fixed">
                         <thead>
                             <tr>
-                                <th scope="col" class="col-2">#</th>
-                                <th scope="col" class="col-7">Name</th>
-                                <th scope="col" class="col-3">Find</th>
+                                <th scope="col" class="col-2">ID</th>
+                                <th scope="col" class="col-7">Thiết Bị</th>
+                                <th scope="col" class="col-3">Vị trí</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor 1 </td>
+                            <%
+                                function getNameDevice(id){
+                                    let type = id.match(/^id(\d+)_\d+$/)[1];
+                                    switch(type){
+                                        case '7':
+                                            return 'Cảm biến độ ẩm đất';
+                                        case '9':
+                                            return 'Motor';
+                                    }
+                                }
+                            %>
+                            <% for(let device of devices){ %>
+                            <tr class="device" data-lat="<%= device.lat %>" data-long="<%= device.long %>"
+                                id="<%= device._id %>" data-device_id="<%= device.device_id %>">
+                                <th scope="row" class="col-2"><%= device.device_id %></th>
+                                <td class="col-7"><%= getNameDevice(device.device_id) %></td>
                                 <td class="col-3">
-                                    <button id="sensor1" type="button" class="btn btn-info">Find</button>
+                                    <button type="button" class="btn btn-info">Tìm</button>
                                 </td>
                             </tr>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor</td>
-                                <td class="col-3">
-                                    <button type="button" class="btn btn-info">Info</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor</td>
-                                <td class="col-3">
-                                    <button type="button" class="btn btn-info">Info</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor</td>
-                                <td class="col-3">
-                                    <button type="button" class="btn btn-info">Info</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor</td>
-                                <td class="col-3">
-                                    <button type="button" class="btn btn-info">Info</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor</td>
-                                <td class="col-3">
-                                    <button type="button" class="btn btn-info">Info</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor</td>
-                                <td class="col-3">
-                                    <button type="button" class="btn btn-info">Info</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor</td>
-                                <td class="col-3">
-                                    <button type="button" class="btn btn-info">Info</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor</td>
-                                <td class="col-3">
-                                    <button type="button" class="btn btn-info">Info</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor</td>
-                                <td class="col-3">
-                                    <button type="button" class="btn btn-info">Info</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor</td>
-                                <td class="col-3">
-                                    <button type="button" class="btn btn-info">Info</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-2">1</th>
-                                <td class="col-7">Sensor</td>
-                                <td class="col-3">
-                                    <button type="button" class="btn btn-info">Info</button>
-                                </td>
-                            </tr>
+                            <% } %>
                         </tbody>
                     </table>
-          </div>
+                </div>
+            </div>
         </div>
-    </div>
-    
-    <script>
-        mapboxgl.accessToken = 'pk.eyJ1IjoidmFuZHVjdm8iLCJhIjoiY2s4anhzODJ3MDlieDNlbTdkNXloOXJsbCJ9.rHcG-iX1IOcoqQGq9gX03A';
-        let map = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/mapbox/streets-v11',
-            center: [106.8029505, 10.880711],
-            zoom: 12
-        });
 
-        document.getElementById("sensor1").onclick = function(){
-            let info = {
-                type: 'Feature',
-                geometry: {
-                    type: 'Point',
-                    coordinates: [106.65913661332138, 10.773434613744882]
-                },
-                properties: {
-                    title: 'Sensor X',
-                    description: 'Ho Chi Minh city University of Technology'
+        <script>
+            function getNameDevice(id) {
+                let type = id.match(/^id(\d+)_\d+$/)[1];
+                switch (type) {
+                    case '7':
+                        return 'Cảm biến độ ẩm đất';
+                    case '9':
+                        return 'Motor';
                 }
-            };
-
-            new mapboxgl.Marker()
-                .setLngLat(info.geometry.coordinates)
-                .setPopup(new mapboxgl.Popup({ offset: 25 }) 
-                .setHTML(
-                    '<h5>' + info.properties.title +
-                     '</h5><p>' + info.properties.description + '</p>'
-                ))
-                .addTo(map);
-
-            map.flyTo({
-                center: info.geometry.coordinates,
-                essential: true
+            }
+            mapboxgl.accessToken = 'pk.eyJ1IjoidmFuZHVjdm8iLCJhIjoiY2s4anhzODJ3MDlieDNlbTdkNXloOXJsbCJ9.rHcG-iX1IOcoqQGq9gX03A';
+            let map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [106.8029505, 10.880711],
+                zoom: 12
             });
-        }
+
+            $(document).ready(() => {
+                for (let device of $(".device")) {
+                    let lat = $(device).attr("data-lat");
+                    let long = $(device).attr("data-long");
+                    if (lat === '' || long === '') {
+                        continue;
+                    }
+
+                    let info = {
+                        type: 'Feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [Number(long), Number(lat)]
+                        },
+                        properties: {
+                            name: getNameDevice($(device).attr("data-device_id")),
+                            id: $(device).attr("id"),
+                            device_id: $(device).attr("data-device_id")
+                        }
+                    };
+
+                    new mapboxgl.Marker()
+                        .setLngLat(info.geometry.coordinates)
+                        .setPopup(new mapboxgl.Popup({ offset: 25 })
+                            .setHTML(
+                                '<h5>' + info.properties.name +
+                                '</h5><p>ID: ' + info.properties.device_id + '</p>'
+                            ))
+                        .addTo(map);
+
+                }
+            });
+
+            $(".table-responsive").on("click", function(e){
+                if(event.target.type !== "button"){
+                    return;
+                }
+                
+                let device = e.target.closest('tr');
+                let long = device.getAttribute("data-long");
+                let lat = device.getAttribute("data-lat");
+
+                if (lat === '' || long === '') {
+                    return;
+                }
+
+                map.flyTo({
+                    center: [Number(long), Number(lat)],
+                    essential: true,
+                    zoom: 18
+                });
+            });
     </script>
 </body>
 
