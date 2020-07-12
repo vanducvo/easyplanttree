@@ -3,6 +3,7 @@ const router = express.Router();
 const { Device, SoilMoisture } = require('../models/device');
 const { getTypeDevice } = require('../utils/utils');
 const databaseLogger = require('../utils/logger').databaseLogger(module);
+const mongoose = require('mongoose');
 
 router.get('/', function (req, res) {
 
@@ -148,6 +149,71 @@ router.get('/averageallsensor', function(req, res){
             res.json(stats).status(200).end();
         }).catch(err => {
             databaseLogger.error(err);
+        });
+    });
+});
+
+router.get('/analysis-watering', function(req, res){
+    // Change to begin day of week
+    let type = req.query.type;
+    let start = new Date();
+    let end = new Date();
+    let day = start.getDay();
+    start.setHours(0);
+    start.setMinutes(0);
+    start.setSeconds(0);
+    start.setMilliseconds(0);
+    start.setDate(start.getDate() - day + (day === 0 ? -6 : 1));
+
+    if(type && type === "preweek"){
+        end = new Date(start);
+        end.setDate(end.getDate() - 1);
+        start.setDate(start.getDate() - 7);
+    }
+
+    mongoose.connection.db.collection('agenda', function(err, collection){
+        if(err){
+            res.status(500).end();
+        }
+
+        collection.aggregate([
+            {
+                "$match": {
+                    name: 'watering',
+                    lastRunAt: {
+                        "$gte": start,
+                        "$lte": end
+                    }
+                }
+                
+            },
+            {
+                "$project": {
+                    day: {
+                        "$dayOfWeek": "$lastRunAt"
+                    }
+                }
+            },
+            {
+                "$group":{
+                    _id: "$day",
+                    times: {
+                        "$sum": 1
+                    }
+                }
+            },
+            {
+                "$sort": {
+                    _id: 1
+                }
+            }
+        ])
+        .toArray()
+        .then(docs => {
+            res.json(docs).end();
+        })
+        .catch(err => {
+            res.status(500).end();
         });
     });
 });
