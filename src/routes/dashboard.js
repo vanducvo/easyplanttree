@@ -108,8 +108,8 @@ router.get('/averageallsensor', function(req, res){
 
     if(type && type === "preweek"){
         end = new Date(start);
-        end.setDate(end.getDate() - 1);
         start.setDate(start.getDate() - 7);
+        end.setSeconds(end.getSeconds() - 1);
     }
     
     // Query
@@ -167,8 +167,8 @@ router.get('/analysis-watering', function(req, res){
 
     if(type && type === "preweek"){
         end = new Date(start);
-        end.setDate(end.getDate() - 1);
         start.setDate(start.getDate() - 7);
+        end.setSeconds(end.getSeconds() - 1);
     }
 
     mongoose.connection.db.collection('agenda', function(err, collection){
