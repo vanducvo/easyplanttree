@@ -180,6 +180,7 @@ router.get('/analysis-watering', function(req, res){
             {
                 "$match": {
                     name: 'watering',
+                    "data.user": req.user.id,
                     lastRunAt: {
                         "$gte": start,
                         "$lte": end
